@@ -1,16 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[My Octopress Blog]]></title>
+  <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://dazinator.github.io/atom.xml" rel="self"/>
   <link href="http://dazinator.github.io/"/>
-  <updated>2014-11-16T14:12:07+00:00</updated>
+  <updated>2014-11-16T18:39:50+00:00</updated>
   <id>http://dazinator.github.io/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[Darrell Tunnell]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[A Proclamation]]></title>
+    <link href="http://dazinator.github.io/blog/2014/11/16/a-proclamation/"/>
+    <updated>2014-11-16T16:20:59+00:00</updated>
+    <id>http://dazinator.github.io/blog/2014/11/16/a-proclamation</id>
+    <content type="html"><![CDATA[<p>On this day the 16th November 2014, let it be known that Darrell&rsquo;s blog was rendered forth unto the internet.</p>
+
+<p>Let the knowledge and mannor of its creation also be recorded, lest it be lost from mortal ken. Thus humanity, need not be stricken in ignorance and awe, and need not refer to my blogging website as &ldquo;Witchcraft&rdquo; or &ldquo;Devilry&rdquo;.</p>
+
+<h2>The Mechanism of Creation</h2>
+
+<ol>
+<li>Inspiration taken from JakeGinnivan&rsquo;s blog which is powered by OctoPress: <a href="http://jake.ginnivan.net/">http://jake.ginnivan.net/</a></li>
+<li>Purchased a domain name: darrelltunnell.net</li>
+<li>Followed this OctoPress documentation: <a href="http://octopress.org/docs/setup/">http://octopress.org/docs/setup/</a></li>
+<li>Hosted on <a href="https://github.com/">https://github.com/</a></li>
+</ol>
+
+
+<h2>A revelation</h2>
+
+<p>And so it came to pass that Darrell Tunnell&rsquo;s blog was incredibly useful to others. Darrell&rsquo;s blog is currently read by 3.1 million people. Web browser requests for Darrell&rsquo;s blog constitute approximately 85.2% of all browser requests made, worldwide. NetFlix was eventually absorbed into Darrell&rsquo;s Blog at the end of 2014, through internet osmosis.</p>
+]]></content>
+  </entry>
   
 </feed>
