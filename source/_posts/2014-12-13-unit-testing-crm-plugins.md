@@ -1,3 +1,111 @@
-## Unit Testing a Dynamics Crm Plugin
+## Unit Testing Crm Plugins
 
-Enter text in [Markdown](http://daringfireball.net/projects/markdown/). Use the toolbar above, or click the **?** button for formatting help.
+Here are a few techniques, that may prove useful - soon you will be unit testing your Dynamics Crm Plugins, like a boss.
+
+## Why bother with unit tests. I have enough work to do as it is.
+
+I'm not going to go into the merrits of unit testing here. Suffice it to say I firmly believe that you should assume code is buggy until you _prove_ that its not. Unit tests allow you to assert that your code meets expectation. They also act as a handy safety net for picking up any regressions in your code.
+
+## A Typical Crm Plugin
+
+Here is the code for a plugin that is written without unit testing in mind.
+
+```
+  public class ReclaimCreditPlugin : IPlugin
+    {
+
+        public void Execute(IServiceProvider serviceProvider)
+        {
+
+            var executionContext = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
+
+            // 1. We must run only within a transaction
+            if (!executionContext.IsInTransaction)
+            {
+                throw new InvalidPluginExecutionException("The plugin detected that it was not running within a database transaction. The plugin requires a database transaction.");
+            }
+
+            // 2. Get the contact, check its parent account.
+            if (executionContext.InputParameters.Contains("Target") && executionContext.InputParameters["Target"] is Entity)
+            {
+                // Obtain the target entity from the input parameters.
+                var contactEntity = (Entity)executionContext.InputParameters["Target"];
+                // Get the parent account id.
+                var parentAccountId = (EntityReference)contactEntity["parentaccountid"];
+
+                // Get the parent account entity.
+                var orgServiceFactory = (IOrganizationServiceFactory)serviceProvider.GetService(typeof(IOrganizationServiceFactory));
+                var orgService = orgServiceFactory.CreateOrganizationService(executionContext.UserId);
+                var parentAccountEntity = orgService.Retrieve("account", parentAccountId.Id, new ColumnSet("creditonhold"));
+
+                var accountOnHold = (bool)parentAccountEntity["creditonhold"];
+
+                if (accountOnHold)
+                {
+                    contactEntity["taketheirshoes"] = true;
+                    var tracingService = (ITracingService)serviceProvider.GetService(typeof(ITracingService));
+                    tracingService.Trace("Have indicated that we should take the shoes from contact: {0}", contactEntity.Id.ToString());
+                }
+
+            }
+
+        }
+
+    }
+    ```
+    
+### It's absolutely littered with dependencies. 
+
+Guess what... t's absolutely littered with dependencies. Dependencies on services that Dynamics CRM provides at runtime, such as:  
+
+1. IServiceProvider
+2. IPluginExecutionContext
+3. IOrganizationServiceFactory
+4. IOrganizationService
+5. ITracingService
+
+### Why is that a problem?
+
+The problem is not technical. It is definately technically possible to mock / fake all of those services at unit test time. You can use something like RhinoMocks or another Mocking library to mock out `IServiceProvider` - and then mock out all the calls to IServiceProvider that are made, so that it returns your other 'mocked' services like your mock 'IPluginExecutionContext' etc etc.
+
+The problem however, is about effort. This approach requires significant effort. You would have to mock a tonne of runtime services and interactions.
+
+### How do we make it easier? 
+
+Well start by defining the requirements of the plugin and making sure they are crystal clear. 
+
+### The Requirements 
+For this plugin these are the requirements:
+
+1. It must only run within a transaction with the database.
+2. When a Contact is Updated, if the contact has a parent account, and that parent account is "on hold" then set the "taketheirshoes" flag on the contact record to true.
+
+### 
+
+
+
+
+
+
+
+
+
+
+
+How would we unit test the above plugin?
+
+Well we would have to supply "mock" objects for all of the runtime services that the above code accesses. These include:
+
+
+
+We would then have to implement all of the methods on those fake objects so at test time when those methods were called, they actually do something. For example:
+
+```
+orgService.Retrieve("account", parentAccountId.Id, new ColumnSet("creditonhold"));
+```
+
+At test time, that would translate into having a mock implementation of IOrganizationService, that 
+
+
+
+
