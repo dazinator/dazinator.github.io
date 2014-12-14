@@ -133,7 +133,7 @@ Notice how it contains only the logic we really care about testing - the logic a
 
 Yes it's true folks you heard it here first. The less dependencies you utilise directly in your methods, the easier they are to unit test.
 
-With this principle in mind, let's revist our plugin and refactor it to remove some dependencies.
+With this principle in mind, let's revisit our plugin and refactor it to remove some dependencies.
 
 ## New and Improved Version of our plugin.
 
