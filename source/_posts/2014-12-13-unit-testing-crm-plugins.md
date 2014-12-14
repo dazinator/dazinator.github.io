@@ -6,16 +6,8 @@ The purpose of this post will be to look at the code for a fairly typical lookin
 
 Firstly, let's look at a plugin that we will call the `ReclaimCreditPlugin`. Here are the requirements:
  
-1. It must run only within a transaction with the database.
+> 1. It must run only within a transaction with the database.
 2. When a Contact entity is Updated, if the contact has a parent account, and that parent account is "on hold" then set the "taketheirshoes" flag on the contact record to true.
-
-I beleive this ficticious plugin to be a pretty decent example of a plugin, because it carries out the following tasks which are fairly typical:
-
-1. Has some conditional logic in it 
-2. Get's the current entity from `IPluginExecutionContext`
-3. Get's the `IOrganizationService` using the `IOrganizationServiceFactory`
-3. Retrieves another entity using the `IOrganizationService`
-3. Updates an entity using the `IOrganizationService`
 
 ## Developer Jon Doe
 
@@ -72,7 +64,7 @@ So.. does it actually work?
 
 ## Does it work?
 
-Listen.. if you want to start haemorrhaging money as an organisation, one way to find out if code works is to immediately go through the process of deploying it to a QA environment, getting someone to test it manually, and then repeating that cycle of Dev --> Deployment --> QA as often as necessary, until the tester gives the thumbs up. 
+Listen.. if you want to start haemorrhaging money as an organisation, one way to find out if this code works is to immediately go through the process of deploying it to a QA environment, getting someone to test it manually, and then repeating that cycle of Dev --> Deployment --> QA as often as necessary, until the tester gives the thumbs up. 
 
 If you want to go that route, feel free to skip the rest of this article. Otherwise read on, where sanity awaits!
 
@@ -90,54 +82,26 @@ In short, because I value my time. Just look at that code again for crying out l
 4. IOrganizationService
 5. ITracingService
 
-WHAT THE HELL ARE ANY OF THESE THINGS TO DO WITH THE ACTUAL REQUIREMENTS THAT I NEED TO TEST???
+**WHAT THE HELL ARE ANY OF THESE THINGS TO DO WITH THE ACTUAL REQUIREMENTS THAT I _NEED_ TO TEST???**
 
 Listen.. I read those requirements for this plugin. I read them atleast one thousand times. And I wrote them in fact. Here they are again:
 
 > 1. It must run only within a transaction with the database.
 2. When a Contact entity is Updated, if the contact has a parent account, and that parent account is "on hold" then set the "taketheirshoes" flag on the contact record to true.
 
-With those requirements in mind, can you please show me the bit where it says: `When a contact is updated, it is of upmost importance to us as a business that it looks at the IExecutionContext and grabs the IOrganizationServiceFactory.`
+So with that in mind, can you please show me the requirement dictating: `When a contact is updated, it is of upmost importance to us as a business that it looks at the `IPluginExecutionContext` and grabs the `IOrganizationServiceFactory.`
 
-Or please show me where the requirements state: `When a contact is updated, the plugin absolutely must interact with the IServiceProvider because otherwise you know.. Our business just won't function without that kind of business rule in place.
+Or please show me where the requirements state: `When a contact is updated, the plugin absolutely must interact with the `IServiceProvider` because otherwise you know.. Our business just won't function anymore.
 
-No my friends. The requirements do not say _any of that_. I am in the business of unit testing actual requirements. If i wanted to unit test the `IServiceProvider` i'd go work for the Microsoft Dynamics Team. 
-
-## Let's reduce the effort of writing a unit unit test  of our unit test
-
-
-
-
-   
-
-## Writing a Unit Test -  there is no ~~Spoon~~ Crm
-
-Look at that code again but this time, look at all of the things that the method depends upon so that it can run. 
-
-
-- `There  with your unit testIt's absolutely littered with dependencies. 
-
-Guess what... it's absolutely littered with dependencies. Dependencies on services that Dynamics CRM provides at runtime, such as:  
-
-
+No my friends. The requirements do not say _any of that_. 
 
 ### Why is that a problem?
 
 The problem is not obvious at first glance. It is definately technically possible to mock / fake all of those services at unit test time. You can use something like RhinoMocks or another Mocking library to mock out `IServiceProvider` for the purposes of your test. You would then have to mock out all the calls to IServiceProvider that are made, so that it returns your other 'mocked' services like a mock 'IPluginExecutionContext' etc etc.
 
-The problem, is about effort. This approach, although technically possible, requires significant effort. You would have to mock a tonne of runtime services and interactions. We have to ask ourselves, is all that effort really necessary? Sometimes it is, sometimes it isn't. In this instance it isn't and I will explain why.
+The problem, is about _effort_. This approach, although technically possible, requires significant _effort_. You would have to mock a tonne of runtime services and interactions. We have to ask ourselves, is all that effort really necessary? Sometimes it may be, but most of the time, it isn't. In this instance it definately isn't and I will explain why.
 
-### How do we make the unit testing for this plugin easier then? 
-
-Let's define the requirements of the plugin and making sure they are crystal clear. 
-
-### The Requirements 
-For this plugin these are the requirements:
-
-1. It must only run within a transaction with the database.
-2. When a Contact is Updated, if the contact has a parent account, and that parent account is "on hold" then set the "taketheirshoes" flag on the contact record to true.
-
-### Pseudo Code - 
+## Let's use the requirements to write the plugin, in pseudo code.
 
 With those requirements - forget everything you know about Dynamics Crm and write your ideal pseudo code that would implement those requirements. This is the actual logic we care about testing.
 
@@ -161,12 +125,12 @@ if(isOnHold)
 }
 ```
 
-## Look at that Pseudo Code - I can't see any runtime services?
-Notice how our pseudo code which encapsulates the logic we really care about, doesn't contain any fluff. No `IServiceProvider`, No `IPluginExecutionContext`. It looks simple. This is the way things should be. Simple.
+## Look at that Pseudo Code -  Do you see _any_ runtime services?
+Notice how it contains only the logic we really care about testing - the logic as described by the requirements. It doesn't contain needless fluff. No `IServiceProvider`, No `IPluginExecutionContext`. It looks very simple, very basic. If we could actually write a CRM plugin like this, it would be about 1.5 million times easier to test. Well we can.
 
 ## Isolating out dependencies makes for simpler and easier unit testing.
 
-Yes it's true folks you heard it here first. The less dependencies you utilise in your methods, the easier they are to test.
+Yes it's true folks you heard it here first. The less dependencies you utilise directly in your methods, the easier they are to unit test.
 
 With this principle in mind, let's revist our plugin and refactor it to remove some dependencies.
 
@@ -206,7 +170,7 @@ With this principle in mind, let's revist our plugin and refactor it to remove s
                 return;
             }
 
-            // 4. If creidt on hold, set taketheirshoes.
+            // 4. If credit on hold, set taketheirshoes.
             var accountOnHold = (bool)parentAccount["creditonhold"];
             if (accountOnHold)
             {
@@ -249,8 +213,17 @@ With this principle in mind, let's revist our plugin and refactor it to remove s
 
 ```
 
-## Huh what about all that crap?
+## What just happened?
 
+I applied a technique called the [Extract and Override](http://taswar.zeytinsoft.com/2009/03/08/extract-and-override-refactoring-technique/) technique, to remove the concrete references to all of those CRM runtime only services from within the Execute method.
+
+For example rather than:
+
+```
+
+```
+
+This technique means that the actual method you want to test,  
 
 
 How would we unit test the above plugin?
