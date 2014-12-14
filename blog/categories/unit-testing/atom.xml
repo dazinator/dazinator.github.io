@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Unit Testing | Darrell Tunnell's Blog]]></title>
-  <link href="http://dazinator.github.io/blog/categories/unit-testing/atom.xml" rel="self"/>
-  <link href="http://dazinator.github.io/"/>
-  <updated>2014-12-14T18:07:01+00:00</updated>
-  <id>http://dazinator.github.io/</id>
+  <link href="http://darrelltunnell.net/blog/categories/unit-testing/atom.xml" rel="self"/>
+  <link href="http://darrelltunnell.net/"/>
+  <updated>2014-12-14T18:13:47+00:00</updated>
+  <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Unit Testing Dynamics CRM Plugins (There Is No ~~Spoon~~ CRM)]]></title>
-    <link href="http://dazinator.github.io/blog/2014/12/14/unit-testing-crm-plugins/"/>
+    <link href="http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins/"/>
     <updated>2014-12-14T17:50:00+00:00</updated>
-    <id>http://dazinator.github.io/blog/2014/12/14/unit-testing-crm-plugins</id>
+    <id>http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins</id>
     <content type="html"><![CDATA[<h2>Unit Testing Dynamics CRM Plugins (There is no <del>Spoon</del> CRM)</h2>
 
 <p>The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a unit test with the least possible effort. Reduced Effort == Reduced Person Hours == Reduced Cost.</p>
