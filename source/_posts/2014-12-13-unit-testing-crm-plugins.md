@@ -172,7 +172,7 @@ With this principle in mind, let's revisit our plugin and refactor it to remove 
                 return;
             }
 
-            // 4. If creidt on hold, set taketheirshoes.
+            // 4. If credit on hold, set taketheirshoes.
             var accountOnHold = (bool)parentAccount["creditonhold"];
             if (accountOnHold)
             {
@@ -253,9 +253,7 @@ It has been replaced by a call to virtual method:
             }
 ```
 
-The IsInTransaction() method is virtual, and so can easily be overriden at test time to return a True or False value.
-
-This means during test time, we no longer need to mock up an `IPluginExecutionContext` - or indeed _any_ of the Crm runtime services. We just need to override the various virtual methods and return appropriate values. 
+Because the interactions with the various CRM runtime Services now occur within Virtual methods, we no longer need to mock them up at unit test time. Say goodbye to having to mockup `IPluginExecutionContext`, `IServiceProvider` or _any_ of the Crm runtime services. All we need to do now is just override the various virtual methods that our Execute() method calls, and return appropriate values at test time.
 
 ## Ok so - Now will you show me a Unit Test??
 
@@ -362,7 +360,7 @@ For the purpose of our unit tests all we do, is create a class that derives from
 
 ## Wrapping Up
 
-Just because it's technically possible to write a unit test for a plugin, doesn't mean you should just immediately plough on and do so. Sometimes, the intelligent thing to do is to examine the requirements, examine the plugin code, and be absolutely clear on what it is you want to cover in your tests. With that in mind, refactor the plugin code to isolate out any dependencies on CRM runtime services that you do not want test coverage for. Doing this can take some time, but can save you a lot more, and make your tests much less fragile. I would aslo reccommend a book on unit testing such as [The Art of Unit Testing](http://artofunittesting.com/) 
+I hope I have demonstrated a simple plugin, with a simple set of unit tests. More importantly, I hope I have demonstrated that although it may be technically possible to write a unit test for an exising plugin,  by mocking up every CRM runtime service and interaction that the plugin makes,just because such a thing is possible, doesn't mean you should just do it. First the work has to be justified. To justify just what is necessary, examine the requirements, examine the plugin code, and be absolutely clear on what it is you want to cover in your unit tests. With that in mind, refactor the plugin code to eliminate fluff (extraneoues concrete references to dependencies that are surplus to the requirements that you want to test). Use techniques like the `Extract and Override` technique to allow you to substitute these dependencies easily at test time. When you do this, you may be surprised at how much simpler it becomes to write unit tests. I would aslo reccommend a book on unit testing such as [The Art of Unit Testing](http://artofunittesting.com/).
 
 
 
