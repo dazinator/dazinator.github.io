@@ -2,6 +2,8 @@
 
 The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a unit test with the least possible effort. Reduced Effort == Reduced Person Hours == Reduced Cost.
 
+Remember, this is Unit Testing, not Integration testing - so at test time - there is no CRM!
+
 ## A plugin - and it's requirements
 
 Firstly, let's look at a plugin that we will call the `ReclaimCreditPlugin`. Here are the requirements:
