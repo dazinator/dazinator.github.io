@@ -95,7 +95,7 @@ So with that in mind, can you please show me the requirement dictating: `When a 
 
 Or please show me where the requirements state: `When a contact is updated, the plugin absolutely must interact with the `IServiceProvider` because otherwise you know.. Our business just won't function anymore.
 
-No my friends. The requirements do not say _any of that_. 
+No my friends. The requirements do not say _any of that_. I am in the business of testing against the requirements.
 
 ### Why is that a problem?
 
