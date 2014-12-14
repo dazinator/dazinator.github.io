@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Dynamics Crm | Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/blog/categories/dynamics-crm/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2014-12-14T20:26:00+00:00</updated>
+  <updated>2014-12-14T20:49:34+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -18,7 +18,7 @@
     <link href="http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins/"/>
     <updated>2014-12-14T17:50:00+00:00</updated>
     <id>http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins</id>
-    <content type="html"><![CDATA[<h2>Unit Testing Dynamics CRM Plugins (There is no <del>Spoon</del> CRM)</h2>
+    <content type="html"><![CDATA[<h2>There is no <del>Spoon</del> CRM</h2>
 
 <p>The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a unit test with the least possible effort. Reduced Effort == Reduced Person Hours == Reduced Cost.</p>
 
@@ -79,76 +79,82 @@
         }
 
     }
-    ```
-
-### Good Job?
-Take a moment to peer review the above code. Would you vindicate Jon Doe's effort? It seems it has all the required logic in all the required places. It appears he has covered the list of requirements. Although Jon doesn't check to make sure the current entity being updated is definately a contact entity.. But within the confines of this blog post we will assume that there is no possible danger that the plugin could ever be registered against the wrong entity. 
-
-So.. does it actually work?
-
-## Does it work?
-
-Assuming you want to start haemorrhaging people's time accross the organisation, one way to find out if this code works is to immediately go through the process of deploying it to a QA environment, getting someone to test it manually, and then repeating that cycle of Dev --&gt; Deployment --&gt; QA as often as necessary, until the tester gives the thumbs up. 
-
-If you want to go that route, feel free to skip the rest of this article. Otherwise read on, where sanity awaits!
-
-## Show me a Unit Test Already!
-
-Bad news for you. I could.. but I won't.
-
-## Why won't you show me a unit test? 
-
-In short, because I value my time. Just look at that code again for crying out loud! It's littered with dependencies on things that are only provided at runtime by Dynamics CRM - things like:
-
-1. IServiceProvider
-2. IPluginExecutionContext
-3. IOrganizationServiceFactory
-4. IOrganizationService
-5. ITracingService
-
-**WHAT THE HELL ARE ANY OF THESE THINGS TO DO WITH THE ACTUAL REQUIREMENTS THAT I _NEED_ TO TEST???**
-
-Listen.. I read those requirements for this plugin. I read them atleast one thousand times. And I wrote them in fact. Here they are again:
-
-&gt; 1. It must run only within a transaction with the database.
-2. When a Contact entity is Updated, if the contact has a parent account, and that parent account is "on hold" then set the "taketheirshoes" flag on the contact record to true.
-
-So with that in mind, can you please show me the requirement dictating: `When a contact is updated, it is of upmost importance to us as a business that it looks at the `IPluginExecutionContext` and grabs the `IOrganizationServiceFactory.`
-
-Or please show me where the requirements state: `When a contact is updated, the plugin absolutely must interact with the `IServiceProvider` because otherwise you know.. Our business just won't function anymore.
-
-No my friends. The requirements do not say _any of that_. I am in the business of testing against the requirements.
-
-### Why is that a problem?
-
-The problem is not obvious at first glance. It is definately technically possible to mock / fake all of those services at unit test time. You can use something like RhinoMocks or another Mocking library to mock out `IServiceProvider` for the purposes of your test. You would then have to mock out all the calls to `IServiceProvider` that are made, so that it returns your other 'mocked' services like a mock 'IPluginExecutionContext' etc etc - and down the rabbit hole you go.
-
-The problem, is about _effort_. This approach, although technically possible, requires significant _effort_. You would have to mock a tonne of runtime services and interactions. We have to ask ourselves, is all that effort really necessary? Sometimes it may be, but most of the time, it isn't. In this instance it definately isn't and I will explain why.
-
-## Let's use the requirements to write the plugin, in pseudo code.
-
-With those requirements - forget everything you know about Dynamics Crm and write your ideal pseudo code that would implement those requirements. This is the actual logic we care about testing.
-
-PSEUDO CODE:
 </code></pre>
 
-<p>if (!IsRunningInTransaction)
+<h3>Good Job?</h3>
+
+<p>Take a moment to peer review the above code. Would you vindicate Jon Doe&rsquo;s effort? It seems it has all the required logic in all the required places. It appears he has covered the list of requirements. Although Jon doesn&rsquo;t check to make sure the current entity being updated is definately a contact entity.. But within the confines of this blog post we will assume that there is no possible danger that the plugin could ever be registered against the wrong entity.</p>
+
+<p>So.. does it actually work?</p>
+
+<h2>Does it work?</h2>
+
+<p>Assuming you want to start haemorrhaging people&rsquo;s time accross the organisation, one way to find out if this code works is to immediately go through the process of deploying it to a QA environment, getting someone to test it manually, and then repeating that cycle of Dev &ndash;> Deployment &ndash;> QA as often as necessary, until the tester gives the thumbs up.</p>
+
+<p>If you want to go that route, feel free to skip the rest of this article. Otherwise read on, where sanity awaits!</p>
+
+<h2>Show me a Unit Test Already!</h2>
+
+<p>Bad news for you. I could.. but I won&rsquo;t.</p>
+
+<h2>Why won&rsquo;t you show me a unit test?</h2>
+
+<p>In short, because I value my time. Just look at that code again for crying out loud! It&rsquo;s littered with dependencies on things that are only provided at runtime by Dynamics CRM - things like:</p>
+
+<ol>
+<li>IServiceProvider</li>
+<li>IPluginExecutionContext</li>
+<li>IOrganizationServiceFactory</li>
+<li>IOrganizationService</li>
+<li>ITracingService</li>
+</ol>
+
+
+<p><strong>WHAT THE HELL ARE ANY OF THESE THINGS TO DO WITH THE ACTUAL REQUIREMENTS THAT I <em>NEED</em> TO TEST???</strong></p>
+
+<p>Listen.. I read those requirements for this plugin. I read them atleast one thousand times. And I wrote them in fact. Here they are again:</p>
+
+<blockquote><ol>
+<li>It must run only within a transaction with the database.</li>
+<li>When a Contact entity is Updated, if the contact has a parent account, and that parent account is &ldquo;on hold&rdquo; then set the &ldquo;taketheirshoes&rdquo; flag on the contact record to true.</li>
+</ol>
+</blockquote>
+
+<p>So with that in mind, can you please show me the requirement dictating: <code>When a contact is updated, it is of upmost importance to us as a business that it looks at the</code>IPluginExecutionContext<code>and grabs the</code>IOrganizationServiceFactory.`</p>
+
+<p>Or please show me where the requirements state: <code>When a contact is updated, the plugin absolutely must interact with the</code>IServiceProvider` because otherwise you know.. Our business just won&rsquo;t function anymore.</p>
+
+<p>No my friends. The requirements do not say <em>any of that</em>. I am in the business of testing against the requirements.</p>
+
+<h3>Why is that a problem?</h3>
+
+<p>The problem is not obvious at first glance. It is definately technically possible to mock / fake all of those services at unit test time. You can use something like RhinoMocks or another Mocking library to mock out <code>IServiceProvider</code> for the purposes of your test. You would then have to mock out all the calls to <code>IServiceProvider</code> that are made, so that it returns your other &lsquo;mocked&rsquo; services like a mock &lsquo;IPluginExecutionContext&rsquo; etc etc - and down the rabbit hole you go.</p>
+
+<p>The problem, is about <em>effort</em>. This approach, although technically possible, requires significant <em>effort</em>. You would have to mock a tonne of runtime services and interactions. We have to ask ourselves, is all that effort really necessary? Sometimes it may be, but most of the time, it isn&rsquo;t. In this instance it definately isn&rsquo;t and I will explain why.</p>
+
+<h2>Let&rsquo;s use the requirements to write the plugin, in pseudo code.</h2>
+
+<p>With those requirements - forget everything you know about Dynamics Crm and write your ideal pseudo code that would implement those requirements. This is the actual logic we care about testing.</p>
+
+<p>PSEUDO CODE:</p>
+
+<pre><code>if (!IsRunningInTransaction)
 {
-    Throw &ldquo;Plugin requires a transaction.&rdquo;
-}</p>
+    Throw "Plugin requires a transaction."
+}
 
-<p>If (IsUpdateOf(&ldquo;contact&rdquo;))
-{</p>
+If (IsUpdateOf("contact"))
+{
 
-<p>var contact = GetTargetEntity();
-var account = GetAccountForContact(contact);</p>
+var contact = GetTargetEntity();
+var account = GetAccountForContact(contact);
 
-<p>var isOnHold = (bool)account[&ldquo;creditonhold&rdquo;];
+var isOnHold = (bool)account["creditonhold"];
 if(isOnHold)
 {
-    contact[&ldquo;taketheirshoes&rdquo;] = true;
+    contact["taketheirshoes"] = true;
 }
-&#8220;`</p>
+</code></pre>
 
 <h2>Look at that Pseudo Code -  Do you see <em>any</em> runtime services?</h2>
 
@@ -258,7 +264,7 @@ if(isOnHold)
 
 <p>For example rather than having the following code directly within the execute method:</p>
 
-<pre><code>  var executionContext = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
+<pre><code class="csharp">  var executionContext = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
 
             // 1. We must run only within a transaction
             if (!executionContext.IsInTransaction)
@@ -267,7 +273,7 @@ if(isOnHold)
 
 <p>It has been replaced by a call to virtual method:</p>
 
-<pre><code class="chsarp">            if (IsInTransaction())
+<pre><code class="csharp">            if (IsInTransaction())
             {
 
             }
@@ -320,7 +326,7 @@ if(isOnHold)
 
 <h2>And here are the Unit Tests</h2>
 
-<pre><code>
+<pre><code class="csharp">
  [TestFixture]
     public class ReclaimCreditPluginUnitTests
     {
