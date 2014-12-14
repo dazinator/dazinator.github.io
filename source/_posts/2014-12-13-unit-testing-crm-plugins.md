@@ -106,6 +106,7 @@ The problem, is about _effort_. This approach, although technically possible, re
 With those requirements - forget everything you know about Dynamics Crm and write your ideal pseudo code that would implement those requirements. This is the actual logic we care about testing.
 
 PSEUDO CODE:
+
 ```
 if (!IsRunningInTransaction)
 {
@@ -136,8 +137,7 @@ With this principle in mind, let's revist our plugin and refactor it to remove s
 
 ## New and Improved Version of our plugin.
 
-```
-
+``` csharp
  public class ReclaimCreditPlugin2 : IPlugin
     {
 
@@ -220,25 +220,139 @@ I applied a technique called the [Extract and Override](http://taswar.zeytinsoft
 For example rather than:
 
 ```
+  var executionContext = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
+
+            // 1. We must run only within a transaction
+            if (!executionContext.IsInTransaction)
+            {
+```
+
+We now have:
+
+  	        if (IsInTransaction())
+            {
+            
+            }
+            
+Where the IsInTransaction() method is a virtual method that returns True or False.
+
+This means during test time, we don't need an `IPluginExecutionContext` at all anymore. We just need to override the IsInTransaction() method, and return a True or False value to simulate the plugin running inside, or outside a transaction.
+
+## Now show me the Unit Test
+
+Certainly Sir / Madame. Your wish is my command:-
+
+For the purpose of our unit tests all we do, is create a class that derives from our original plugin class, but overrides the various virtual methods to provide different values that we can provide at test time. 
+
+``` csharp
+ public class UnitTestableReclaimCreditPlugin : ReclaimCreditPlugin2
+    {
+
+        public UnitTestableReclaimCreditPlugin()
+        {
+            AccountIsOnHold = false;
+            IsRunningInTransaction = false;
+            ContactEntity = new Entity("contact");
+        }
+
+        protected override Entity GetTargetEntity()
+        {
+            ContactEntity["parentaccountid"] = new EntityReference("account", Guid.NewGuid());
+            return ContactEntity;
+        }
+
+        protected override Entity GetAccountEntity(Entity contact)
+        {
+            var accountEntity = new Entity("account");
+            accountEntity["creditonhold"] = AccountIsOnHold;
+            return accountEntity;
+        }
+
+        protected override bool IsInTransaction()
+        {
+            return IsRunningInTransaction;
+        }
+
+        public bool AccountIsOnHold { get; set; }
+
+        public bool IsRunningInTransaction { get; set; }
+
+        public Entity ContactEntity { get; set; }
+
+    }
+```
+
+## And here are the Unit Tests
 
 ```
 
-This technique means that the actual method you want to test,  
+ [TestFixture]
+    public class ReclaimCreditPluginUnitTests
+    {
+        public ReclaimCreditPluginUnitTests()
+        {
+
+        }
+
+        [ExpectedException(typeof(InvalidPluginExecutionException),
+            ExpectedMessage = "The plugin detected that it was not running within a database transaction",
+            MatchType = MessageMatch.Contains)]
+        public void Should_Only_Run_Within_Transaction()
+        {
+            // arrange
+            var sut = new UnitTestableReclaimCreditPlugin();
+            sut.IsRunningInTransaction = false;
+
+            // act 
+            sut.Execute();
+
+        }
 
 
-How would we unit test the above plugin?
+        public void Should_Take_Shoes_When_Credit_On_Hold()
+        {
+            // arrange
+            var sut = new UnitTestableReclaimCreditPlugin();
+            sut.IsRunningInTransaction = true;
+            sut.AccountIsOnHold = true;
 
-Well we would have to supply "mock" objects for all of the runtime services that the above code accesses. These include:
+            // act 
+            sut.Execute();
 
+            //assert
+            Assert.That(sut.ContactEntity["taketheirshoes"], Is.EqualTo(true));
 
+        }
 
-We would then have to implement all of the methods on those fake objects so at test time when those methods were called, they actually do something. For example:
+        public void Should_Not_Take_Shoes_When_Credit_Not_On_Hold()
+        {
+            // arrange
+            var sut = new UnitTestableReclaimCreditPlugin();
+            sut.IsRunningInTransaction = true;
+            sut.AccountIsOnHold = false;
 
+            // act 
+            sut.Execute();
+
+            //assert
+            Assert.That(sut.ContactEntity["taketheirshoes"], Is.Not.EqualTo(true));
+
+        }
+    }
 ```
-orgService.Retrieve("account", parentAccountId.Id, new ColumnSet("creditonhold"));
-```
 
-At test time, that would translate into having a mock implementation of IOrganizationService, that 
+## Wrapping Up
+
+Just because it's technically possible to unit test some plugin code, doesn't mean you should just immediately plough on and do so, sometimes it will save you a lot of time if you revise the code itself to make it easier to unit test. Keep the requirements in mind that you actually care about testing. Read a book such as [The Art of Unit Testing](http://artofunittesting.com/) to learn basic principles that you can apply to Dynamics Crm plugin development. 
+
+
+
+
+
+
+
+
+
 
 
 
