@@ -135,7 +135,7 @@ Yes it's true folks you heard it here first. The less dependencies you utilise d
 
 With this principle in mind, let's revisit our plugin and refactor it to remove some dependencies.
 
-## New and Improved Version of our plugin.
+## New and Improved Plugin
 
 ``` csharp
  public class ReclaimCreditPlugin2 : IPlugin
@@ -150,7 +150,7 @@ With this principle in mind, let's revisit our plugin and refactor it to remove 
         }
 
         /// <summary>
-        /// This is the method contianing the business logic that we want to test. Notice how it is similar to our pseudo code in that it concerns itself with the requirements, and not CRM Fluff.
+        /// This is the method containing the business logic that we want to be able to assert at unit test time.
         /// </summary>
         public void Execute()
         {
@@ -170,7 +170,7 @@ With this principle in mind, let's revisit our plugin and refactor it to remove 
                 return;
             }
 
-            // 4. If credit on hold, set taketheirshoes.
+            // 4. If creidt on hold, set taketheirshoes.
             var accountOnHold = (bool)parentAccount["creditonhold"];
             if (accountOnHold)
             {
@@ -179,21 +179,33 @@ With this principle in mind, let's revisit our plugin and refactor it to remove 
 
         }
 
+        /// <summary>
+        /// Returns the parent account entity for the contact.
+        /// </summary>
+        /// <param name="contact"></param>
+        /// <returns></returns>
         protected virtual Entity GetAccountEntity(Entity contact)
         {
+            // Get the p[arent account id.
             var parentAccountId = (EntityReference)contact["parentaccountid"];
 
+            // Get an instance of the IOrganisationService.
             var orgServiceFactory = (IOrganizationServiceFactory)_ServiceProvider.GetService(typeof(IOrganizationServiceFactory));
             var executionContext = (IPluginExecutionContext)_ServiceProvider.GetService(typeof(IPluginExecutionContext));
             var orgService = orgServiceFactory.CreateOrganizationService(executionContext.UserId);
-
+            
+            // Get the account entity, with only the column / attribute that we need.
             var parentAccountEntity = orgService.Retrieve("account", parentAccountId.Id, new ColumnSet("creditonhold"));
             return parentAccountEntity;
         }
 
+        /// <summary>
+        /// Returns the current "Target" entity that the plugin is executing against.
+        /// </summary>
+        /// <returns></returns>
         protected virtual Entity GetTargetEntity()
         {
-            var context = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
+            var context = (IPluginExecutionContext)_ServiceProvider.GetService(typeof(IPluginExecutionContext));
             if (context.InputParameters.Contains("Target") && context.InputParameters["Target"] is Entity)
             {
                 var contactEntity = (Entity)context.InputParameters["Target"];
@@ -203,6 +215,10 @@ With this principle in mind, let's revisit our plugin and refactor it to remove 
             return null;
         }
 
+        /// <summary>
+        /// Returns whether the plugin is currently enrolled within a database transaction.
+        /// </summary>
+        /// <returns></returns>
         protected virtual bool IsInTransaction()
         {
             var context = (IPluginExecutionContext)_ServiceProvider.GetService(typeof(IPluginExecutionContext));
@@ -210,14 +226,13 @@ With this principle in mind, let's revisit our plugin and refactor it to remove 
         }
 
     }
-
 ```
 
 ## What just happened?
 
-I applied a technique called the [Extract and Override](http://taswar.zeytinsoft.com/2009/03/08/extract-and-override-refactoring-technique/) technique, to remove the concrete references to all of those CRM runtime only services from within the Execute method.
+I applied a technique called the [Extract and Override](http://taswar.zeytinsoft.com/2009/03/08/extract-and-override-refactoring-technique/) technique, to remove the concrete references to all of those CRM runtime only services from within the Execute method, and instead they are now referenced within virtual methods which can be overriden at unit test time.
 
-For example rather than:
+For example rather than having the following code directly within the execute method:
 
 ```
   var executionContext = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
@@ -227,22 +242,24 @@ For example rather than:
             {
 ```
 
-We now have:
+It has been replaced by a call to virtual method:
 
+``` chsarp
   	        if (IsInTransaction())
             {
             
             }
-            
-Where the IsInTransaction() method is a virtual method that returns True or False.
+```
 
-This means during test time, we don't need an `IPluginExecutionContext` at all anymore. We just need to override the IsInTransaction() method, and return a True or False value to simulate the plugin running inside, or outside a transaction.
+The IsInTransaction() method is virtual, and so can easily be overriden at test time to return a True or False value.
 
-## Now show me the Unit Test
+This means during test time, we no longer need to mock up an `IPluginExecutionContext` - or indeed _any_ of the Crm runtime services. We just need to override the various virtual methods and return appropriate values. 
 
-Certainly Sir / Madame. Your wish is my command:-
+## Ok so - Now will you show me a Unit Test??
 
-For the purpose of our unit tests all we do, is create a class that derives from our original plugin class, but overrides the various virtual methods to provide different values that we can provide at test time. 
+Certainly Sir / Madame. Now that I can write one within a few minutes as opposed to a few hours, your wish is my command:-
+
+For the purpose of our unit tests all we do, is create a class that derives from our original plugin class, but overrides the various virtual methods to provide different values at test time. 
 
 ``` csharp
  public class UnitTestableReclaimCreditPlugin : ReclaimCreditPlugin2
@@ -343,7 +360,7 @@ For the purpose of our unit tests all we do, is create a class that derives from
 
 ## Wrapping Up
 
-Just because it's technically possible to unit test some plugin code, doesn't mean you should just immediately plough on and do so, sometimes it will save you a lot of time if you revise the code itself to make it easier to unit test. Keep the requirements in mind that you actually care about testing. Read a book such as [The Art of Unit Testing](http://artofunittesting.com/) to learn basic principles that you can apply to Dynamics Crm plugin development. 
+Just because it's technically possible to write a unit test for a plugin, doesn't mean you should just immediately plough on and do so. Sometimes, the intelligent thing to do is to examine the requirements, examine the plugin code, and be absolutely clear on what it is you want to cover in your tests. With that in mind, refactor the plugin code to isolate out any dependencies on CRM runtime services that you do not want test coverage for. Doing this can take some time, but can save you a lot more, and make your tests much less fragile. I would aslo reccommend a book on unit testing such as [The Art of Unit Testing](http://artofunittesting.com/) 
 
 
 
