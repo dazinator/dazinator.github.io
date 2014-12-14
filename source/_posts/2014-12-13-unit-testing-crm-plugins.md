@@ -129,7 +129,7 @@ if(isOnHold)
 ## Look at that Pseudo Code -  Do you see _any_ runtime services?
 Notice how it contains only the logic we really care about testing - the logic as described by the requirements. It doesn't contain needless fluff. No `IServiceProvider`, No `IPluginExecutionContext`. It looks very simple, very basic. If we could actually write a CRM plugin like this, it would be about 1.5 million times easier to test. Well we can.
 
-## Isolating out dependencies makes for simpler and easier unit testing.
+## Isolating out dependencies is the key to unit testing.
 
 Yes it's true folks you heard it here first. The less dependencies you utilise directly in your methods, the easier they are to unit test.
 
