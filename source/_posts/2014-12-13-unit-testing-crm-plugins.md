@@ -60,13 +60,13 @@ Jon Doe immediately gets to work on writing the plugin for those requirements. H
     ```
     
 ### Good Job?
-Take a moment to peer review the above code. Would you vindicate Jon Doe's effort? It seems it has all the correct logic in all the correct places. It appears he has covered the list of requirements? Although Jon doesn't check to make sure the current entity being updated is definately a contact entity.. But within the confines of this blog post we will assume that there is no possible danger that the plugin could ever be registred against the wrong entity. 
+Take a moment to peer review the above code. Would you vindicate Jon Doe's effort? It seems it has all the required logic in all the required places. It appears he has covered the list of requirements. Although Jon doesn't check to make sure the current entity being updated is definately a contact entity.. But within the confines of this blog post we will assume that there is no possible danger that the plugin could ever be registred against the wrong entity. 
 
 So.. does it actually work?
 
 ## Does it work?
 
-Listen.. if you want to start haemorrhaging money as an organisation, one way to find out if this code works is to immediately go through the process of deploying it to a QA environment, getting someone to test it manually, and then repeating that cycle of Dev --> Deployment --> QA as often as necessary, until the tester gives the thumbs up. 
+Listen.. if you want to start haemorrhaging people's time accross the organisation, one way to find out if this code works is to immediately go through the process of deploying it to a QA environment, getting someone to test it manually, and then repeating that cycle of Dev --> Deployment --> QA as often as necessary, until the tester gives the thumbs up. 
 
 If you want to go that route, feel free to skip the rest of this article. Otherwise read on, where sanity awaits!
 
