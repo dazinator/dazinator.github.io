@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Dynamics Crm | Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/blog/categories/dynamics-crm/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2014-12-14T19:23:53+00:00</updated>
+  <updated>2014-12-14T20:26:00+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Unit Testing Dynamics CRM Plugins (There Is No ~~Spoon~~ CRM)]]></title>
+    <title type="html"><![CDATA[Unit Testing Dynamics CRM Plugins]]></title>
     <link href="http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins/"/>
     <updated>2014-12-14T17:50:00+00:00</updated>
     <id>http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins</id>
