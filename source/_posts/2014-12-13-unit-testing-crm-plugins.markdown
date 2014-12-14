@@ -247,7 +247,7 @@ I applied a technique called the [Extract and Override](http://taswar.zeytinsoft
 
 For example rather than having the following code directly within the execute method:
 
-```
+``` csharp
   var executionContext = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
 
             // 1. We must run only within a transaction
@@ -257,7 +257,7 @@ For example rather than having the following code directly within the execute me
 
 It has been replaced by a call to virtual method:
 
-``` chsarp
+``` csharp
   	        if (IsInTransaction())
             {
             
@@ -312,7 +312,7 @@ For the purpose of our unit tests all we do, is create a class that derives from
 
 ## And here are the Unit Tests
 
-```
+``` csharp
 
  [TestFixture]
     public class ReclaimCreditPluginUnitTests
