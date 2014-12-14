@@ -1,6 +1,6 @@
-## Unit Testing Crm Plugins, Effort = Person Hours = Money.
+## Unit Testing Crm Plugins, Effort = Person Hours = $$.
 
-The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a unit test for that plugin. We will then look at how we could write / refactor the plugin, with unit testing "in mind" - so that the effort of writing the unit test is significantly reduced. Effort == Person Hours == Money.
+The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a unit test for that plugin. We will then look at how we could write / refactor the plugin, with unit testing "in mind" - so that the effort of writing the unit test is significantly reduced. Reducing effort, reduces Effort == Person Hours == Money.
 
 ## A plugin - and it's requirements
 
