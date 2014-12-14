@@ -68,7 +68,7 @@ Jon Doe immediately gets to work on writing the plugin for those requirements. H
         }
 
     }
-    ```
+```
     
 ### Good Job?
 Take a moment to peer review the above code. Would you vindicate Jon Doe's effort? It seems it has all the required logic in all the required places. It appears he has covered the list of requirements. Although Jon doesn't check to make sure the current entity being updated is definately a contact entity.. But within the confines of this blog post we will assume that there is no possible danger that the plugin could ever be registered against the wrong entity. 
