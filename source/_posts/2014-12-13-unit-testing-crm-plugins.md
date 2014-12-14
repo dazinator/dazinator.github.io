@@ -66,29 +66,62 @@ Jon Doe immediately gets to work on writing the plugin for those requirements. H
     ```
     
 ### Good Job?
-A peer review of the above code may no doubt vindicate Jon Doe's effort. It seems it has all the correct logic in all the correct places. He has covered all of the requirements.
+Take a moment to peer review the above code. Would you vindicate Jon Doe's effort? It seems it has all the correct logic in all the correct places. It appears he has covered the list of requirements?
 
 So.. does it actually work?
 
-### So.. does it actually work?
+## Does it work?
 
-Well, if you want to start haemorrhaging some money as an organisation, one way to find out if code works it to immediately go through the process of deploying it to a QA environment, getting someone to test it manually, and then repeat that cycle of Dev --> Deployment --> QA as often as necessary, until the the tester gives the thumbs up. 
+Listen.. if you want to start haemorrhaging money as an organisation, one way to find out if code works is to immediately go through the process of deploying it to a QA environment, getting someone to test it manually, and then repeating that cycle of Dev --> Deployment --> QA as often as necessary, until the tester gives the thumbs up. 
 
-### We are smarter than that
+If you want to go that route, feel free to skip the rest of this article. Otherwise read on, where sanity awaits!
 
-However, we are smarter than that. We will write a unit test so that we can establish a minimum level of confidence in our code before we waste anyone elses time deploying it or QA'ing it. Our unit test will also serve to automatically detect any regression with the code in the future.   
+### Show me a Unit Test Already!
 
-### Let's write a unit test - There is no ~Spoon~ Crm
+Bad news for you. I could.. but I won't.
 
-Look at that code again but this time, imagine - `There  with your unit testIt's absolutely littered with dependencies. 
+### Why won't you show me a unit test? 
 
-Guess what... it's absolutely littered with dependencies. Dependencies on services that Dynamics CRM provides at runtime, such as:  
+In short, because I value my time. Just look at that code again for crying out loud! It's littered with dependencies on things that are only provided by the Dynamics CRM runtime. What are all these things to with anything!
 
 1. IServiceProvider
 2. IPluginExecutionContext
 3. IOrganizationServiceFactory
 4. IOrganizationService
 5. ITracingService
+
+Listen.. I read those requirements for this plugin. Here they are again:
+
+1. It must run only within a transaction with the database.
+2. When a Contact entity is Updated, if the contact has a parent account, and that parent account is "on hold" then set the "taketheirshoes" flag on the contact record to true.
+
+Now please show me the bit where it says: `When a contact is updated, it is of upmost importance to us as a business that it looks at the IExecutionContext and grabs the IOrganizationServiceFactory.`
+
+Or please show me where the requirements state: `When a contact is updated, the plugin absolutely must interact with the IServiceProvider because otherwise you know.. Our business just won't function without that kind of business rule in place.
+
+No my friends. The requirements do not say _any of that_. I am in the business of unit testing actual requirements. If you 
+
+## 
+
+
+
+
+This
+
+However, we are smarter than that. If we were _truly_ smart we would practice a TDD approach and write the Unit Test with the Plugin. However for the purposes of this blog, we will write the unit test atfer the plugin has been written. 
+
+so that we can establish a minimum level of confidence in our code before we waste anyone elses time deploying it or QA'ing it. Our unit test will also serve to automatically detect any regression with the code in the future.   
+
+## Writing a Unit Test -  there is no ~~Spoon~~ Crm
+
+Look at that code again but this time, look at all of the things that the method depends upon so that it can run. 
+
+
+- `There  with your unit testIt's absolutely littered with dependencies. 
+
+Guess what... it's absolutely littered with dependencies. Dependencies on services that Dynamics CRM provides at runtime, such as:  
+
+
 
 ### Why is that a problem?
 
