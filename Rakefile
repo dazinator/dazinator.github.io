@@ -252,6 +252,9 @@ desc "deploy public directory to github pages"
 multitask :push do
   puts "## Deploying branch to Github Pages "
   puts "## Pulling any updates from Github Pages "
+unless File.directory?(deploy_dir)
+  FileUtils.mkdir_p(deploy_dir)
+end 
   cd "#{deploy_dir}" do 
     Bundler.with_clean_env { system "git pull" }
   end
