@@ -1,16 +1,23 @@
 ## Unit Testing Crm Plugins
 
-Here are a few techniques, that may prove useful - soon you will be unit testing your Dynamics Crm Plugins, like a boss.
+The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how the code for that plugin could have been better formulated (refactored) to allow for easier unit testing.
 
-## Why bother with unit tests. I have enough work to do as it is.
+## Why bother with Unit Testing and also I have Integration Tests so ...
 
-I'm not going to go into the merrits of unit testing here. Suffice it to say I firmly believe that you should assume code is buggy until you _prove_ that its not. Unit tests allow you to assert that your code meets expectation. They also act as a handy safety net for picking up any regressions in your code.
+I'm not going to go into all of the merrits of unit testing here. Suffice it to say that Unit tests allow you to assert that code meets expectations and to do so in a way that doesn't require external dependencies (such as a running Dynamics Crm). They also act as a safety net for detecting regressions in the code base.
 
-## A Typical Crm Plugin
+## Let's start with a plugin - and it's requirements
 
-Here is the code for a plugin that is written without unit testing in mind.
+Firstly, let's look at a plugin that we will call the `ReclaimCreditPlugin` that delivers the following requirements:
+ 
+1. It must run only within a transaction with the database.
+2. When a Contact entity is Updated, if the contact has a parent account, and that parent account is "on hold" then set the "taketheirshoes" flag on the contact record to true.
 
-```
+## Developer Jon Doe
+
+Here is the code that Jon Doe then writes, for this plugin, based on those requirements.
+
+``` csharp
   public class ReclaimCreditPlugin : IPlugin
     {
 
@@ -54,7 +61,11 @@ Here is the code for a plugin that is written without unit testing in mind.
     }
     ```
     
-### It's absolutely littered with dependencies. 
+### Will it work?
+
+Without writing a unit test for this plugin, the only way to tell if it works would be to go through the process of deployment, and to actually get someone to test it running within a Dynamics CRM system. If any bugs were found you would have to repeat that process for every code change, until QA gave the thumbs up. 
+
+It's absolutely littered with dependencies. 
 
 Guess what... it's absolutely littered with dependencies. Dependencies on services that Dynamics CRM provides at runtime, such as:  
 
