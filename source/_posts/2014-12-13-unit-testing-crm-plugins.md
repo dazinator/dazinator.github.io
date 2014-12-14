@@ -1,6 +1,6 @@
-## Unit Testing Crm Plugins, Effort = Person Hours = $$.
+## Unit Testing Crm Plugins, Reducing Cost
 
-The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a unit test for that plugin. We will then look at how we could write / refactor the plugin, with unit testing "in mind" - so that the effort of writing the unit test is significantly reduced. Reducing effort, reduces Effort == Person Hours == Money.
+The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a unit test with the least possible effort. Reduced Effort == Reduced Person Hours == Reduced Cost.
 
 ## A plugin - and it's requirements
 
@@ -66,25 +66,21 @@ Jon Doe immediately gets to work on writing the plugin for those requirements. H
     ```
     
 ### Good Job?
-A peer review of the above code may no doubt vindicate Jon Doe's effort. It seems he has covered all of the requirements. So.. does it actually work?
+A peer review of the above code may no doubt vindicate Jon Doe's effort. It seems it has all the correct logic in all the correct places. He has covered all of the requirements.
+
+So.. does it actually work?
 
 ### So.. does it actually work?
 
-Well, if you wanted to start haemorrhaging some money as an organisation, one way to find out is to immediately go through the process of deploying the above plugin to a CRM environment, getting someone to test it manually, and then repeat that cycle of Dev --> Deployment --> QA as often as necessary, until the the tester gives the thumbs up. 
+Well, if you want to start haemorrhaging some money as an organisation, one way to find out if code works it to immediately go through the process of deploying it to a QA environment, getting someone to test it manually, and then repeat that cycle of Dev --> Deployment --> QA as often as necessary, until the the tester gives the thumbs up. 
 
 ### We are smarter than that
 
-However, we are smarter than that. We will write a unit test so that we can establish a minimum level of confidence in our code before we waste QA's time testing it. Our unit test can also be run as part of all future builds to detect any regressions in the code. 
+However, we are smarter than that. We will write a unit test so that we can establish a minimum level of confidence in our code before we waste anyone elses time deploying it or QA'ing it. Our unit test will also serve to automatically detect any regression with the code in the future.   
 
-This doesn't replace the need for a QA process, but it will set a bar on code quality irrespective of QA processes. It will also reduce the number of Dev --> QA cycles that have to be performed, and it will allow regressions to be caught automatically.
+### Let's write a unit test - There is no ~Spoon~ Crm
 
-### 
-
-1
-
-Without writing a unit test for this plugin, the only way to tell if it works would be to go through the process of deployment, and to actually get someone to test it running within a Dynamics CRM system. If any bugs were found you would have to repeat that process for every code change, until QA gave the thumbs up. 
-
-It's absolutely littered with dependencies. 
+Look at that code again but this time, imagine - `There  with your unit testIt's absolutely littered with dependencies. 
 
 Guess what... it's absolutely littered with dependencies. Dependencies on services that Dynamics CRM provides at runtime, such as:  
 
