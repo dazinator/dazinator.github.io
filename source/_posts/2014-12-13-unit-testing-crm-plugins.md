@@ -1,21 +1,25 @@
-## Unit Testing Crm Plugins
+## Unit Testing Crm Plugins, Effort = Person Hours = Money.
 
-The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how the code for that plugin could have been better formulated (refactored) to allow for easier unit testing.
+The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a unit test for that plugin. We will then look at how we could write / refactor the plugin, with unit testing "in mind" - so that the effort of writing the unit test is significantly reduced. Effort == Person Hours == Money.
 
-## Why bother with Unit Testing and also I have Integration Tests so ...
+## A plugin - and it's requirements
 
-I'm not going to go into all of the merrits of unit testing here. Suffice it to say that Unit tests allow you to assert that code meets expectations and to do so in a way that doesn't require external dependencies (such as a running Dynamics Crm). They also act as a safety net for detecting regressions in the code base.
-
-## Let's start with a plugin - and it's requirements
-
-Firstly, let's look at a plugin that we will call the `ReclaimCreditPlugin` that delivers the following requirements:
+Firstly, let's look at a plugin that we will call the `ReclaimCreditPlugin`. Here are the requirements:
  
 1. It must run only within a transaction with the database.
 2. When a Contact entity is Updated, if the contact has a parent account, and that parent account is "on hold" then set the "taketheirshoes" flag on the contact record to true.
 
+I beleive this ficticious plugin to be a pretty decent example of a plugin, because it carries out the following tasks which are fairly typical:
+
+1. Has some conditional logic in it 
+2. Get's the current entity from `IPluginExecutionContext`
+3. Get's the `IOrganizationService` using the `IOrganizationServiceFactory`
+3. Retrieves another entity using the `IOrganizationService`
+3. Updates an entity using the `IOrganizationService`
+
 ## Developer Jon Doe
 
-Here is the code that Jon Doe then writes, for this plugin, based on those requirements.
+Jon Doe immediately gets to work on writing the plugin for those requirements. He produces the following plugin:
 
 ``` csharp
   public class ReclaimCreditPlugin : IPlugin
@@ -61,7 +65,22 @@ Here is the code that Jon Doe then writes, for this plugin, based on those requi
     }
     ```
     
-### Will it work?
+### Good Job?
+A peer review of the above code may no doubt vindicate Jon Doe's effort. It seems he has covered all of the requirements. So.. does it actually work?
+
+### So.. does it actually work?
+
+Well, if you wanted to start haemorrhaging some money as an organisation, one way to find out is to immediately go through the process of deploying the above plugin to a CRM environment, getting someone to test it manually, and then repeat that cycle of Dev --> Deployment --> QA as often as necessary, until the the tester gives the thumbs up. 
+
+### We are smarter than that
+
+However, we are smarter than that. We will write a unit test so that we can establish a minimum level of confidence in our code before we waste QA's time testing it. Our unit test can also be run as part of all future builds to detect any regressions in the code. 
+
+This doesn't replace the need for a QA process, but it will set a bar on code quality irrespective of QA processes. It will also reduce the number of Dev --> QA cycles that have to be performed, and it will allow regressions to be caught automatically.
+
+### 
+
+1
 
 Without writing a unit test for this plugin, the only way to tell if it works would be to go through the process of deployment, and to actually get someone to test it running within a Dynamics CRM system. If any bugs were found you would have to repeat that process for every code change, until QA gave the thumbs up. 
 
