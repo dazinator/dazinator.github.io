@@ -66,7 +66,7 @@ So.. does it actually work?
 
 ## Does it work?
 
-Listen.. if you want to start haemorrhaging people's time accross the organisation, one way to find out if this code works is to immediately go through the process of deploying it to a QA environment, getting someone to test it manually, and then repeating that cycle of Dev --> Deployment --> QA as often as necessary, until the tester gives the thumbs up. 
+Assuming you want to start haemorrhaging people's time accross the organisation, one way to find out if this code works is to immediately go through the process of deploying it to a QA environment, getting someone to test it manually, and then repeating that cycle of Dev --> Deployment --> QA as often as necessary, until the tester gives the thumbs up. 
 
 If you want to go that route, feel free to skip the rest of this article. Otherwise read on, where sanity awaits!
 
