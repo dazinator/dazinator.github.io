@@ -99,7 +99,7 @@ No my friends. The requirements do not say _any of that_. I am in the business o
 
 ### Why is that a problem?
 
-The problem is not obvious at first glance. It is definately technically possible to mock / fake all of those services at unit test time. You can use something like RhinoMocks or another Mocking library to mock out `IServiceProvider` for the purposes of your test. You would then have to mock out all the calls to IServiceProvider that are made, so that it returns your other 'mocked' services like a mock 'IPluginExecutionContext' etc etc - and down the rabbit hole you go.
+The problem is not obvious at first glance. It is definately technically possible to mock / fake all of those services at unit test time. You can use something like RhinoMocks or another Mocking library to mock out `IServiceProvider` for the purposes of your test. You would then have to mock out all the calls to `IServiceProvider` that are made, so that it returns your other 'mocked' services like a mock 'IPluginExecutionContext' etc etc - and down the rabbit hole you go.
 
 The problem, is about _effort_. This approach, although technically possible, requires significant _effort_. You would have to mock a tonne of runtime services and interactions. We have to ask ourselves, is all that effort really necessary? Sometimes it may be, but most of the time, it isn't. In this instance it definately isn't and I will explain why.
 
