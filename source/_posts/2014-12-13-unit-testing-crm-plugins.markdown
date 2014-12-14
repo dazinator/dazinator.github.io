@@ -1,3 +1,12 @@
+---
+layout: post
+title: Unit Testing Dynamics CRM Plugins (There is no ~~Spoon~~ CRM)
+date: "2014-12-14 17:50:00 +0000"
+comments: true
+categories: [Dynamics CRM, Unit Testing]
+published: true
+---
+
 ## Unit Testing Dynamics CRM Plugins (There is no ~~Spoon~~ CRM)
 
 The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a unit test with the least possible effort. Reduced Effort == Reduced Person Hours == Reduced Cost.
