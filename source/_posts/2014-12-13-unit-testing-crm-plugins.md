@@ -150,7 +150,7 @@ With this principle in mind, let's revisit our plugin and refactor it to remove 
         }
 
         /// <summary>
-        /// This is the method contianing the business logic that we want to test. Notice how it closes matches our pseudo code.
+        /// This is the method contianing the business logic that we want to test. Notice how it is similar to our pseudo code in that it concerns itself with the requirements, and not CRM Fluff.
         /// </summary>
         public void Execute()
         {
