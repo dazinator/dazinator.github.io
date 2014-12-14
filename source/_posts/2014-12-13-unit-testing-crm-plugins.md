@@ -76,13 +76,13 @@ Listen.. if you want to start haemorrhaging money as an organisation, one way to
 
 If you want to go that route, feel free to skip the rest of this article. Otherwise read on, where sanity awaits!
 
-### Show me a Unit Test Already!
+## Show me a Unit Test Already!
 
 Bad news for you. I could.. but I won't.
 
-### Why won't you show me a unit test? 
+## Why won't you show me a unit test? 
 
-In short, because I value my time. Just look at that code again for crying out loud! It's littered with dependencies on things that are only provided by the Dynamics CRM runtime. What are all these things to with anything!
+In short, because I value my time. Just look at that code again for crying out loud! It's littered with dependencies on things that are only provided at runtime by Dynamics CRM - things like:
 
 1. IServiceProvider
 2. IPluginExecutionContext
@@ -90,27 +90,25 @@ In short, because I value my time. Just look at that code again for crying out l
 4. IOrganizationService
 5. ITracingService
 
-Listen.. I read those requirements for this plugin. Here they are again:
+WHAT THE HELL ARE ANY OF THESE THINGS TO DO WITH THE ACTUAL REQUIREMENTS THAT I NEED TO TEST???
 
-1. It must run only within a transaction with the database.
+Listen.. I read those requirements for this plugin. I read them atleast one thousand times. And I wrote them in fact. Here they are again:
+
+> 1. It must run only within a transaction with the database.
 2. When a Contact entity is Updated, if the contact has a parent account, and that parent account is "on hold" then set the "taketheirshoes" flag on the contact record to true.
 
-Now please show me the bit where it says: `When a contact is updated, it is of upmost importance to us as a business that it looks at the IExecutionContext and grabs the IOrganizationServiceFactory.`
+With those requirements in mind, can you please show me the bit where it says: `When a contact is updated, it is of upmost importance to us as a business that it looks at the IExecutionContext and grabs the IOrganizationServiceFactory.`
 
 Or please show me where the requirements state: `When a contact is updated, the plugin absolutely must interact with the IServiceProvider because otherwise you know.. Our business just won't function without that kind of business rule in place.
 
-No my friends. The requirements do not say _any of that_. I am in the business of unit testing actual requirements. If you 
+No my friends. The requirements do not say _any of that_. I am in the business of unit testing actual requirements. If i wanted to unit test the `IServiceProvider` i'd go work for the Microsoft Dynamics Team. 
 
-## 
-
-
+## Let's reduce the effort of writing a unit unit test  of our unit test
 
 
-This
 
-However, we are smarter than that. If we were _truly_ smart we would practice a TDD approach and write the Unit Test with the Plugin. However for the purposes of this blog, we will write the unit test atfer the plugin has been written. 
 
-so that we can establish a minimum level of confidence in our code before we waste anyone elses time deploying it or QA'ing it. Our unit test will also serve to automatically detect any regression with the code in the future.   
+   
 
 ## Writing a Unit Test -  there is no ~~Spoon~~ Crm
 
