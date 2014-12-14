@@ -1,9 +1,11 @@
 ---
 layout: post
-title: Unit Testing Dynamics CRM Plugins (There is no ~~Spoon~~ CRM)
+title: Unit Testing Dynamics CRM Plugins
 date: "2014-12-14 17:50:00 +0000"
 comments: true
-categories: [Dynamics CRM, Unit Testing]
+categories: 
+  - Dynamics CRM
+  - Unit Testing
 published: true
 ---
 
@@ -370,16 +372,3 @@ For the purpose of our unit tests all we do, is create a class that derives from
 ## Wrapping Up
 
 I hope I have demonstrated a simple plugin, with a simple set of unit tests. More importantly, I hope I have demonstrated that although it may be technically possible to write a unit test for an exising plugin,  by mocking up every CRM runtime service and interaction that the plugin makes,just because such a thing is possible, doesn't mean you should just do it. First the work has to be justified. To justify just what is necessary, examine the requirements, examine the plugin code, and be absolutely clear on what it is you want to cover in your unit tests. With that in mind, refactor the plugin code to eliminate fluff (extraneoues concrete references to dependencies that are surplus to the requirements that you want to test). Use techniques like the `Extract and Override` technique to allow you to substitute these dependencies easily at test time. When you do this, you may be surprised at how much simpler it becomes to write unit tests. I would aslo reccommend reading a book on unit testing, I found [The Art of Unit Testing](http://artofunittesting.com/) very educational on this topic.
-
-
-
-
-
-
-
-
-
-
-
-
-
