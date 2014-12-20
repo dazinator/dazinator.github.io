@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: 
-
-Sitemap: http://darrelltunnell.net/sitemap.xml 
