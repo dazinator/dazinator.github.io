@@ -99,3 +99,35 @@ google_analytics_tracking_id: UA-49278315-3
 
 # Facebook Like
 facebook_like: false
+
+# ----------------------- #
+#   prose.io settings     #
+# ----------------------- #
+prose:
+  rooturl: "source"
+  site: "http://darrelltunnell.net"
+  media: "source/assets/posts"
+  metadata:
+    "source/_posts":
+      - name: "layout"
+        field:
+          element: "hidden"
+          value: "post"
+      - name: "title"
+        field:
+          element: "text"
+          value: "Title"
+      - name: "comments"
+        field:
+          label: "Allow comments"
+          element: "checkbox"
+          value: true
+      - name: "categories"
+        field:
+          element: "text"
+          value: ""
+      - name: "published"
+        field:
+          label: "Published"
+          element: "checkbox"
+          value: true
