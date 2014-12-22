@@ -7,40 +7,26 @@ categories: Dynamics CRM
 ---
 
 ## Setting the Scene
-Let's imagine we have an application that's on a seperate server to the CRM web server, and that latency between our server and the CRM web server is not negligible. 
+Imagine we have an application that uses the CRM SDK. It needs to:
 
-We want our application to perform lightning fast, and so we look at ways we can minimise the number of request / response (roundtrips) that our application makes to CRM. 
+1. Create a contact in crm.
+2. Get the reference number that was just generated as a result of the plugin that fired on the create.
 
-## SuperDuper CRM Solution
-As part of our `SuperDuper` CRM solution, we have a plugin on the `account` entity that:
+## The "I don't care about network latency method!"
+The 'I don't care about network latency' way of dealing with this is to just do 2 seperate Requests (roundtrips) with the CRM server.
 
-- Runs synchronously on create
-- Generates a reference number for the account.
+1. Create the new account and get the ID returned.
+2. Retrieve the account via the Id, along with the values that you need.
 
-## The Goal
+This approach is no longer the optimal method where latency is a concern, as it incurs the penalty of making two roundtrips accross the network to the CRM server, where 1 is possible.
 
-Now, using the SDK, how can you create a new `account` and get access to the newly generated reference number, all in one round trip to the CRM server? I'll show you.
-
+Let's now have a look at the "I'm running on a 56k modem method"
 <!-- more -->
-Now 
 
-The application needs to:
-
-1. Create a contact in crm
-2. Get the reference number that was generated as a result of the create (perhaps it displays it in a UI).
-
-## Multiple Roundtrips - The 'Historical' Way!
-The historical way of dealing with this is to do 2 seperate roundtrips with CRM:
-
-1. Create the account
-2. Retrieve the account (with the generated values that you need)
-
-This approach is now no longer optimal where latency is a concern, as it incurs the penalty of making two roundtrips accross the network to the CRM server.
-
-## Enter ~~the Dragon~~ this weeks pro tip!
+## The "I'm running on a 56k modem method" - this weeks pro tip!
 For quite some time now - as of `CRM 2011 Update Rollup 12 - (SDK 5.0.13)` you can utilise the [Execute Multiple](http://msdn.microsoft.com/en-gb/library/jj863604(v=crm.5).aspx) request to do this kind of thing in one roundtrip with the CRM server.
 
-Here is an example of doing this:
+Here is an example of creating an account, and retrieiving it in a single round trip:
 
 ``` csharp
  				 // Create an ExecuteMultipleRequest object.
@@ -104,11 +90,11 @@ CRM processed them in that order, collated the responses together, and returned 
 ## Caveats
 One caveat of this approach is that, if you intend to grab the generated values for an entity that is being created, then you need to know in advance what the ID will be.
 
-This means you have to specify the ID of the entity when you create it. 
+This means you have to specify the ID of the entity when you create it yourself - you can't let CRM auto create the new ID. 
 
-For updates / deletes this isn't an issue, as the ID is allready known.
+For updates / deletes this is a non issue, as the ID is allready known.
 
-## Is there a SQL Optimisation Guru present?
+## Last thoughts - SQL Optimisation
 I speculate that specifying your own ID's _might be a bad thing_ if you don't use Sequential Guid's.
 
-When CRM generates Id's, it generates them sequentially, and I beleive there may be SQL performance benefits to this in terms of index optimisation etc. So if using Guid.NewGuid() you may want to check with a SQL guru first to understand any impact of using random Guid's as Id's! That said - Microsoft do support it.
+When CRM generates Id's for you, it generates them sequentially, and I beleive there may be SQL performance benefits to this in terms of index optimisation etc. So if using Guid.NewGuid() to create your new Id's you may want to check with a SQL guru first to understand any impact of using random Guid's as Id's on performance of the CRM tables! That said - Microsoft do support this, so it can't be too bad..
