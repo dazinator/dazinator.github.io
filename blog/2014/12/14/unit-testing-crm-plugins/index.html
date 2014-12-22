@@ -1,0 +1,883 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Unit Testing Dynamics CRM Plugins - Darrell Tunnell&#8217;s Blog</title>
+  <meta name="author" content="Darrell Tunnell">
+
+  
+  <meta name="description" content="There is no Spoon CRM The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Darrell Tunnell's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-49278315-3']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Darrell Tunnell&#8217;s Blog</a></h1>
+  
+    <h2>Radiating Awesomeness, One Blog Post at a Time.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:darrelltunnell.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Unit Testing Dynamics CRM Plugins</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-12-14T17:50:00+00:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>5:50 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>There is no <del>Spoon</del> CRM</h2>
+
+<p>The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a unit test with the least possible effort. Reduced Effort == Reduced Person Hours == Reduced Cost.</p>
+
+<p>Remember, this is Unit Testing, not Integration testing - so at test time - there is no CRM!</p>
+
+<h2>A plugin - and it&rsquo;s requirements</h2>
+
+<p>Firstly, let&rsquo;s look at a plugin that we will call the <code>ReclaimCreditPlugin</code>. Here are the requirements:</p>
+
+<blockquote><ol>
+<li>It must run only within a transaction with the database.</li>
+<li>When a Contact entity is Updated, if the contact has a parent account, and that parent account is &ldquo;on hold&rdquo; then set the &ldquo;taketheirshoes&rdquo; flag on the contact record to true.</li>
+</ol>
+</blockquote>
+
+<h2>Developer Jon Doe</h2>
+
+<p>Jon Doe immediately gets to work on writing the plugin for those requirements. He produces the following plugin:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>  <span class="k">public</span> <span class="k">class</span> <span class="nc">ReclaimCreditPlugin</span> <span class="p">:</span> <span class="n">IPlugin</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Execute</span><span class="p">(</span><span class="n">IServiceProvider</span> <span class="n">serviceProvider</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">executionContext</span> <span class="p">=</span> <span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">)</span><span class="n">serviceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 1. We must run only within a transaction</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(!</span><span class="n">executionContext</span><span class="p">.</span><span class="n">IsInTransaction</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">throw</span> <span class="k">new</span> <span class="nf">InvalidPluginExecutionException</span><span class="p">(</span><span class="s">&quot;The plugin detected that it was not running within a database transaction. The plugin requires a database transaction.&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 2. Get the contact, check its parent account.</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">executionContext</span><span class="p">.</span><span class="n">InputParameters</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="s">&quot;Target&quot;</span><span class="p">)</span> <span class="p">&amp;&amp;</span> <span class="n">executionContext</span><span class="p">.</span><span class="n">InputParameters</span><span class="p">[</span><span class="s">&quot;Target&quot;</span><span class="p">]</span> <span class="k">is</span> <span class="n">Entity</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="c1">// Obtain the target entity from the input parameters.</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">contactEntity</span> <span class="p">=</span> <span class="p">(</span><span class="n">Entity</span><span class="p">)</span><span class="n">executionContext</span><span class="p">.</span><span class="n">InputParameters</span><span class="p">[</span><span class="s">&quot;Target&quot;</span><span class="p">];</span>
+</span><span class='line'>                <span class="c1">// Get the parent account id.</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">parentAccountId</span> <span class="p">=</span> <span class="p">(</span><span class="n">EntityReference</span><span class="p">)</span><span class="n">contactEntity</span><span class="p">[</span><span class="s">&quot;parentaccountid&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c1">// Get the parent account entity.</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">orgServiceFactory</span> <span class="p">=</span> <span class="p">(</span><span class="n">IOrganizationServiceFactory</span><span class="p">)</span><span class="n">serviceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IOrganizationServiceFactory</span><span class="p">));</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">orgService</span> <span class="p">=</span> <span class="n">orgServiceFactory</span><span class="p">.</span><span class="n">CreateOrganizationService</span><span class="p">(</span><span class="n">executionContext</span><span class="p">.</span><span class="n">UserId</span><span class="p">);</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">parentAccountEntity</span> <span class="p">=</span> <span class="n">orgService</span><span class="p">.</span><span class="n">Retrieve</span><span class="p">(</span><span class="s">&quot;account&quot;</span><span class="p">,</span> <span class="n">parentAccountId</span><span class="p">.</span><span class="n">Id</span><span class="p">,</span> <span class="k">new</span> <span class="n">ColumnSet</span><span class="p">(</span><span class="s">&quot;creditonhold&quot;</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">accountOnHold</span> <span class="p">=</span> <span class="p">(</span><span class="kt">bool</span><span class="p">)</span><span class="n">parentAccountEntity</span><span class="p">[</span><span class="s">&quot;creditonhold&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">accountOnHold</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="n">contactEntity</span><span class="p">[</span><span class="s">&quot;taketheirshoes&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>                    <span class="kt">var</span> <span class="n">tracingService</span> <span class="p">=</span> <span class="p">(</span><span class="n">ITracingService</span><span class="p">)</span><span class="n">serviceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">ITracingService</span><span class="p">));</span>
+</span><span class='line'>                    <span class="n">tracingService</span><span class="p">.</span><span class="n">Trace</span><span class="p">(</span><span class="s">&quot;Have indicated that we should take the shoes from contact: {0}&quot;</span><span class="p">,</span> <span class="n">contactEntity</span><span class="p">.</span><span class="n">Id</span><span class="p">.</span><span class="n">ToString</span><span class="p">());</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Good Job?</h3>
+
+<p>Take a moment to peer review the above code. Would you vindicate Jon Doe&rsquo;s effort? It seems it has all the required logic in all the required places. It appears he has covered the list of requirements. Although Jon doesn&rsquo;t check to make sure the current entity being updated is definately a contact entity.. But within the confines of this blog post we will assume that there is no possible danger that the plugin could ever be registered against the wrong entity.</p>
+
+<p>So.. does it actually work?</p>
+
+<h2>Does it work?</h2>
+
+<p>Assuming you want to start haemorrhaging people&rsquo;s time accross the organisation, one way to find out if this code works is to immediately go through the process of deploying it to a QA environment, getting someone to test it manually, and then repeating that cycle of Dev &ndash;> Deployment &ndash;> QA as often as necessary, until the tester gives the thumbs up.</p>
+
+<p>If you want to go that route, feel free to skip the rest of this article. Otherwise read on, where sanity awaits!</p>
+
+<h2>Show me a Unit Test Already!</h2>
+
+<p>Bad news for you. I could.. but I won&rsquo;t.</p>
+
+<h2>Why won&rsquo;t you show me a unit test?</h2>
+
+<p>In short, because I value my time. Just look at that code again for crying out loud! It&rsquo;s littered with dependencies on things that are only provided at runtime by Dynamics CRM - things like:</p>
+
+<ol>
+<li>IServiceProvider</li>
+<li>IPluginExecutionContext</li>
+<li>IOrganizationServiceFactory</li>
+<li>IOrganizationService</li>
+<li>ITracingService</li>
+</ol>
+
+
+<p><strong>WHAT THE HELL ARE ANY OF THESE THINGS TO DO WITH THE ACTUAL REQUIREMENTS THAT I <em>NEED</em> TO TEST???</strong></p>
+
+<p>Listen.. I read those requirements for this plugin. I read them atleast one thousand times. And I wrote them in fact. Here they are again:</p>
+
+<blockquote><ol>
+<li>It must run only within a transaction with the database.</li>
+<li>When a Contact entity is Updated, if the contact has a parent account, and that parent account is &ldquo;on hold&rdquo; then set the &ldquo;taketheirshoes&rdquo; flag on the contact record to true.</li>
+</ol>
+</blockquote>
+
+<p>So with that in mind, can you please show me the requirement dictating: <code>When a contact is updated, it is of upmost importance to us as a business that it looks at the</code>IPluginExecutionContext<code>and grabs the</code>IOrganizationServiceFactory.`</p>
+
+<p>Or please show me where the requirements state: <code>When a contact is updated, the plugin absolutely must interact with the</code>IServiceProvider` because otherwise you know.. Our business just won&rsquo;t function anymore.</p>
+
+<p>No my friends. The requirements do not say <em>any of that</em>. I am in the business of testing against the requirements.</p>
+
+<h3>Why is that a problem?</h3>
+
+<p>The problem is not obvious at first glance. It is definately technically possible to mock / fake all of those services at unit test time. You can use something like RhinoMocks or another Mocking library to mock out <code>IServiceProvider</code> for the purposes of your test. You would then have to mock out all the calls to <code>IServiceProvider</code> that are made, so that it returns your other &lsquo;mocked&rsquo; services like a mock &lsquo;IPluginExecutionContext&rsquo; etc etc - and down the rabbit hole you go.</p>
+
+<p>The problem, is about <em>effort</em>. This approach, although technically possible, requires significant <em>effort</em>. You would have to mock a tonne of runtime services and interactions. We have to ask ourselves, is all that effort really necessary? Sometimes it may be, but most of the time, it isn&rsquo;t. In this instance it definately isn&rsquo;t and I will explain why.</p>
+
+<h2>Let&rsquo;s use the requirements to write the plugin, in pseudo code.</h2>
+
+<p>With those requirements - forget everything you know about Dynamics Crm and write your ideal pseudo code that would implement those requirements. This is the actual logic we care about testing.</p>
+
+<p>PSEUDO CODE:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">if</span> <span class="p">(!</span><span class="n">IsRunningInTransaction</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">Throw</span> <span class="s">&quot;Plugin requires a transaction.&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">If</span> <span class="p">(</span><span class="n">IsUpdateOf</span><span class="p">(</span><span class="s">&quot;contact&quot;</span><span class="p">))</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">var</span> <span class="n">contact</span> <span class="p">=</span> <span class="n">GetTargetEntity</span><span class="p">();</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">account</span> <span class="p">=</span> <span class="n">GetAccountForContact</span><span class="p">(</span><span class="n">contact</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">var</span> <span class="n">isOnHold</span> <span class="p">=</span> <span class="p">(</span><span class="kt">bool</span><span class="p">)</span><span class="n">account</span><span class="p">[</span><span class="s">&quot;creditonhold&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="n">isOnHold</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">contact</span><span class="p">[</span><span class="s">&quot;taketheirshoes&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Look at that Pseudo Code -  Do you see <em>any</em> runtime services?</h2>
+
+<p>Notice how it contains only the logic we really care about testing - the logic as described by the requirements. It doesn&rsquo;t contain needless fluff. No <code>IServiceProvider</code>, No <code>IPluginExecutionContext</code>. It looks very simple, very basic. If we could actually write a CRM plugin like this, it would be about 1.5 million times easier to test. Well we can.</p>
+
+<h2>Isolating out dependencies is the key to unit testing.</h2>
+
+<p>Yes it&rsquo;s true folks you heard it here first. The less dependencies you utilise directly in your methods, the easier they are to unit test.</p>
+
+<p>With this principle in mind, let&rsquo;s revisit our plugin and refactor it to remove some dependencies.</p>
+
+<h2>New and Improved Plugin</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'> <span class="k">public</span> <span class="k">class</span> <span class="nc">ReclaimCreditPlugin2</span> <span class="p">:</span> <span class="n">IPlugin</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">private</span> <span class="n">IServiceProvider</span> <span class="n">_ServiceProvider</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Execute</span><span class="p">(</span><span class="n">IServiceProvider</span> <span class="n">serviceProvider</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">_ServiceProvider</span> <span class="p">=</span> <span class="n">serviceProvider</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">Execute</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">/// &lt;summary&gt;</span>
+</span><span class='line'>        <span class="c1">/// This is the method containing the business logic that we want to be able to assert at unit test time.</span>
+</span><span class='line'>        <span class="c1">/// &lt;/summary&gt;</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Execute</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// 1. We must run only within a transaction</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">IsInTransaction</span><span class="p">())</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">throw</span> <span class="k">new</span> <span class="nf">InvalidPluginExecutionException</span><span class="p">(</span><span class="s">&quot;The plugin detected that it was not running within a database transaction. The plugin requires a database transaction.&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 2. Get the contact</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">contact</span> <span class="p">=</span> <span class="n">GetTargetEntity</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 3. Get the Parent Account for the contact.</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">parentAccount</span> <span class="p">=</span> <span class="n">GetAccountEntity</span><span class="p">(</span><span class="n">contact</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">parentAccount</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 4. If credit on hold, set taketheirshoes.</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">accountOnHold</span> <span class="p">=</span> <span class="p">(</span><span class="kt">bool</span><span class="p">)</span><span class="n">parentAccount</span><span class="p">[</span><span class="s">&quot;creditonhold&quot;</span><span class="p">];</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">accountOnHold</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">contact</span><span class="p">[</span><span class="s">&quot;taketheirshoes&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">/// &lt;summary&gt;</span>
+</span><span class='line'>        <span class="c1">/// Returns the parent account entity for the contact.</span>
+</span><span class='line'>        <span class="c1">/// &lt;/summary&gt;</span>
+</span><span class='line'>        <span class="c1">/// &lt;param name=&quot;contact&quot;&gt;&lt;/param&gt;</span>
+</span><span class='line'>        <span class="c1">/// &lt;returns&gt;&lt;/returns&gt;</span>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">virtual</span> <span class="n">Entity</span> <span class="nf">GetAccountEntity</span><span class="p">(</span><span class="n">Entity</span> <span class="n">contact</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// Get the p[arent account id.</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">parentAccountId</span> <span class="p">=</span> <span class="p">(</span><span class="n">EntityReference</span><span class="p">)</span><span class="n">contact</span><span class="p">[</span><span class="s">&quot;parentaccountid&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// Get an instance of the IOrganisationService.</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">orgServiceFactory</span> <span class="p">=</span> <span class="p">(</span><span class="n">IOrganizationServiceFactory</span><span class="p">)</span><span class="n">_ServiceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IOrganizationServiceFactory</span><span class="p">));</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">executionContext</span> <span class="p">=</span> <span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">)</span><span class="n">_ServiceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">));</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">orgService</span> <span class="p">=</span> <span class="n">orgServiceFactory</span><span class="p">.</span><span class="n">CreateOrganizationService</span><span class="p">(</span><span class="n">executionContext</span><span class="p">.</span><span class="n">UserId</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// Get the account entity, with only the column / attribute that we need.</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">parentAccountEntity</span> <span class="p">=</span> <span class="n">orgService</span><span class="p">.</span><span class="n">Retrieve</span><span class="p">(</span><span class="s">&quot;account&quot;</span><span class="p">,</span> <span class="n">parentAccountId</span><span class="p">.</span><span class="n">Id</span><span class="p">,</span> <span class="k">new</span> <span class="n">ColumnSet</span><span class="p">(</span><span class="s">&quot;creditonhold&quot;</span><span class="p">));</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">parentAccountEntity</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">/// &lt;summary&gt;</span>
+</span><span class='line'>        <span class="c1">/// Returns the current &quot;Target&quot; entity that the plugin is executing against.</span>
+</span><span class='line'>        <span class="c1">/// &lt;/summary&gt;</span>
+</span><span class='line'>        <span class="c1">/// &lt;returns&gt;&lt;/returns&gt;</span>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">virtual</span> <span class="n">Entity</span> <span class="nf">GetTargetEntity</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">)</span><span class="n">_ServiceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">));</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">InputParameters</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="s">&quot;Target&quot;</span><span class="p">)</span> <span class="p">&amp;&amp;</span> <span class="n">context</span><span class="p">.</span><span class="n">InputParameters</span><span class="p">[</span><span class="s">&quot;Target&quot;</span><span class="p">]</span> <span class="k">is</span> <span class="n">Entity</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">contactEntity</span> <span class="p">=</span> <span class="p">(</span><span class="n">Entity</span><span class="p">)</span><span class="n">context</span><span class="p">.</span><span class="n">InputParameters</span><span class="p">[</span><span class="s">&quot;Target&quot;</span><span class="p">];</span>
+</span><span class='line'>                <span class="k">return</span> <span class="n">contactEntity</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">/// &lt;summary&gt;</span>
+</span><span class='line'>        <span class="c1">/// Returns whether the plugin is currently enrolled within a database transaction.</span>
+</span><span class='line'>        <span class="c1">/// &lt;/summary&gt;</span>
+</span><span class='line'>        <span class="c1">/// &lt;returns&gt;&lt;/returns&gt;</span>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">IsInTransaction</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">)</span><span class="n">_ServiceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">));</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">context</span><span class="p">.</span><span class="n">IsInTransaction</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>What just happened?</h2>
+
+<p>I applied a technique called the <a href="http://taswar.zeytinsoft.com/2009/03/08/extract-and-override-refactoring-technique/">Extract and Override</a> technique, to remove the concrete references to all of those CRM runtime only services from within the Execute method, and instead they are now referenced within virtual methods which can be overriden at unit test time.</p>
+
+<p>For example rather than having the following code directly within the execute method:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>  <span class="kt">var</span> <span class="n">executionContext</span> <span class="p">=</span> <span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">)</span><span class="n">serviceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 1. We must run only within a transaction</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(!</span><span class="n">executionContext</span><span class="p">.</span><span class="n">IsInTransaction</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It has been replaced by a call to virtual method:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>           <span class="k">if</span> <span class="p">(</span><span class="n">IsInTransaction</span><span class="p">())</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Because the interactions with the various CRM runtime Services now occur within Virtual methods, we no longer need to mock them up at unit test time. Say goodbye to having to mockup <code>IPluginExecutionContext</code>, <code>IServiceProvider</code> or <em>any</em> of the Crm runtime services. All we need to do now is just override the various virtual methods that our Execute() method calls, and return appropriate values at test time.</p>
+
+<h2>Ok so - Now will you show me a Unit Test??</h2>
+
+<p>Certainly Sir / Madame. Now that I can write one within a few minutes as opposed to a few hours, your wish is my command:-</p>
+
+<p>For the purpose of our unit tests all we do, is create a class that derives from our original plugin class, but overrides the various virtual methods to provide different values at test time.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'> <span class="k">public</span> <span class="k">class</span> <span class="nc">UnitTestableReclaimCreditPlugin</span> <span class="p">:</span> <span class="n">ReclaimCreditPlugin2</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="nf">UnitTestableReclaimCreditPlugin</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">AccountIsOnHold</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">IsRunningInTransaction</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">ContactEntity</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Entity</span><span class="p">(</span><span class="s">&quot;contact&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">override</span> <span class="n">Entity</span> <span class="nf">GetTargetEntity</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">ContactEntity</span><span class="p">[</span><span class="s">&quot;parentaccountid&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EntityReference</span><span class="p">(</span><span class="s">&quot;account&quot;</span><span class="p">,</span> <span class="n">Guid</span><span class="p">.</span><span class="n">NewGuid</span><span class="p">());</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">ContactEntity</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">override</span> <span class="n">Entity</span> <span class="nf">GetAccountEntity</span><span class="p">(</span><span class="n">Entity</span> <span class="n">contact</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">accountEntity</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Entity</span><span class="p">(</span><span class="s">&quot;account&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">accountEntity</span><span class="p">[</span><span class="s">&quot;creditonhold&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="n">AccountIsOnHold</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">accountEntity</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">IsInTransaction</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">IsRunningInTransaction</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="kt">bool</span> <span class="n">AccountIsOnHold</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="kt">bool</span> <span class="n">IsRunningInTransaction</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="n">Entity</span> <span class="n">ContactEntity</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>And here are the Unit Tests</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na"> [TestFixture]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">ReclaimCreditPluginUnitTests</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">public</span> <span class="nf">ReclaimCreditPluginUnitTests</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">        [ExpectedException(typeof(InvalidPluginExecutionException),</span>
+</span><span class='line'><span class="na">            ExpectedMessage = &quot;The plugin detected that it was not running within a database transaction&quot;,</span>
+</span><span class='line'><span class="na">            MatchType = MessageMatch.Contains)]</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Should_Only_Run_Within_Transaction</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// arrange</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">sut</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UnitTestableReclaimCreditPlugin</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">IsRunningInTransaction</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// act </span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">Execute</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Should_Take_Shoes_When_Credit_On_Hold</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// arrange</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">sut</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UnitTestableReclaimCreditPlugin</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">IsRunningInTransaction</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">AccountIsOnHold</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// act </span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">Execute</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">//assert</span>
+</span><span class='line'>            <span class="n">Assert</span><span class="p">.</span><span class="n">That</span><span class="p">(</span><span class="n">sut</span><span class="p">.</span><span class="n">ContactEntity</span><span class="p">[</span><span class="s">&quot;taketheirshoes&quot;</span><span class="p">],</span> <span class="n">Is</span><span class="p">.</span><span class="n">EqualTo</span><span class="p">(</span><span class="k">true</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Should_Not_Take_Shoes_When_Credit_Not_On_Hold</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// arrange</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">sut</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UnitTestableReclaimCreditPlugin</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">IsRunningInTransaction</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">AccountIsOnHold</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// act </span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">Execute</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">//assert</span>
+</span><span class='line'>            <span class="n">Assert</span><span class="p">.</span><span class="n">That</span><span class="p">(</span><span class="n">sut</span><span class="p">.</span><span class="n">ContactEntity</span><span class="p">[</span><span class="s">&quot;taketheirshoes&quot;</span><span class="p">],</span> <span class="n">Is</span><span class="p">.</span><span class="n">Not</span><span class="p">.</span><span class="n">EqualTo</span><span class="p">(</span><span class="k">true</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Wrapping Up</h2>
+
+<p>I hope I have demonstrated a simple plugin, with a simple set of unit tests. More importantly, I hope I have demonstrated that although it may be technically possible to write a unit test for an exising plugin,  by mocking up every CRM runtime service and interaction that the plugin makes,just because such a thing is possible, doesn&rsquo;t mean you should just do it. First the work has to be justified. To justify just what is necessary, examine the requirements, examine the plugin code, and be absolutely clear on what it is you want to cover in your unit tests. With that in mind, refactor the plugin code to eliminate fluff (extraneoues concrete references to dependencies that are surplus to the requirements that you want to test). Use techniques like the <code>Extract and Override</code> technique to allow you to substitute these dependencies easily at test time. When you do this, you may be surprised at how much simpler it becomes to write unit tests. I would aslo reccommend reading a book on unit testing, I found <a href="http://artofunittesting.com/">The Art of Unit Testing</a> very educational on this topic.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Darrell Tunnell</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-12-14T17:50:00+00:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>5:50 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/dynamics-crm/'>dynamics crm</a>, <a class='category' href='/blog/categories/unit-testing/'>unit testing</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins/" data-via="dazinate" data-counturl="http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/16/a-proclamation/" title="Previous Post: A Proclamation">&laquo; A Proclamation</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/" title="Next Post: CRM / Plugin Generated Values - and Reducing Roundtrips!">CRM / Plugin Generated Values - and Reducing Roundtrips! &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/">CRM / Plugin Generated Values - and Reducing Roundtrips!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/14/unit-testing-crm-plugins/">Unit Testing Dynamics CRM Plugins</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/16/a-proclamation/">A Proclamation</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/dazinator">@dazinator</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'dazinator',
+            count: 10,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/darrelltunnell?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Darrell Tunnell -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'darrelltunnellsblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins/';
+        var disqus_url = 'http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
