@@ -29,7 +29,7 @@ The most common way (the historical way) I have seen this dealt with is to do 2 
 
 This obviously incurs the penalty of making two roundtrips with the server.
 
-## The Modern Approach (Less network overhead)
+## The Pro Way!
 For quite some time now - as of `CRM 2011 Update Rollup 12 - (SDK 5.0.13)` you can utilise the [Execute Multiple](http://msdn.microsoft.com/en-gb/library/jj863604(v=crm.5).aspx) request to do this kind of thing in one roundtrip with the CRM server.
 
 Here is an example:
