@@ -9,18 +9,18 @@ categories: Dynamics CRM
 ## Setting the Scene
 Imagine we have an application that uses the CRM SDK. It needs to:
 
-1. Create a contact in crm.
-2. Get the reference number that was just generated as a result of the plugin that fired on the create.
+1. Create a new `account` entity in crm.
+2. Get some value that was just generated as a result of a synchronous plugin that fires on the create. For example, suppose there is a plugin that generates an account reference number.
 
 ## The "I don't care about network latency method!"
 The 'I don't care about network latency' way of dealing with this is to just do 2 seperate Requests (roundtrips) with the CRM server.
 
-1. Create the new account and get the ID returned.
-2. Retrieve the account via the Id, along with the values that you need.
+1. Create the new `account` which returns you the ID.
+2. Retrieve the `account` using that Id, along with the values that you need.
 
-This approach is no longer the optimal method where latency is a concern, as it incurs the penalty of making two roundtrips accross the network to the CRM server, where 1 is possible.
+This approach is sub optimal where network latency is a concern, as it incurs the penalty of making two roundtrips accross the network with the server, where 1 is possible.
 
-Let's now have a look at the "I'm running on a 56k modem method"
+Let's now have a look at the "I'm running on a 56k modem method" of doing the same thing!
 <!-- more -->
 
 ## The "I'm running on a 56k modem method" - this weeks pro tip!
