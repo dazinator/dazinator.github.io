@@ -6,14 +6,23 @@ comments: true
 categories: Dynamics CRM
 ---
 
-## Imagine the Scenario..
-You have a plugin on the `account` entity that:
+## Setting the Scene
+Let's imagine we have an application that's on a seperate server to the CRM web server, and that latency between our server and the CRM web server is not negligible. 
+
+We want our application to perform lightning fast, and so we look at ways we can minimise the number of request / response (roundtrips) that our application makes to CRM. 
+
+## SuperDuper CRM Solution
+As part of our `SuperDuper` CRM solution, we have a plugin on the `account` entity that:
 
 - Runs synchronously on create
 - Generates a reference number for the account.
 
+## The Goal
+
+Now, using the SDK, how can you create a new `account` and get access to the newly generated reference number, all in one round trip to the CRM server? I'll show you.
+
 <!-- more -->
-Now assume we have an application that's on a seperate server to the CRM server (where latency and network traffic are a concern).
+Now 
 
 The application needs to:
 
