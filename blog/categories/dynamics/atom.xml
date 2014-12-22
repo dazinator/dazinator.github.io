@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Dynamics | Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/blog/categories/dynamics/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2014-12-22T16:42:46+00:00</updated>
+  <updated>2014-12-22T18:07:38+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -18,45 +18,38 @@
     <link href="http://darrelltunnell.net/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/"/>
     <updated>2014-12-22T00:00:00+00:00</updated>
     <id>http://darrelltunnell.net/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips</id>
-    <content type="html"><![CDATA[<p>Just a short post this week, with a little CRM development pro tip for you!</p>
+    <content type="html"><![CDATA[<h2>Setting the Scene</h2>
 
-<h2>Scenario</h2>
-
-<p>Say you have a plugin on the <code>account</code> entity that:</p>
-
-<ul>
-<li>Runs synchronously on create</li>
-<li>Generates a reference number for the account.</li>
-</ul>
-
-
-<p>Now assume we have an application that&rsquo;s on a seperate server to the CRM server (where latency and network traffic are a concern).</p>
-
-<p>The application needs to:</p>
+<p>Imagine we have an application that uses the CRM SDK. It needs to:</p>
 
 <ol>
-<li>Create a contact in crm</li>
-<li>Get the reference number that was generated for the contact.</li>
+<li>Create a new <code>account</code> entity in crm.</li>
+<li>Get some value that was just generated as a result of a synchronous plugin that fires on the create. For example, suppose there is a plugin that generates an account reference number.</li>
 </ol>
 
 
-<h2>The Multiple Roundtrip Way</h2>
+<h2>The &ldquo;I don&rsquo;t care about network latency method!&rdquo;</h2>
 
-<p>The most common way (the historical way) I have seen this dealt with is to do 2 seperate roundtrips with CRM:</p>
+<p>The &lsquo;I don&rsquo;t care about network latency&rsquo; way of dealing with this is to just do 2 seperate Requests (roundtrips) with the CRM server.</p>
 
 <ol>
-<li>Create the account</li>
-<li>Retrieve the account</li>
+<li>Create the new <code>account</code> which returns you the ID.</li>
+<li>Retrieve the <code>account</code> using that ID, along with the values that you need.</li>
 </ol>
 
 
-<p>This obviously incurs the penalty of making two roundtrips with the server.</p>
+<p>This approach is sub optimal where network latency is a concern, as it incurs the penalty of making two roundtrips accross the network with the server, where 1 is possible.</p>
 
-<h2>The Pro Way!</h2>
+<p>Let&rsquo;s now have a look at the &ldquo;I&rsquo;m running on a 56k modem method&rdquo; of doing the same thing!</p>
 
-<p>For quite some time now - as of <code>CRM 2011 Update Rollup 12 - (SDK 5.0.13)</code> you can utilise the <a href="http://msdn.microsoft.com/en-gb/library/jj863604(v=crm.5">Execute Multiple</a>.aspx) request to do this kind of thing in one roundtrip with the CRM server.</p>
+<!-- more -->
 
-<p>Here is an example:</p>
+
+<h2>The &ldquo;I&rsquo;m running on a 56k modem method&rdquo; - this weeks pro tip!</h2>
+
+<p>For quite some time now - as of <code>CRM 2011 Update Rollup 12 - (SDK 5.0.13)</code> you can utilise the <a href="http://msdn.microsoft.com/en-gb/library/jj863604.aspx">Execute Multiple</a> request to do this kind of thing in one roundtrip with the CRM server.</p>
+
+<p>Here is an example of creating an account, and retrieiving it in a single round trip:</p>
 
 <pre><code class="csharp">                 // Create an ExecuteMultipleRequest object.
                 var multipleRequests = new ExecuteMultipleRequest()
@@ -83,7 +76,7 @@
                 RetrieveRequest retrieveRequest = new RetrieveRequest
                 {
                     Target = new EntityReference(entity.LogicalName, entity.Id),
-                    ColumnSet = new ColumnSet("createdon")
+                    ColumnSet = new ColumnSet("createdon") // list the fields that you want here
                 };
 
                 multipleRequests.Requests.Add(createRequest);
@@ -107,7 +100,7 @@
                     retrieveResponse = (RetrieveResponse)retrieveResponseItem.Response;
                 }
 
-                Console.Write(retrieveResponse.Entity["createdon"]);
+                Console.Write(retrieveResponse.Entity["createdon"]); // yup - we got the value we needed!
 </code></pre>
 
 <h2>What happened?</h2>
@@ -120,16 +113,393 @@
 
 <p>One caveat of this approach is that, if you intend to grab the generated values for an entity that is being created, then you need to know in advance what the ID will be.</p>
 
-<p>This means you have to specify the ID of the entity when you create it.</p>
+<p>This means you have to specify the ID of the entity when you create it yourself - you can&rsquo;t let CRM auto create the new ID.</p>
 
-<p>For updates / deletes this isn&rsquo;t an issue, as the ID is allready known.</p>
+<p>For updates / deletes this is a non issue, as the ID is allready known.</p>
 
-<h2>Any SQL Guru&rsquo;s out there?</h2>
+<h2>Last thoughts - SQL Optimisation</h2>
 
-<p>Specifying your own ID&rsquo;s <em>might be a bad thing</em> if you don&rsquo;t use Sequential Guid&rsquo;s.
-When CRM generates Id&rsquo;s, it generates them sequentially. I beleive there are SQL performance benefits to this in terms of index optimisation etc.</p>
+<p>I speculate that specifying your own ID&rsquo;s <em>might be a bad thing</em> if you don&rsquo;t use Sequential Guid&rsquo;s.</p>
 
-<p>When you specify your own Id&rsquo;s, if you don&rsquo;t specify them sequentially, i.e  Guid.NewGuid(), this could well have a negative overhead on the DB - that&rsquo;s purely my suspicion - I am no SQL expert, - I&rsquo;d love to see someone look into that further!</p>
+<p>When CRM generates Id&rsquo;s for you, it generates them sequentially, and I beleive there may be SQL performance benefits to this in terms of index optimisation etc. So if using Guid.NewGuid() to create your new Id&rsquo;s you may want to check with a SQL guru first to understand any impact of using random Guid&rsquo;s as Id&rsquo;s on performance of the CRM tables! That said - Microsoft do support this, so it can&rsquo;t be too bad..</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Unit Testing Dynamics CRM Plugins]]></title>
+    <link href="http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins/"/>
+    <updated>2014-12-14T17:50:00+00:00</updated>
+    <id>http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins</id>
+    <content type="html"><![CDATA[<h2>There is no <del>Spoon</del> CRM</h2>
+
+<p>The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a unit test with the least possible effort. Reduced Effort == Reduced Person Hours == Reduced Cost.</p>
+
+<p>Remember, this is Unit Testing, not Integration testing - so at test time - there is no CRM!</p>
+
+<!-- more -->
+
+
+<h2>A plugin - and it&rsquo;s requirements</h2>
+
+<p>Firstly, let&rsquo;s look at a plugin that we will call the <code>ReclaimCreditPlugin</code>. Here are the requirements:</p>
+
+<blockquote><ol>
+<li>It must run only within a transaction with the database.</li>
+<li>When a Contact entity is Updated, if the contact has a parent account, and that parent account is &ldquo;on hold&rdquo; then set the &ldquo;taketheirshoes&rdquo; flag on the contact record to true.</li>
+</ol>
+</blockquote>
+
+<h2>Developer Jon Doe</h2>
+
+<p>Jon Doe immediately gets to work on writing the plugin for those requirements. He produces the following plugin:</p>
+
+<pre><code class="csharp">  public class ReclaimCreditPlugin : IPlugin
+    {
+
+        public void Execute(IServiceProvider serviceProvider)
+        {
+
+            var executionContext = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
+
+            // 1. We must run only within a transaction
+            if (!executionContext.IsInTransaction)
+            {
+                throw new InvalidPluginExecutionException("The plugin detected that it was not running within a database transaction. The plugin requires a database transaction.");
+            }
+
+            // 2. Get the contact, check its parent account.
+            if (executionContext.InputParameters.Contains("Target") &amp;&amp; executionContext.InputParameters["Target"] is Entity)
+            {
+                // Obtain the target entity from the input parameters.
+                var contactEntity = (Entity)executionContext.InputParameters["Target"];
+                // Get the parent account id.
+                var parentAccountId = (EntityReference)contactEntity["parentaccountid"];
+
+                // Get the parent account entity.
+                var orgServiceFactory = (IOrganizationServiceFactory)serviceProvider.GetService(typeof(IOrganizationServiceFactory));
+                var orgService = orgServiceFactory.CreateOrganizationService(executionContext.UserId);
+                var parentAccountEntity = orgService.Retrieve("account", parentAccountId.Id, new ColumnSet("creditonhold"));
+
+                var accountOnHold = (bool)parentAccountEntity["creditonhold"];
+
+                if (accountOnHold)
+                {
+                    contactEntity["taketheirshoes"] = true;
+                    var tracingService = (ITracingService)serviceProvider.GetService(typeof(ITracingService));
+                    tracingService.Trace("Have indicated that we should take the shoes from contact: {0}", contactEntity.Id.ToString());
+                }
+
+            }
+
+        }
+
+    }
+</code></pre>
+
+<h3>Good Job?</h3>
+
+<p>Take a moment to peer review the above code. Would you vindicate Jon Doe&rsquo;s effort? It seems it has all the required logic in all the required places. It appears he has covered the list of requirements. Although Jon doesn&rsquo;t check to make sure the current entity being updated is definately a contact entity.. But within the confines of this blog post we will assume that there is no possible danger that the plugin could ever be registered against the wrong entity.</p>
+
+<p>So.. does it actually work?</p>
+
+<h2>Does it work?</h2>
+
+<p>Assuming you want to start haemorrhaging people&rsquo;s time accross the organisation, one way to find out if this code works is to immediately go through the process of deploying it to a QA environment, getting someone to test it manually, and then repeating that cycle of Dev &ndash;> Deployment &ndash;> QA as often as necessary, until the tester gives the thumbs up.</p>
+
+<p>If you want to go that route, feel free to skip the rest of this article. Otherwise read on, where sanity awaits!</p>
+
+<h2>Show me a Unit Test Already!</h2>
+
+<p>Bad news for you. I could.. but I won&rsquo;t.</p>
+
+<h2>Why won&rsquo;t you show me a unit test?</h2>
+
+<p>In short, because I value my time. Just look at that code again for crying out loud! It&rsquo;s littered with dependencies on things that are only provided at runtime by Dynamics CRM - things like:</p>
+
+<ol>
+<li>IServiceProvider</li>
+<li>IPluginExecutionContext</li>
+<li>IOrganizationServiceFactory</li>
+<li>IOrganizationService</li>
+<li>ITracingService</li>
+</ol>
+
+
+<p><strong>WHAT THE HELL ARE ANY OF THESE THINGS TO DO WITH THE ACTUAL REQUIREMENTS THAT I <em>NEED</em> TO TEST???</strong></p>
+
+<p>Listen.. I read those requirements for this plugin. I read them atleast one thousand times. And I wrote them in fact. Here they are again:</p>
+
+<blockquote><ol>
+<li>It must run only within a transaction with the database.</li>
+<li>When a Contact entity is Updated, if the contact has a parent account, and that parent account is &ldquo;on hold&rdquo; then set the &ldquo;taketheirshoes&rdquo; flag on the contact record to true.</li>
+</ol>
+</blockquote>
+
+<p>So with that in mind, can you please show me the requirement dictating: <code>When a contact is updated, it is of upmost importance to us as a business that it looks at the</code>IPluginExecutionContext<code>and grabs the</code>IOrganizationServiceFactory.`</p>
+
+<p>Or please show me where the requirements state: <code>When a contact is updated, the plugin absolutely must interact with the</code>IServiceProvider` because otherwise you know.. Our business just won&rsquo;t function anymore.</p>
+
+<p>No my friends. The requirements do not say <em>any of that</em>. I am in the business of testing against the requirements.</p>
+
+<h3>Why is that a problem?</h3>
+
+<p>The problem is not obvious at first glance. It is definately technically possible to mock / fake all of those services at unit test time. You can use something like RhinoMocks or another Mocking library to mock out <code>IServiceProvider</code> for the purposes of your test. You would then have to mock out all the calls to <code>IServiceProvider</code> that are made, so that it returns your other &lsquo;mocked&rsquo; services like a mock &lsquo;IPluginExecutionContext&rsquo; etc etc - and down the rabbit hole you go.</p>
+
+<p>The problem, is about <em>effort</em>. This approach, although technically possible, requires significant <em>effort</em>. You would have to mock a tonne of runtime services and interactions. We have to ask ourselves, is all that effort really necessary? Sometimes it may be, but most of the time, it isn&rsquo;t. In this instance it definately isn&rsquo;t and I will explain why.</p>
+
+<h2>Let&rsquo;s use the requirements to write the plugin, in pseudo code.</h2>
+
+<p>With those requirements - forget everything you know about Dynamics Crm and write your ideal pseudo code that would implement those requirements. This is the actual logic we care about testing.</p>
+
+<p>PSEUDO CODE:</p>
+
+<pre><code>if (!IsRunningInTransaction)
+{
+    Throw "Plugin requires a transaction."
+}
+
+If (IsUpdateOf("contact"))
+{
+
+var contact = GetTargetEntity();
+var account = GetAccountForContact(contact);
+
+var isOnHold = (bool)account["creditonhold"];
+if(isOnHold)
+{
+    contact["taketheirshoes"] = true;
+}
+</code></pre>
+
+<h2>Look at that Pseudo Code -  Do you see <em>any</em> runtime services?</h2>
+
+<p>Notice how it contains only the logic we really care about testing - the logic as described by the requirements. It doesn&rsquo;t contain needless fluff. No <code>IServiceProvider</code>, No <code>IPluginExecutionContext</code>. It looks very simple, very basic. If we could actually write a CRM plugin like this, it would be about 1.5 million times easier to test. Well we can.</p>
+
+<h2>Isolating out dependencies is the key to unit testing.</h2>
+
+<p>Yes it&rsquo;s true folks you heard it here first. The less dependencies you utilise directly in your methods, the easier they are to unit test.</p>
+
+<p>With this principle in mind, let&rsquo;s revisit our plugin and refactor it to remove some dependencies.</p>
+
+<h2>New and Improved Plugin</h2>
+
+<pre><code class="csharp"> public class ReclaimCreditPlugin2 : IPlugin
+    {
+
+        private IServiceProvider _ServiceProvider;
+
+        public void Execute(IServiceProvider serviceProvider)
+        {
+            _ServiceProvider = serviceProvider;
+            Execute();
+        }
+
+        /// &lt;summary&gt;
+        /// This is the method containing the business logic that we want to be able to assert at unit test time.
+        /// &lt;/summary&gt;
+        public void Execute()
+        {
+            // 1. We must run only within a transaction
+            if (IsInTransaction())
+            {
+                throw new InvalidPluginExecutionException("The plugin detected that it was not running within a database transaction. The plugin requires a database transaction.");
+            }
+
+            // 2. Get the contact
+            var contact = GetTargetEntity();
+
+            // 3. Get the Parent Account for the contact.
+            var parentAccount = GetAccountEntity(contact);
+            if (parentAccount == null)
+            {
+                return;
+            }
+
+            // 4. If credit on hold, set taketheirshoes.
+            var accountOnHold = (bool)parentAccount["creditonhold"];
+            if (accountOnHold)
+            {
+                contact["taketheirshoes"] = true;
+            }
+
+        }
+
+        /// &lt;summary&gt;
+        /// Returns the parent account entity for the contact.
+        /// &lt;/summary&gt;
+        /// &lt;param name="contact"&gt;&lt;/param&gt;
+        /// &lt;returns&gt;&lt;/returns&gt;
+        protected virtual Entity GetAccountEntity(Entity contact)
+        {
+            // Get the p[arent account id.
+            var parentAccountId = (EntityReference)contact["parentaccountid"];
+
+            // Get an instance of the IOrganisationService.
+            var orgServiceFactory = (IOrganizationServiceFactory)_ServiceProvider.GetService(typeof(IOrganizationServiceFactory));
+            var executionContext = (IPluginExecutionContext)_ServiceProvider.GetService(typeof(IPluginExecutionContext));
+            var orgService = orgServiceFactory.CreateOrganizationService(executionContext.UserId);
+
+            // Get the account entity, with only the column / attribute that we need.
+            var parentAccountEntity = orgService.Retrieve("account", parentAccountId.Id, new ColumnSet("creditonhold"));
+            return parentAccountEntity;
+        }
+
+        /// &lt;summary&gt;
+        /// Returns the current "Target" entity that the plugin is executing against.
+        /// &lt;/summary&gt;
+        /// &lt;returns&gt;&lt;/returns&gt;
+        protected virtual Entity GetTargetEntity()
+        {
+            var context = (IPluginExecutionContext)_ServiceProvider.GetService(typeof(IPluginExecutionContext));
+            if (context.InputParameters.Contains("Target") &amp;&amp; context.InputParameters["Target"] is Entity)
+            {
+                var contactEntity = (Entity)context.InputParameters["Target"];
+                return contactEntity;
+            }
+
+            return null;
+        }
+
+        /// &lt;summary&gt;
+        /// Returns whether the plugin is currently enrolled within a database transaction.
+        /// &lt;/summary&gt;
+        /// &lt;returns&gt;&lt;/returns&gt;
+        protected virtual bool IsInTransaction()
+        {
+            var context = (IPluginExecutionContext)_ServiceProvider.GetService(typeof(IPluginExecutionContext));
+            return context.IsInTransaction;
+        }
+
+    }
+</code></pre>
+
+<h2>What just happened?</h2>
+
+<p>I applied a technique called the <a href="http://taswar.zeytinsoft.com/2009/03/08/extract-and-override-refactoring-technique/">Extract and Override</a> technique, to remove the concrete references to all of those CRM runtime only services from within the Execute method, and instead they are now referenced within virtual methods which can be overriden at unit test time.</p>
+
+<p>For example rather than having the following code directly within the execute method:</p>
+
+<pre><code class="csharp">  var executionContext = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
+
+            // 1. We must run only within a transaction
+            if (!executionContext.IsInTransaction)
+            {
+</code></pre>
+
+<p>It has been replaced by a call to virtual method:</p>
+
+<pre><code class="csharp">            if (IsInTransaction())
+            {
+
+            }
+</code></pre>
+
+<p>Because the interactions with the various CRM runtime Services now occur within Virtual methods, we no longer need to mock them up at unit test time. Say goodbye to having to mockup <code>IPluginExecutionContext</code>, <code>IServiceProvider</code> or <em>any</em> of the Crm runtime services. All we need to do now is just override the various virtual methods that our Execute() method calls, and return appropriate values at test time.</p>
+
+<h2>Ok so - Now will you show me a Unit Test??</h2>
+
+<p>Certainly Sir / Madame. Now that I can write one within a few minutes as opposed to a few hours, your wish is my command:-</p>
+
+<p>For the purpose of our unit tests all we do, is create a class that derives from our original plugin class, but overrides the various virtual methods to provide different values at test time.</p>
+
+<pre><code class="csharp"> public class UnitTestableReclaimCreditPlugin : ReclaimCreditPlugin2
+    {
+
+        public UnitTestableReclaimCreditPlugin()
+        {
+            AccountIsOnHold = false;
+            IsRunningInTransaction = false;
+            ContactEntity = new Entity("contact");
+        }
+
+        protected override Entity GetTargetEntity()
+        {
+            ContactEntity["parentaccountid"] = new EntityReference("account", Guid.NewGuid());
+            return ContactEntity;
+        }
+
+        protected override Entity GetAccountEntity(Entity contact)
+        {
+            var accountEntity = new Entity("account");
+            accountEntity["creditonhold"] = AccountIsOnHold;
+            return accountEntity;
+        }
+
+        protected override bool IsInTransaction()
+        {
+            return IsRunningInTransaction;
+        }
+
+        public bool AccountIsOnHold { get; set; }
+
+        public bool IsRunningInTransaction { get; set; }
+
+        public Entity ContactEntity { get; set; }
+
+    }
+</code></pre>
+
+<h2>And here are the Unit Tests</h2>
+
+<pre><code class="csharp">
+ [TestFixture]
+    public class ReclaimCreditPluginUnitTests
+    {
+        public ReclaimCreditPluginUnitTests()
+        {
+
+        }
+
+        [ExpectedException(typeof(InvalidPluginExecutionException),
+            ExpectedMessage = "The plugin detected that it was not running within a database transaction",
+            MatchType = MessageMatch.Contains)]
+        public void Should_Only_Run_Within_Transaction()
+        {
+            // arrange
+            var sut = new UnitTestableReclaimCreditPlugin();
+            sut.IsRunningInTransaction = false;
+
+            // act 
+            sut.Execute();
+
+        }
+
+
+        public void Should_Take_Shoes_When_Credit_On_Hold()
+        {
+            // arrange
+            var sut = new UnitTestableReclaimCreditPlugin();
+            sut.IsRunningInTransaction = true;
+            sut.AccountIsOnHold = true;
+
+            // act 
+            sut.Execute();
+
+            //assert
+            Assert.That(sut.ContactEntity["taketheirshoes"], Is.EqualTo(true));
+
+        }
+
+        public void Should_Not_Take_Shoes_When_Credit_Not_On_Hold()
+        {
+            // arrange
+            var sut = new UnitTestableReclaimCreditPlugin();
+            sut.IsRunningInTransaction = true;
+            sut.AccountIsOnHold = false;
+
+            // act 
+            sut.Execute();
+
+            //assert
+            Assert.That(sut.ContactEntity["taketheirshoes"], Is.Not.EqualTo(true));
+
+        }
+    }
+</code></pre>
+
+<h2>Wrapping Up</h2>
+
+<p>I hope I have demonstrated a simple plugin, with a simple set of unit tests. More importantly, I hope I have demonstrated that although it may be technically possible to write a unit test for an exising plugin,  by mocking up every CRM runtime service and interaction that the plugin makes,just because such a thing is possible, doesn&rsquo;t mean you should just do it. First the work has to be justified. To justify just what is necessary, examine the requirements, examine the plugin code, and be absolutely clear on what it is you want to cover in your unit tests. With that in mind, refactor the plugin code to eliminate fluff (extraneoues concrete references to dependencies that are surplus to the requirements that you want to test). Use techniques like the <code>Extract and Override</code> technique to allow you to substitute these dependencies easily at test time. When you do this, you may be surprised at how much simpler it becomes to write unit tests. I would aslo reccommend reading a book on unit testing, I found <a href="http://artofunittesting.com/">The Art of Unit Testing</a> very educational on this topic.</p>
 ]]></content>
   </entry>
   

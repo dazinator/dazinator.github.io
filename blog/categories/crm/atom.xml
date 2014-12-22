@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Crm | Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/blog/categories/crm/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2014-12-22T16:42:46+00:00</updated>
+  <updated>2014-12-22T18:07:38+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -18,45 +18,38 @@
     <link href="http://darrelltunnell.net/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/"/>
     <updated>2014-12-22T00:00:00+00:00</updated>
     <id>http://darrelltunnell.net/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips</id>
-    <content type="html"><![CDATA[<p>Just a short post this week, with a little CRM development pro tip for you!</p>
+    <content type="html"><![CDATA[<h2>Setting the Scene</h2>
 
-<h2>Scenario</h2>
-
-<p>Say you have a plugin on the <code>account</code> entity that:</p>
-
-<ul>
-<li>Runs synchronously on create</li>
-<li>Generates a reference number for the account.</li>
-</ul>
-
-
-<p>Now assume we have an application that&rsquo;s on a seperate server to the CRM server (where latency and network traffic are a concern).</p>
-
-<p>The application needs to:</p>
+<p>Imagine we have an application that uses the CRM SDK. It needs to:</p>
 
 <ol>
-<li>Create a contact in crm</li>
-<li>Get the reference number that was generated for the contact.</li>
+<li>Create a new <code>account</code> entity in crm.</li>
+<li>Get some value that was just generated as a result of a synchronous plugin that fires on the create. For example, suppose there is a plugin that generates an account reference number.</li>
 </ol>
 
 
-<h2>The Multiple Roundtrip Way</h2>
+<h2>The &ldquo;I don&rsquo;t care about network latency method!&rdquo;</h2>
 
-<p>The most common way (the historical way) I have seen this dealt with is to do 2 seperate roundtrips with CRM:</p>
+<p>The &lsquo;I don&rsquo;t care about network latency&rsquo; way of dealing with this is to just do 2 seperate Requests (roundtrips) with the CRM server.</p>
 
 <ol>
-<li>Create the account</li>
-<li>Retrieve the account</li>
+<li>Create the new <code>account</code> which returns you the ID.</li>
+<li>Retrieve the <code>account</code> using that ID, along with the values that you need.</li>
 </ol>
 
 
-<p>This obviously incurs the penalty of making two roundtrips with the server.</p>
+<p>This approach is sub optimal where network latency is a concern, as it incurs the penalty of making two roundtrips accross the network with the server, where 1 is possible.</p>
 
-<h2>The Pro Way!</h2>
+<p>Let&rsquo;s now have a look at the &ldquo;I&rsquo;m running on a 56k modem method&rdquo; of doing the same thing!</p>
 
-<p>For quite some time now - as of <code>CRM 2011 Update Rollup 12 - (SDK 5.0.13)</code> you can utilise the <a href="http://msdn.microsoft.com/en-gb/library/jj863604(v=crm.5">Execute Multiple</a>.aspx) request to do this kind of thing in one roundtrip with the CRM server.</p>
+<!-- more -->
 
-<p>Here is an example:</p>
+
+<h2>The &ldquo;I&rsquo;m running on a 56k modem method&rdquo; - this weeks pro tip!</h2>
+
+<p>For quite some time now - as of <code>CRM 2011 Update Rollup 12 - (SDK 5.0.13)</code> you can utilise the <a href="http://msdn.microsoft.com/en-gb/library/jj863604.aspx">Execute Multiple</a> request to do this kind of thing in one roundtrip with the CRM server.</p>
+
+<p>Here is an example of creating an account, and retrieiving it in a single round trip:</p>
 
 <pre><code class="csharp">                 // Create an ExecuteMultipleRequest object.
                 var multipleRequests = new ExecuteMultipleRequest()
@@ -83,7 +76,7 @@
                 RetrieveRequest retrieveRequest = new RetrieveRequest
                 {
                     Target = new EntityReference(entity.LogicalName, entity.Id),
-                    ColumnSet = new ColumnSet("createdon")
+                    ColumnSet = new ColumnSet("createdon") // list the fields that you want here
                 };
 
                 multipleRequests.Requests.Add(createRequest);
@@ -107,7 +100,7 @@
                     retrieveResponse = (RetrieveResponse)retrieveResponseItem.Response;
                 }
 
-                Console.Write(retrieveResponse.Entity["createdon"]);
+                Console.Write(retrieveResponse.Entity["createdon"]); // yup - we got the value we needed!
 </code></pre>
 
 <h2>What happened?</h2>
@@ -120,16 +113,15 @@
 
 <p>One caveat of this approach is that, if you intend to grab the generated values for an entity that is being created, then you need to know in advance what the ID will be.</p>
 
-<p>This means you have to specify the ID of the entity when you create it.</p>
+<p>This means you have to specify the ID of the entity when you create it yourself - you can&rsquo;t let CRM auto create the new ID.</p>
 
-<p>For updates / deletes this isn&rsquo;t an issue, as the ID is allready known.</p>
+<p>For updates / deletes this is a non issue, as the ID is allready known.</p>
 
-<h2>Any SQL Guru&rsquo;s out there?</h2>
+<h2>Last thoughts - SQL Optimisation</h2>
 
-<p>Specifying your own ID&rsquo;s <em>might be a bad thing</em> if you don&rsquo;t use Sequential Guid&rsquo;s.
-When CRM generates Id&rsquo;s, it generates them sequentially. I beleive there are SQL performance benefits to this in terms of index optimisation etc.</p>
+<p>I speculate that specifying your own ID&rsquo;s <em>might be a bad thing</em> if you don&rsquo;t use Sequential Guid&rsquo;s.</p>
 
-<p>When you specify your own Id&rsquo;s, if you don&rsquo;t specify them sequentially, i.e  Guid.NewGuid(), this could well have a negative overhead on the DB - that&rsquo;s purely my suspicion - I am no SQL expert, - I&rsquo;d love to see someone look into that further!</p>
+<p>When CRM generates Id&rsquo;s for you, it generates them sequentially, and I beleive there may be SQL performance benefits to this in terms of index optimisation etc. So if using Guid.NewGuid() to create your new Id&rsquo;s you may want to check with a SQL guru first to understand any impact of using random Guid&rsquo;s as Id&rsquo;s on performance of the CRM tables! That said - Microsoft do support this, so it can&rsquo;t be too bad..</p>
 ]]></content>
   </entry>
   
