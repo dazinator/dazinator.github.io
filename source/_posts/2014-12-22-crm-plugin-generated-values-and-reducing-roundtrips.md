@@ -16,7 +16,7 @@ Imagine we have an application that uses the CRM SDK. It needs to:
 The 'I don't care about network latency' way of dealing with this is to just do 2 seperate Requests (roundtrips) with the CRM server.
 
 1. Create the new `account` which returns you the ID.
-2. Retrieve the `account` using that Id, along with the values that you need.
+2. Retrieve the `account` using that ID, along with the values that you need.
 
 This approach is sub optimal where network latency is a concern, as it incurs the penalty of making two roundtrips accross the network with the server, where 1 is possible.
 
