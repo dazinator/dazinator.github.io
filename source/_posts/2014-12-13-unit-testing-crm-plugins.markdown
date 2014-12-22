@@ -13,6 +13,8 @@ The purpose of this post will be to look at the code for a fairly typical lookin
 
 Remember, this is Unit Testing, not Integration testing - so at test time - there is no CRM!
 
+<!-- more -->
+
 ## A plugin - and it's requirements
 
 Firstly, let's look at a plugin that we will call the `ReclaimCreditPlugin`. Here are the requirements:
@@ -23,8 +25,6 @@ Firstly, let's look at a plugin that we will call the `ReclaimCreditPlugin`. Her
 ## Developer Jon Doe
 
 Jon Doe immediately gets to work on writing the plugin for those requirements. He produces the following plugin:
-
-<!-- more -->
 
 ``` csharp
   public class ReclaimCreditPlugin : IPlugin
