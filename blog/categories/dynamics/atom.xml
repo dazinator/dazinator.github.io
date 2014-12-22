@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Dynamics | Darrell Tunnell's Blog]]></title>
+  <link href="http://darrelltunnell.net/blog/categories/dynamics/atom.xml" rel="self"/>
+  <link href="http://darrelltunnell.net/"/>
+  <updated>2014-12-22T15:04:25+00:00</updated>
+  <id>http://darrelltunnell.net/</id>
+  <author>
+    <name><![CDATA[Darrell Tunnell]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[CRM / Plugin Generated Values - and Reducing Roundtrips!]]></title>
+    <link href="http://darrelltunnell.net/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/"/>
+    <updated>2014-12-22T00:00:00+00:00</updated>
+    <id>http://darrelltunnell.net/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips</id>
+    <content type="html"><![CDATA[<p>Just a short post this week, with a little CRM development pro tip for you!</p>
+
+<h2>Scenario</h2>
+
+<p>Say you have a plugin on the <code>account</code> entity that:</p>
+
+<ul>
+<li>Runs synchronously on create</li>
+<li>Generates a reference number for the account.</li>
+</ul>
+
+
+<p>Now assume we have an application that&rsquo;s on a seperate server to the CRM server (where latency and network traffic are a concern).</p>
+
+<p>The application needs to:</p>
+
+<ol>
+<li>Create a contact in crm</li>
+<li>Get the reference number that was generated for the contact.</li>
+</ol>
+
+
+<h2>The Multiple Roundtrip Way</h2>
+
+<p>The most common way (the historical way) I have seen this dealt with is to do 2 seperate roundtrips with CRM:</p>
+
+<ol>
+<li>Create the account</li>
+<li>Retrieve the account</li>
+</ol>
+
+
+<p>This obviously incurs the penalty of making two roundtrips with the server.</p>
+
+<h2>The Pro Way!</h2>
+
+<p>For quite some time now - as of <code>CRM 2011 Update Rollup 12 - (SDK 5.0.13)</code> you can utilise the <a href="http://msdn.microsoft.com/en-gb/library/jj863604(v=crm.5">Execute Multiple</a>.aspx) request to do this kind of thing in one roundtrip with the CRM server.</p>
+
+<p>Here is an example:</p>
+
+<pre><code class="csharp">                 // Create an ExecuteMultipleRequest object.
+                var multipleRequests = new ExecuteMultipleRequest()
+                {
+                    // Assign settings that define execution behavior: continue on error, return responses. 
+                    Settings = new ExecuteMultipleSettings()
+                    {
+                        ContinueOnError = false,
+                        ReturnResponses = true
+                    },
+                    // Create an empty organization request collection.
+                    Requests = new OrganizationRequestCollection()
+                };
+
+                var entity = new Entity("account");
+                entity.Id = Guid.NewGuid();
+                entity["name"] = "experimental test";
+
+                CreateRequest createRequest = new CreateRequest
+                {
+                    Target = entity
+                };
+
+                RetrieveRequest retrieveRequest = new RetrieveRequest
+                {
+                    Target = new EntityReference(entity.LogicalName, entity.Id),
+                    ColumnSet = new ColumnSet("createdon")
+                };
+
+                multipleRequests.Requests.Add(createRequest);
+                multipleRequests.Requests.Add(retrieveRequest);
+
+                // Execute all the requests in the request collection using a single web method call.
+                ExecuteMultipleResponse responseWithResults = (ExecuteMultipleResponse)orgService.Execute(multipleRequests);
+
+                var createResponseItem = responseWithResults.Responses[0];
+                CreateResponse createResponse = null;
+                if (createResponseItem.Response != null)
+                {
+                    createResponse = (CreateResponse)createResponseItem.Response;
+                }
+
+                var retrieveResponseItem = responseWithResults.Responses[1];
+
+                RetrieveResponse retrieveResponse = null;
+                if (retrieveResponseItem.Response != null)
+                {
+                    retrieveResponse = (RetrieveResponse)retrieveResponseItem.Response;
+                }
+
+                Console.Write(retrieveResponse.Entity["createdon"]);
+</code></pre>
+
+<h2>What happened?</h2>
+
+<p>Both the CreateRequest, and the RetrieveRequest (for the created entity) are batched up into a single Request and shipped off to the CRM server for processing.</p>
+
+<p>CRM processed them in that order, collated the responses together, and returned them in a single batch.</p>
+
+<h2>Caveats</h2>
+
+<p>One caveat of this approach is that, if you intend to grab the generated values for an entity that is being created, then you need to know in advance what the ID will be.</p>
+
+<p>This means you have to specify the ID of the entity when you create it.</p>
+
+<p>For updates / deletes this isn&rsquo;t an issue, as the ID is allready known.</p>
+
+<h2>Any SQL Guru&rsquo;s out there?</h2>
+
+<p>Specifying your own ID&rsquo;s <em>might be a bad thing</em> if you don&rsquo;t use Sequential Guid&rsquo;s.
+When CRM generates Id&rsquo;s, it generates them sequentially. I beleive there are SQL performance benefits to this in terms of index optimisation etc.</p>
+
+<p>When you specify your own Id&rsquo;s, if you don&rsquo;t specify them sequentially, i.e  Guid.NewGuid(), this could well have a negative overhead on the DB - that&rsquo;s purely my suspicion - I am no SQL expert, - I&rsquo;d love to see someone look into that further!</p>
+]]></content>
+  </entry>
+  
+</feed>
