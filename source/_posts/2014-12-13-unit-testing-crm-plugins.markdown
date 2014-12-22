@@ -3,9 +3,7 @@ layout: post
 title: Unit Testing Dynamics CRM Plugins
 date: "2014-12-14 17:50:00 +0000"
 comments: true
-categories: 
-  - Dynamics CRM
-  - Unit Testing
+categories: "Dynamics CRM,Unit Testing"
 published: true
 ---
 
@@ -25,6 +23,8 @@ Firstly, let's look at a plugin that we will call the `ReclaimCreditPlugin`. Her
 ## Developer Jon Doe
 
 Jon Doe immediately gets to work on writing the plugin for those requirements. He produces the following plugin:
+
+<!-- more -->
 
 ``` csharp
   public class ReclaimCreditPlugin : IPlugin
