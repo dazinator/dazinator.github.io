@@ -6,7 +6,7 @@ comments: true
 categories: Dynamics CRM
 ---
 
-Just a short post this week, with a little CRM development pro tip for you!
+Just a short post this week, with a little CRM development tip for you!
 
 ## Scenario
 Say you have a plugin on the `account` entity that:
@@ -25,7 +25,7 @@ The application needs to:
 The most common way (the historical way) I have seen this dealt with is to do 2 seperate roundtrips with CRM:
 
 1. Create the account
-2. Retrieve the account
+2. Retrieve the account (with the generated values)
 
 This obviously incurs the penalty of making two roundtrips with the server.
 
@@ -60,7 +60,7 @@ Here is an example:
                 RetrieveRequest retrieveRequest = new RetrieveRequest
                 {
                     Target = new EntityReference(entity.LogicalName, entity.Id),
-                    ColumnSet = new ColumnSet("createdon")
+                    ColumnSet = new ColumnSet("createdon") // list the fields that you want here
                 };
 
                 multipleRequests.Requests.Add(createRequest);
@@ -84,7 +84,7 @@ Here is an example:
                     retrieveResponse = (RetrieveResponse)retrieveResponseItem.Response;
                 }
 
-                Console.Write(retrieveResponse.Entity["createdon"]);
+                Console.Write(retrieveResponse.Entity["createdon"]); // yup - we got the value we needed!
 
 ```
 
