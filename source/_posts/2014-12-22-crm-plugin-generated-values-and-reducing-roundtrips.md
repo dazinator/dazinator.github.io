@@ -6,33 +6,32 @@ comments: true
 categories: Dynamics CRM
 ---
 
-Just a short post this week, with a little CRM development tip for you!
-
-## Scenario
-Say you have a plugin on the `account` entity that:
+## Imagine the Scenario..
+You have a plugin on the `account` entity that:
 
 - Runs synchronously on create
 - Generates a reference number for the account.
 
+<!-- more -->
 Now assume we have an application that's on a seperate server to the CRM server (where latency and network traffic are a concern).
 
 The application needs to:
 
 1. Create a contact in crm
-2. Get the reference number that was generated for the contact.
+2. Get the reference number that was generated as a result of the create (perhaps it displays it in a UI).
 
-## The Multiple Roundtrip Way
-The most common way (the historical way) I have seen this dealt with is to do 2 seperate roundtrips with CRM:
+## Multiple Roundtrips - The 'Historical' Way!
+The historical way of dealing with this is to do 2 seperate roundtrips with CRM:
 
 1. Create the account
-2. Retrieve the account (with the generated values)
+2. Retrieve the account (with the generated values that you need)
 
-This obviously incurs the penalty of making two roundtrips with the server.
+This approach is now no longer optimal where latency is a concern, as it incurs the penalty of making two roundtrips accross the network to the CRM server.
 
-## The Pro Way!
+## Enter ~~the Dragon~~ this weeks pro tip!
 For quite some time now - as of `CRM 2011 Update Rollup 12 - (SDK 5.0.13)` you can utilise the [Execute Multiple](http://msdn.microsoft.com/en-gb/library/jj863604(v=crm.5).aspx) request to do this kind of thing in one roundtrip with the CRM server.
 
-Here is an example:
+Here is an example of doing this:
 
 ``` csharp
  				 // Create an ExecuteMultipleRequest object.
@@ -100,8 +99,7 @@ This means you have to specify the ID of the entity when you create it.
 
 For updates / deletes this isn't an issue, as the ID is allready known.
 
-## Any SQL Guru's out there?
-Specifying your own ID's _might be a bad thing_ if you don't use Sequential Guid's.
-When CRM generates Id's, it generates them sequentially. I beleive there are SQL performance benefits to this in terms of index optimisation etc. 
+## Is there a SQL Optimisation Guru present?
+I speculate that specifying your own ID's _might be a bad thing_ if you don't use Sequential Guid's.
 
-When you specify your own Id's, if you don't specify them sequentially, i.e  Guid.NewGuid(), this could well have a negative overhead on the DB - that's purely my suspicion - I am no SQL expert, - I'd love to see someone look into that further!
+When CRM generates Id's, it generates them sequentially, and I beleive there may be SQL performance benefits to this in terms of index optimisation etc. So if using Guid.NewGuid() you may want to check with a SQL guru first to understand any impact of using random Guid's as Id's! That said - Microsoft do support it.
