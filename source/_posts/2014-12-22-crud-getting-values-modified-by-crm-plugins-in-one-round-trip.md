@@ -1,7 +1,7 @@
 ---
 layout: post
 published: true
-title: "Reducing Network Round Trips, when Dealing with Generated Values."
+title: "Crm / Plugin Generated Values - and Reducing Roundtrips!"
 comments: true
 categories: Dynamics CRM
 ---
