@@ -24,7 +24,7 @@ Let's now have a look at the "I'm running on a 56k modem method" of doing the sa
 <!-- more -->
 
 ## The "I'm running on a 56k modem method" - this weeks pro tip!
-For quite some time now - as of `CRM 2011 Update Rollup 12 - (SDK 5.0.13)` you can utilise the [Execute Multiple](http://msdn.microsoft.com/en-gb/library/jj863604(v=crm.5).aspx) request to do this kind of thing in one roundtrip with the CRM server.
+For quite some time now - as of `CRM 2011 Update Rollup 12 - (SDK 5.0.13)` you can utilise the [Execute Multiple](http://msdn.microsoft.com/en-gb/library/jj863604.aspx) request to do this kind of thing in one roundtrip with the CRM server.
 
 Here is an example of creating an account, and retrieiving it in a single round trip:
 
