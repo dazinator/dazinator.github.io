@@ -89,7 +89,7 @@ Here is an example:
 ```
 
 ## What happened?
-Both the CreateRequest, and the RetrieveRequest (for the created entity) are batched up into a single Request and shipped off to the CRM server for processing (in that order).
+Both the CreateRequest, and the RetrieveRequest (for the created entity) are batched up into a single Request and shipped off to the CRM server for processing.
 
 Crm processed them in that order, collated the responses together, and returned them in a single batch.
 
