@@ -91,7 +91,7 @@ Here is an example:
 ## What happened?
 Both the CreateRequest, and the RetrieveRequest (for the created entity) are batched up into a single Request and shipped off to the CRM server for processing.
 
-Crm processed them in that order, collated the responses together, and returned them in a single batch.
+CRM processed them in that order, collated the responses together, and returned them in a single batch.
 
 ## Caveats
 One caveat of this approach is that, if you intend to grab the generated values for an entity that is being created, then you need to know in advance what the created entities ID will be. This means you have to specify the ID of the entity when you create it. In otherwords, you can't let Crm generate the ID of the new entity for you - because you need to know what it will be ahead of time so that you can craft the appropriate Retrieve request and send it in the same batch as the CreateRequest.
