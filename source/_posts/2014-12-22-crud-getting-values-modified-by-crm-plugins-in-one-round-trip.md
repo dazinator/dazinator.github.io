@@ -1,7 +1,7 @@
 ---
 layout: post
 published: true
-title: "Crm / Plugin Generated Values - and Reducing Roundtrips!"
+title: "CRM / Plugin Generated Values - and Reducing Roundtrips!"
 comments: true
 categories: Dynamics CRM
 ---
