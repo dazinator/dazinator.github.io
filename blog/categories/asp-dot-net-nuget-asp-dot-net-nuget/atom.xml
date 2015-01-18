@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: asp.net,nuget | Darrell Tunnell's Blog]]></title>
-  <link href="http://darrelltunnell.net/blog/categories/asp-dot-net-nuget/atom.xml" rel="self"/>
+  <title><![CDATA[Category: asp.net,nuget,asp.net,nuget | Darrell Tunnell's Blog]]></title>
+  <link href="http://darrelltunnell.net/blog/categories/asp-dot-net-nuget-asp-dot-net-nuget/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
   <updated>2015-01-18T18:42:26+00:00</updated>
   <id>http://darrelltunnell.net/</id>
