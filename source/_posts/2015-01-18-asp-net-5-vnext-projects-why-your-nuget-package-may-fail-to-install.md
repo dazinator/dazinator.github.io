@@ -27,6 +27,6 @@ I have tried to look for more information. At the moment all I have to go on is 
 ## So where from here?
 I am generally really excited about ASP.NET 5. I love what the team are doing. However I beleive that the ASP.NET team really should put some guidance out there to the NuGet community, so that NuGet package authors can gain an understanding of how their packages might have to change to work in the context of ASP.NET 5 projects. 
 
-It could be that package authors will need to add proviso's to certain packages that **This package does not work with ASP.NET 5 projects** - which would be a massive failing in my estmation, of the ASP.NET team, and perhaps NuGet org for allowing such a situation to arise.
+At a minimum, if ASP.NET 5 will indeed no longer support the running of these powershell scripts, then it should atleast warn you that the package contains such scripts and that they will not be executed - which means the package may not beahve as desired.  
 
 My hope is that David Fowler or someone from the ASP.NET team will offer a clarification, insight, or workaround for this issue that makes it a non issue. Fingers crossed.
