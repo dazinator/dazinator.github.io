@@ -1,8 +1,10 @@
 ---
 layout: post
 published: false
-title: "ASP.NET 5 (vNext) Projects - Your NuGet Package May Fail To Install Correctly "
+title: "ASP.NET 5 (vNext) Projects - Your NuGet Package May Fail To Install Correctly"
 comments: true
+sharing: true
+categories: [ASP.NET, NuGet]
 ---
 
 ## Are you the author of a NuGet package - don't assume it will work with ASP.NET 5 (vNext) projects.
