@@ -15,7 +15,7 @@ Recently, [I was contacted by someone](http://stackoverflow.com/questions/277626
 
 As most NuGet package authors will already know, it's a [standard feature of NuGet](http://docs.nuget.org/docs/creating-packages/creating-and-publishing-a-package#Automatically_Running_PowerShell_Scripts_During_Package_Installation_and_Removal) that you can include powershell scripts within your NuGet package, that will then be executed when your package is installed (or uninstalled) into a visual studio project / solution. 
 
-Many NuGet packages out there currently use this feature. For example, one of mine uses an `Install.ps1` powershell script to ensure that a necessary `msi` is installed on to the developers machine - which is necessary for the package to work.
+Many NuGet packages out there currently use this feature. For example, one of my packages uses an `Install.ps1` powershell script to ensure that a necessary `msi` is installed on to the developers machine - which is necessary for the package to work.
 
 The EntityFramework NuGet package uses it to enable all of those nice `Code First` powershell commands such as `Enable-Migrations` etc within the Package Manager Console.
 
