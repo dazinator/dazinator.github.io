@@ -15,22 +15,18 @@ Recently, [I was contacted by someone](http://stackoverflow.com/questions/277626
 
 As most NuGet package authors will already know, it's a [standard feature of NuGet](http://docs.nuget.org/docs/creating-packages/creating-and-publishing-a-package#Automatically_Running_PowerShell_Scripts_During_Package_Installation_and_Removal) that you can include powershell scripts within your NuGet package, that will then be executed when your package is installed (or uninstalled) into a visual studio project / solution. 
 
-Many NuGet packages out there currently use this feature. For example, one of my packages uses an `Install.ps1` powershell script to ensure that a necessary `msi` is installed on to the developer's machine - which is necessary for the package to work.
+Many NuGet packages out there currently rely on this feature - else they will not work.
 
-The EntityFramework NuGet package uses it to enable all of those nice `Code First` powershell commands such as `Enable-Migrations` etc within the Package Manager Console.
-
-I could easily list plenty more examples of packages that use this feature of NuGet.
-
-Well [David Fowler](http://forums.asp.net/members/davidfowl.aspx ) (who's on the ASP.NET team) - seems to suggest that [ASP.NET v5 does not support running the packages powershell scripts when you install a NuGet package into an ASP.NET v5 project.](http://forums.asp.net/t/2027698.aspx?Error+while+adding+NuGet+package+to+ASP+NET+vNext+project) 
+Well, the issue with my NuGet package failing to install into an ASP.NET vNext project  was eventaully posted on the asp.net forums, and [David Fowler](http://forums.asp.net/members/davidfowl.aspx ) (who's on the ASP.NET team) - kindly responded with some insight into the matter. He seems to suggest that [ASP.NET v5 does not support running the packages powershell scripts when you install a NuGet package into an ASP.NET v5 project.](http://forums.asp.net/t/2027698.aspx?Error+while+adding+NuGet+package+to+ASP+NET+vNext+project) 
 
 I wanted to confirm that with him a second time - because `that's a huge problem for some of my NuGet packages`, but as you will see from that thread, I am still awaiting a secondary confirmation of this - although his first answer seems pretty clear cut.
 
 ## Surely this is documented somewhere - or perhaps ASP.NET 5 offers an alternative mechanism for running tasks on installation / uninstallation of a NuGet package?
-I have tried to look for more information. At the moment all I have to go on is David Fowlers response. If your NuGet package requires custom tasks to be performed in an `init`, `install` or `uninstall` ps1 script - then be prepared that it may not be supported in ASP.NET vNext - and also be prepared for the fact that there may not be any workaround. If this turns out the be the case for some of my NuGet packages I'll be left with a slightly bitter taste in my mouth. 
+I have tried to look for more information. At the moment all I have to go on is David Fowlers response. Perhaps this is because there is still work in progress in this area, who knows. All I can suggest is that if your NuGet package currently requires custom tasks to be performed and you are using an `init`, `install` or `uninstall` ps1 script - then be prepared for the fact that it may not work with ASP.NET 5 projects - and also be prepared for the fact that there may not be any workaround either. If this turns out to be the case after ASP.NET 5 is released, I'll be left with a slightly bitter taste in my mouth.
 
 ## So where from here?
 I am generally really excited about ASP.NET 5. I love what the team are doing. However I beleive that the ASP.NET team really should put some guidance out there to the NuGet community, so that NuGet package authors can gain an understanding of how their packages might have to change to work in the context of ASP.NET 5 projects. 
 
 It could be that package authors will need to add proviso's to certain packages that **This package does not work with ASP.NET 5 projects** - which would be a massive failing in my estmation, of the ASP.NET team, and perhaps NuGet org for allowing such a situation to arise.
 
-My hope is that David Fowler or someone from the ASP.NET team will offer a clarification, insight, or workaround for this issue - or put some information out that explains which NuGet features they do and don't support and what the ramifications of these decisions are, to NuGet package authors.
+My hope is that David Fowler or someone from the ASP.NET team will offer a clarification, insight, or workaround for this issue that makes it a non issue. Fingers crossed.
