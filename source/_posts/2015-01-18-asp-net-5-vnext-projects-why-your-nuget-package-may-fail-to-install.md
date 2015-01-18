@@ -1,6 +1,6 @@
 ---
 layout: post
-published: false
+published: true
 title: "ASP.NET 5 (vNext) Projects - Your NuGet Package May Fail To Install Correctly"
 comments: true
 sharing: true
