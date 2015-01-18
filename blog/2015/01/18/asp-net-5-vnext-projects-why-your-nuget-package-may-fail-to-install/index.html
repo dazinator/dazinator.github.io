@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Darrell Tunnell&#8217;s Blog</title>
+  <title>ASP.NET 5 (vNext) Projects - Your NuGet Package May Fail to Install Correctly - Darrell Tunnell&#8217;s Blog</title>
   <meta name="author" content="Darrell Tunnell">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://darrelltunnell.net">
+  <link rel="canonical" href="http://darrelltunnell.net/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Darrell Tunnell's Blog" type="application/atom+xml">
@@ -84,15 +84,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install/">ASP.NET 5 (vNext) Projects - Your NuGet Package May Fail to Install Correctly</a></h1>
+      <h1 class="entry-title">ASP.NET 5 (vNext) Projects - Your NuGet Package May Fail to Install Correctly</h1>
     
     
       <p class="meta">
@@ -108,7 +105,7 @@
   </header>
 
 
-  <div class="entry-content"><h2>Are you the author of a NuGet package - don&rsquo;t assume it will work with ASP.NET 5 (vNext) projects.</h2>
+<div class="entry-content"><h2>Are you the author of a NuGet package - don&rsquo;t assume it will work with ASP.NET 5 (vNext) projects.</h2>
 
 <p>Over the past year or so, I have authored <a href="https://www.nuget.org/packages?q=darrell.tunnell">a number of NuGet packages</a> - because, well&hellip; I am just an all around great guy.</p>
 
@@ -136,157 +133,58 @@
 
 <p>My hope is that David Fowler or someone from the ASP.NET team will offer a clarification, insight, or workaround for this issue that makes it a non issue. Fingers crossed.</p>
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/">CRM / Plugin Generated Values - and Reducing Roundtrips!</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-12-22T00:00:00+00:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2014</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Setting the Scene</h2>
-
-<p>Imagine we have an application that uses the CRM SDK. It needs to:</p>
-
-<ol>
-<li>Create a new <code>account</code> entity in crm.</li>
-<li>Get some value that was just generated as a result of a synchronous plugin that fires on the create. For example, suppose there is a plugin that generates an account reference number.</li>
-</ol>
-
-
-<h2>The &ldquo;I don&rsquo;t care about network latency method!&rdquo;</h2>
-
-<p>The &lsquo;I don&rsquo;t care about network latency&rsquo; way of dealing with this is to just do 2 seperate Requests (roundtrips) with the CRM server.</p>
-
-<ol>
-<li>Create the new <code>account</code> which returns you the ID.</li>
-<li>Retrieve the <code>account</code> using that ID, along with the values that you need.</li>
-</ol>
-
-
-<p>This approach is sub optimal where network latency is a concern, as it incurs the penalty of making two roundtrips accross the network with the server, where 1 is possible.</p>
-
-<p>Let&rsquo;s now have a look at the &ldquo;I&rsquo;m running on a 56k modem method&rdquo; of doing the same thing!</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/">Read on &rarr;</a>
-    </footer>
   
 
+<span class="byline author vcard">Posted by <span class="fn">Darrell Tunnell</span></span>
 
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/12/14/unit-testing-crm-plugins/">Unit Testing Dynamics CRM Plugins</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
 
-<time class='entry-date' datetime='2014-12-14T17:50:00+00:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>5:50 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>There is no <del>Spoon</del> CRM</h2>
-
-<p>The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a unit test with the least possible effort. Reduced Effort == Reduced Person Hours == Reduced Cost.</p>
-
-<p>Remember, this is Unit Testing, not Integration testing - so at test time - there is no CRM!</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/12/14/unit-testing-crm-plugins/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
+<time class='entry-date' datetime='2015-01-18T00:00:00+00:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:00 am</span></time>
       
-  <header>
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/asp-dot-net/'>asp.net</a>, <a class='category' href='/blog/categories/asp-dot-net-nuget/'>asp.net,nuget</a>, <a class='category' href='/blog/categories/nuget/'>nuget</a>
+  
+</span>
+
+
+    </p>
     
-      <h1 class="entry-title"><a href="/blog/2014/11/16/a-proclamation/">A Proclamation</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-11-16T16:20:59+00:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>4:20 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>On this day the 16th November 2014, let it be known that Darrell&rsquo;s blog was rendered forth unto the internet.</p>
-
-<p>Let the knowledge and manner of its creation also be recorded, lest it be lost from mortal ken. Thus humanity, need not be stricken in ignorance and awe, and need not refer to my blogging website as &ldquo;Witchcraft&rdquo; or &ldquo;Devilry&rdquo;.</p>
-
-<h2>The Mechanism of Creation</h2>
-
-<ol>
-<li>Inspiration taken from JakeGinnivan&rsquo;s blog which is powered by OctoPress: <a href="http://jake.ginnivan.net/">http://jake.ginnivan.net/</a></li>
-<li>Purchased a domain name: darrelltunnell.net</li>
-<li>Followed this OctoPress documentation: <a href="http://octopress.org/docs/setup/">http://octopress.org/docs/setup/</a></li>
-<li>Hosted on <a href="https://github.com/">https://github.com/</a></li>
-</ol>
-
-
-<h2>A revelation</h2>
-
-<p>And so it came to pass that Darrell Tunnell&rsquo;s blog was incredibly useful to others. Darrell&rsquo;s blog is currently read by 3.1 million people. Web browser requests for Darrell&rsquo;s blog constitute approximately 85.2% of all browser requests made, worldwide. NetFlix was eventually absorbed into Darrell&rsquo;s Blog at the end of 2014, through internet osmosis.</p>
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://darrelltunnell.net/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install/" data-via="dazinate" data-counturl="http://darrelltunnell.net/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install/" >Tweet</a>
+  
+  
+  
 </div>
-  
-  
 
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/" title="Previous Post: CRM / Plugin Generated Values - and Reducing Roundtrips!">&laquo; CRM / Plugin Generated Values - and Reducing Roundtrips!</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
+  </section>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
@@ -357,6 +255,7 @@
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -371,7 +270,10 @@
       var disqus_shortname = 'darrelltunnellsblog';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://darrelltunnell.net/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install/';
+        var disqus_url = 'http://darrelltunnell.net/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
