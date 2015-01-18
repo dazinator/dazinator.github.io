@@ -17,7 +17,7 @@ As most NuGet package authors will already know, it's a [standard feature of NuG
 
 Many NuGet packages out there currently rely on this feature - else they will not work.
 
-Well, the issue with my NuGet package failing to install into an ASP.NET vNext project  was eventaully posted on the asp.net forums, and [David Fowler](http://forums.asp.net/members/davidfowl.aspx ) (who's on the ASP.NET team) - kindly responded with some insight into the matter. He seems to suggest that [ASP.NET v5 does not support running the packages powershell scripts when you install a NuGet package into an ASP.NET v5 project.](http://forums.asp.net/t/2027698.aspx?Error+while+adding+NuGet+package+to+ASP+NET+vNext+project) 
+Well, the issue with my NuGet package failing to install into an ASP.NET vNext project  was eventually posted on the asp.net forums, and [David Fowler](http://forums.asp.net/members/davidfowl.aspx ) (who's on the ASP.NET team) - kindly responded with some insight into the matter. He seems to suggest that [ASP.NET v5 does not support running the packages powershell scripts when you install a NuGet package into an ASP.NET v5 project.](http://forums.asp.net/t/2027698.aspx?Error+while+adding+NuGet+package+to+ASP+NET+vNext+project) 
 
 I wanted to confirm that with him a second time - because `that's a huge problem for some of my NuGet packages`, but as you will see from that thread, I am still awaiting a secondary confirmation of this - although his first answer seems pretty clear cut.
 
