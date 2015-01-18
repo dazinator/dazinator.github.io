@@ -1,16 +1,17 @@
 ---
 layout: post
 published: true
-title: "ASP.NET 5 (vNext) Projects - Your NuGet Package May Fail To Install Correctly"
+title: "ASP.NET 5 (vNext) Projects - Your NuGet Package May Fail to Install Correctly"
 comments: true
 sharing: true
 categories: 
   - ASP.NET
   - NuGet
   - "ASP.NET,NuGet"
+  - "ASP.NET,NuGet,ASP.NET,NuGet"
 ---
 
-## Are you the author of a NuGet package - don't assume it will work with ASP.NET 5 (vNext) projects.
+### Don't assume NuGet Packages that you have authored will continue to work with ASP.NET 5 (vNext) projects.
 
 Over the past year or so, I have authored [a number of NuGet packages](https://www.nuget.org/packages?q=darrell.tunnell) - because, well... I am just an all around great guy.
 
