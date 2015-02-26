@@ -5,7 +5,7 @@ title: "How far does the XRM SDK's BulkRequestMessage get you?"
 comments: true
 ---
 
-## BulkRequestMessage
+## BulkRequestMessage - Let's take it to the max
 
 In this post, I will explore what kinds of things can be achieved using the SDK's BulkRequestMessage, by starting of with a simple SQL command, and implementing a semantically equivalent BulkRequestMessage, and then slowly introducing some additional complexity - so that, we can see some areas where the SDK starts to fall short!
 
