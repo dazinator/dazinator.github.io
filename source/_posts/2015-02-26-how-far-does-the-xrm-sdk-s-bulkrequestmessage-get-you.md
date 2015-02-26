@@ -24,9 +24,11 @@ Well you hardly need a BulkRequestMessage for this, but if you really wanted to 
 This equates to the following:
 
 Either:-
-    1. A single CreateRequestMessage
-    2. A BulkRequestMessage containing a single CreateRequestMessage.
-
+<ol>
+  <li>A single CreateRequestMessage.</li>
+  <li>A BulkRequestMessage containing a single CreateRequestMessage.</li>
+</ol>
+  
 I hope you are with me so far..
 
 ## Take It Up A Notch
@@ -44,8 +46,11 @@ This equates to the following using the SDK:-
 SORRRY DAVE. YOU CAN'T DO THAT.
 
 The problem being, is that to do this in one roundtrip with the CRM server means building a BulkRequestMessage that contains:-
-1. A CreateRequestMessage (to insert / create the contact)
-2. A RetrieveRequestMessage (to retrieve the accountnumber of the inserted contact)
+
+<ol>
+  <li>A CreateRequestMessage (to insert / create the contact)</li>
+  <li>A RetrieveRequestMessage (to retrieve the accountnumber of the inserted contact)</li>
+</ol>
 
 However in order to construct the appropriate RetrieveRequestMessage we need to know the ID of what the inserted contact will be in advance. If you look at the SQL query - we are not specifying an ID in advance - therefore we cannot perform the equivalent to this query.
 
@@ -57,11 +62,15 @@ With the previous example in mind, consider the following SQL
 INSERT INTO contact (contactid, firstname, lastname) OUTPUT inserted.accountnumber VALUES ('2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42', 'albert', 'einstein');
 ```
 
-If you are quick, you've already cottoned on that this one is possible, and it equates to:
+If you are quick, you've already cottoned on that this one is possible, and it equates to:-
 
-A BulRequestMessage (ContinueOnError = false) containing:-
-1. A CreateRequestMessage (to insert / create the contact)
-2. A RetrieveRequestMessage - to retrieve the "accountnumber" of the created entity
+A BulkRequestMessage (ContinueOnError = false) containing:-
+
+<ol>
+  <li>A CreateRequestMessage (to insert / create the contact) 
+  </li>
+  <li>A RetrieveRequestMessage - to retrieve the "accountnumber" of the created entity)</li>
+</ol>
 
 ## Let's start to push the boat out a little.
 Here is a batch of T-SQL commands:
@@ -77,9 +86,12 @@ Now, we know that SQL Server would execute that SQL, by executing each sql comma
 This equates to:
 
 A BulkRequestMessage (ContinueOnError = false) - containing the following messages:
-1. A CreateRequestMessage (to insert / create the contact)
-2. An UpdateRequestMessage(to update the contact) 
-3. A DeleteRequestMessage
+<ol>
+  <li>A CreateRequestMessage (to insert / create the contact) 
+  </li>
+  <li>An UpdateRequestMessage(to update the contact)</li>
+  <li>A DeleteRequestMessage</li>
+</ol>
 
 It seems like this is a good fit between the SQL and a BulkRequestMessage.
 
@@ -104,10 +116,13 @@ A BulkRequestMessage (ContinueOnError = false)
 
 Containing:
 
-1. A CreateRequestMessage (to insert / create the contact)
-2. A RetrieveRequestMessage - to retrieve the "accountnumber" of the created entity.
-3. An UpdateRequestMessage
-1. A DeleteRequestMessage
+<ol>
+  <li>A CreateRequestMessage (to insert / create the contact) 
+  </li>
+  <li>A RetrieveRequestMessage - to retrieve the "accountnumber" of the created entity.</li>
+  <li>An UpdateRequestMessage</li>
+  <li>A DeleteRequestMessage</li>
+</ol>
 
 Ok good so far!
 
