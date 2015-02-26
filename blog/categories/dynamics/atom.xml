@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Dynamics | Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/blog/categories/dynamics/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2015-02-26T17:48:48+00:00</updated>
+  <updated>2015-02-26T17:56:01+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -51,7 +51,7 @@
 <pre><code class="sql">INSERT INTO contact (firstname, lastname) OUTPUT inserted.accountnumber VALUES ('albert', 'einstein');
 </code></pre>
 
-<p>This equates to the following using the SDK:</p>
+<p>This equates to the following using the SDK:-</p>
 
 <p>SORRRY DAVE. YOU CAN&rsquo;T DO THAT.</p>
 
@@ -70,12 +70,11 @@
 
 <p>If you are quick, you&rsquo;ve already cottoned on that this one is possible, and it equates to:</p>
 
-<p>A BulRequestMessage:-
-1. ContinueOnError = false
-2. Containing a CreateRequestMessage (to insert / create the contact)
-3. Containing a RetrieveRequestMessage - to retrieve the &ldquo;accountnumber&rdquo; of target entity: &lsquo;2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&rsquo;</p>
+<p>A BulRequestMessage (ContinueOnError = false) containing:-
+1. A CreateRequestMessage (to insert / create the contact)
+2. A RetrieveRequestMessage - to retrieve the &ldquo;accountnumber&rdquo; of the created entity</p>
 
-<h2>Let&rsquo;s start pushing the boat out a bit.</h2>
+<h2>Let&rsquo;s start to push the boat out a little.</h2>
 
 <p>Here is a batch of T-SQL commands:</p>
 
@@ -115,7 +114,7 @@ DELETE FROM contact WHERE contactid = '4b4941ec-2f6f-4c7f-8adc-c6f4fb002d42'
 
 <p>Containing:
 1. A CreateRequestMessage (to insert / create the contact)
-2. A RetrieveRequestMessage - to retrieve the &ldquo;accountnumber&rdquo; of target entity: &lsquo;2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&rsquo;
+2. A RetrieveRequestMessage - to retrieve the &ldquo;accountnumber&rdquo; of the created entity.
 3. An UpdateRequestMessage
 4. A DeleteRequestMessage</p>
 
@@ -125,15 +124,17 @@ DELETE FROM contact WHERE contactid = '4b4941ec-2f6f-4c7f-8adc-c6f4fb002d42'
 
 <p>Now consider this one:</p>
 
-<p>INSERT INTO contact (firstname, lastname) OUTPUT inserted.accountnumber VALUES (&lsquo;albert&rsquo;, &lsquo;einstein&rsquo;);
+<pre><code class="sql">INSERT INTO contact (firstname, lastname) OUTPUT inserted.accountnumber VALUES ('albert', 'einstein');
 GO
-DELETE FROM contact WHERE contactid = &lsquo;6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&rsquo;</p>
+DELETE FROM contact WHERE contactid = '6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42'
+</code></pre>
 
 <p>What this says is:</p>
 
 <ol>
 <li>We want to Insert a Contact, output its account number.</li>
-<li>We want to Delete a contact. This is regardless of whether any previous statements succeed or fail - as this statement is in a seperate batch (indicated by the GO keyword, which is used as a batch seperator)</li>
+<li>We want to Delete a contact. This is regardless of whether any previous statements
+succeed or fail - as this statement is in a seperate batch (indicated by the GO keyword, which is used as a batch seperator)</li>
 </ol>
 
 
@@ -185,7 +186,7 @@ DELETE FROM contact WHERE contactid = &lsquo;6f4941ec-2f6f-4c7f-8adc-c6f4fb002d4
 
 <p>Consider the following T-SQL:</p>
 
-<pre><code class="SQL">INSERT INTO contact (firstname, lastname) VALUES ('albert', 'einstein');
+<pre><code class="sql">INSERT INTO contact (firstname, lastname) VALUES ('albert', 'einstein');
 GO
 DELETE FROM contact WHERE contactid = '6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42';
 GO
@@ -197,7 +198,7 @@ GO
 
 <p>For an example of the danger I am referring to here, consider this:</p>
 
-<pre><code class="SQL">DELETE FROM contact WHERE contactid = '6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42';
+<pre><code class="sql">DELETE FROM contact WHERE contactid = '6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42';
 DELETE FROM account WHERE primarycontactid = '6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42';
 GO
 UPDATE contact SET firstname = 'bob' WHERE lastname = 'Hoskins';
