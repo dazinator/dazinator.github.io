@@ -9,7 +9,7 @@ comments: true
 
 In this post, I will explore what kinds of things can be achieved using the SDK's BulkRequestMessage, by starting of with a simple SQL command, and implementing the equivalent using BulkRequestMessage, and then slowly introducing some additional complexity - until, as we will see - the SDK starts to fall short!
 
-<--Continue /-->
+<!-- more -->
 
 ## Starting Simple
 Consider this:
