@@ -4,7 +4,7 @@
   <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2015-02-26T18:02:37+00:00</updated>
+  <updated>2015-02-26T18:03:12+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -39,8 +39,8 @@
 <p>This equates to the following:</p>
 
 <p>Either:
-1. A single CreateRequestMessage
-2. A BulkRequestMessage containing a single CreateRequestMessage.</p>
+    A single CreateRequestMessage
+    A BulkRequestMessage containing a single CreateRequestMessage.</p>
 
 <p>I hope you are with me so far..</p>
 
