@@ -103,10 +103,11 @@ And we know that this actually equates to 2 seperate RequestMessages, a CreateRe
 A BulkRequestMessage (ContinueOnError = false)
 
 Containing:
+
 1. A CreateRequestMessage (to insert / create the contact)
 2. A RetrieveRequestMessage - to retrieve the "accountnumber" of the created entity.
 3. An UpdateRequestMessage
-4. A DeleteRequestMessage
+1. A DeleteRequestMessage
 
 Ok good so far!
 
@@ -159,7 +160,7 @@ The BulkRequestMessage should not be used for sending multiple individual `batch
 
 Consider the following T-SQL:
 
-```sql
+``` sql
 INSERT INTO contact (firstname, lastname) VALUES ('albert', 'einstein');
 GO
 DELETE FROM contact WHERE contactid = '6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42';
