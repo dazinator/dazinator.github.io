@@ -63,7 +63,40 @@ A BulRequestMessage:-
 2. Containing a CreateRequestMessage (to insert / create the contact)
 3. Containing a RetrieveRequestMessage - with the target entity id set to: '2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42' and "accountnumber" specified as as an attribute to retrieve.
 
-## More delving
+## Let's start pushing the boat out a bit.
+Here is a batch of T-SQL commands:
+
+```sql
+INSERT INTO contact (firstname, lastname) VALUES ('albert', 'einstein');
+UPDATE contact SET lastname = 'Johnson' WHERE contactid = '3a4941ec-2f6f-4c7f-8adc-c6f4fb002d42';
+DELETE FROM contact WHERE contactid = '4b4941ec-2f6f-4c7f-8adc-c6f4fb002d42'
+```
+
+Now, we know that SQL Server will execute each sql command within that batch in sequence, but if there are any errors it will not continue. It would not execute the batch within a single transaction, so it would not roll back on errors etc.
+
+This equates to:
+
+A BulRequestMessage:-
+1. ContinueOnError = false
+
+Containing the following messages:
+1. A CreateRequestMessage (to insert / create the contact)
+2. An UpdateRequestMessage(to update the contact) 
+3. A DeleteRequestMessage
+
+It seems like this is a good fit between SQL and the BulkRequest message.
+
+## The boat is now heading towards the open ocean
+Let's add a bit of complexity to the previous T-SQL - consider this:
+
+```sql
+INSERT INTO contact (contactid, firstname, lastname) OUTPUT inserted.accountnumber VALUES ('2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42', 'albert', 'einstein');
+UPDATE contact SET lastname = 'Johnson' WHERE contactid = '3a4941ec-2f6f-4c7f-8adc-c6f4fb002d42';
+DELETE FROM contact WHERE contactid = '4b4941ec-2f6f-4c7f-8adc-c6f4fb002d42'
+```
+
+
+
 
 
 
