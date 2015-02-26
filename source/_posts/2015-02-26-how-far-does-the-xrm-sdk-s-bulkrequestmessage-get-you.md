@@ -61,7 +61,7 @@ If you are quick, you've already cottoned on that this one is possible, and it e
 A BulRequestMessage:-
 1. ContinueOnError = false
 2. Containing a CreateRequestMessage (to insert / create the contact)
-3. Containing a RetrieveRequestMessage - with the target entity id set to: '2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42' and "accountnumber" specified as as an attribute to retrieve.
+3. Containing a RetrieveRequestMessage - to retrieve the "accountnumber" of target entity: '2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42' 
 
 ## Let's start pushing the boat out a bit.
 Here is a batch of T-SQL commands:
@@ -72,7 +72,7 @@ UPDATE contact SET lastname = 'Johnson' WHERE contactid = '3a4941ec-2f6f-4c7f-8a
 DELETE FROM contact WHERE contactid = '4b4941ec-2f6f-4c7f-8adc-c6f4fb002d42'
 ```
 
-Now, we know that SQL Server will execute each sql command within that batch in sequence, but if there are any errors it will not continue. It would not execute the batch within a single transaction, so it would not roll back on errors etc.
+Now, we know that SQL Server would execute that SQL, by executing each sql command within that batch in sequence, and if there were any errors it will not continue to process the rest of the commands in the same batch. It would also not execute that batch within a transaction, so it would not roll back should errors occur half way through etc.
 
 This equates to:
 
@@ -84,7 +84,7 @@ Containing the following messages:
 2. An UpdateRequestMessage(to update the contact) 
 3. A DeleteRequestMessage
 
-It seems like this is a good fit between SQL and the BulkRequest message.
+It seems like this is a good fit between SQL and usage of a BulkRequestMessage.
 
 ## The boat is now heading towards the open ocean
 Let's add a bit of complexity to the previous T-SQL - consider this:
@@ -94,6 +94,29 @@ INSERT INTO contact (contactid, firstname, lastname) OUTPUT inserted.accountnumb
 UPDATE contact SET lastname = 'Johnson' WHERE contactid = '3a4941ec-2f6f-4c7f-8adc-c6f4fb002d42';
 DELETE FROM contact WHERE contactid = '4b4941ec-2f6f-4c7f-8adc-c6f4fb002d42'
 ```
+
+The first command in that batch of SQL commands is this:
+
+```sql 
+INSERT INTO contact (contactid, firstname, lastname) OUTPUT inserted.accountnumber VALUES ('2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42', 'albert', 'einstein');
+```
+
+And we know that this actually equates to 2 seperate RequestMessages, a CreateRequest and a RetrieveRequest. We then also need to do an Update and a then a Delete. So this equates to:
+
+A BulRequestMessage (ContinueOnError = false)
+
+Containing:
+1. A CreateRequestMessage (to insert / create the contact)
+2. A RetrieveRequestMessage - to retrieve the "accountnumber" of target entity: '2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42' 
+3. An UpdateRequestMessage
+4. A DeleteRequestMessage
+
+Ok good so far.
+
+## Should look at Boat Breakdown cover
+
+
+
 
 
 
