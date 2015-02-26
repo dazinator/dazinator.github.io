@@ -23,9 +23,9 @@ Well you hardly need a BulkRequestMessage for this, but if you really wanted to 
 
 This equates to the following:
 
-Either:
-    A single CreateRequestMessage
-    A BulkRequestMessage containing a single CreateRequestMessage.
+Either:-
+    1. A single CreateRequestMessage
+    2. A BulkRequestMessage containing a single CreateRequestMessage.
 
 I hope you are with me so far..
 
