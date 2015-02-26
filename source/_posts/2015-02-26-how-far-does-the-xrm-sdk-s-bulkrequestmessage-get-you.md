@@ -39,7 +39,7 @@ Here's it is in T-SQL:
 INSERT INTO contact (firstname, lastname) OUTPUT inserted.accountnumber VALUES ('albert', 'einstein');
 ```
 
-This equates to the following using the SDK:
+This equates to the following using the SDK:-
 
 SORRRY DAVE. YOU CAN'T DO THAT.
 
@@ -59,12 +59,11 @@ INSERT INTO contact (contactid, firstname, lastname) OUTPUT inserted.accountnumb
 
 If you are quick, you've already cottoned on that this one is possible, and it equates to:
 
-A BulRequestMessage:-
-1. ContinueOnError = false
-2. Containing a CreateRequestMessage (to insert / create the contact)
-3. Containing a RetrieveRequestMessage - to retrieve the "accountnumber" of target entity: '2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42' 
+A BulRequestMessage (ContinueOnError = false) containing:-
+1. A CreateRequestMessage (to insert / create the contact)
+2. A RetrieveRequestMessage - to retrieve the "accountnumber" of the created entity
 
-## Let's start pushing the boat out a bit.
+## Let's start to push the boat out a little.
 Here is a batch of T-SQL commands:
 
 ```sql
@@ -105,7 +104,7 @@ A BulkRequestMessage (ContinueOnError = false)
 
 Containing:
 1. A CreateRequestMessage (to insert / create the contact)
-2. A RetrieveRequestMessage - to retrieve the "accountnumber" of target entity: '2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42' 
+2. A RetrieveRequestMessage - to retrieve the "accountnumber" of the created entity.
 3. An UpdateRequestMessage
 4. A DeleteRequestMessage
 
@@ -114,14 +113,17 @@ Ok good so far!
 ## Should look at Boat Breakdown cover
 Now consider this one:
 
+```sql
 INSERT INTO contact (firstname, lastname) OUTPUT inserted.accountnumber VALUES ('albert', 'einstein');
 GO
 DELETE FROM contact WHERE contactid = '6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42'
+```
 
 What this says is:
 
 1. We want to Insert a Contact, output its account number. 
-2. We want to Delete a contact. This is regardless of whether any previous statements succeed or fail - as this statement is in a seperate batch (indicated by the GO keyword, which is used as a batch seperator)
+2. We want to Delete a contact. This is regardless of whether any previous statements
+succeed or fail - as this statement is in a seperate batch (indicated by the GO keyword, which is used as a batch seperator)
 
 What this translates into is:
 
@@ -157,7 +159,7 @@ The BulkRequestMessage should not be used for sending multiple individual `batch
 
 Consider the following T-SQL:
 
-```SQL
+```sql
 INSERT INTO contact (firstname, lastname) VALUES ('albert', 'einstein');
 GO
 DELETE FROM contact WHERE contactid = '6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42';
@@ -170,7 +172,7 @@ In this scenario - each batch of commands contains only a single command. What t
 
 For an example of the danger I am referring to here, consider this:
 
-```SQL
+``` sql
 DELETE FROM contact WHERE contactid = '6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42';
 DELETE FROM account WHERE primarycontactid = '6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42';
 GO
