@@ -114,6 +114,51 @@ Containing:
 Ok good so far.
 
 ## Should look at Boat Breakdown cover
+Now consider this one:
+
+INSERT INTO contact (firstname, lastname) OUTPUT inserted.accountnumber VALUES ('albert', 'einstein');
+GO
+DELETE FROM contact WHERE contactid = '6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42'
+
+What this says is:
+
+1. We want to Insert a Contact, output its account number. 
+2. We want to Delete a contact. This is regardless of whether any previous statements succeed or fail. So in this instance, we allways want to perform the Delete. This is indicated by the fact this Delete statement is in a seperate batch (indicated by the GO keyword, which is used as a batch seperator)
+
+What this translates into is:
+
+1. A CreateRequest that allways needs to be executed.
+2. A RetreiveRequest (to retrieve the "accountnumber") which should only be executed if the preceeding CreateRequest succeeds.
+3. A DeleteRequest that allways needs to be executed.
+
+Can we construct the equivalent BulkRequestMessage?
+
+Well.. the answer is.. we could semantically construct an appropriate BulkRequestMessage, but it won't be supported by CRM - because you are not allowed to nest BulkRequestMessages inside BulkRequestMessages - if you do the CRM server will throw an error when you send it such a request.
+
+Here is what that looks like though (if only it was supported by the server!)
+
+1. A BulRequestMessage (ContinueOnError = true) Containing:
+    1. A BulkRequestMessage (ContinueOnError = false) Containing:
+        1. A CreateRequest to create the contact
+        2. A RetrieveRequestMessage - to retrieve the "accountnumber" of created entity 
+    2. A DeleteRequestMessage
+    
+As I say, constructing such a Request is possible, but the CRM server won't process it due to current runtime limitations that are imposed about not allowing nested BulkRequestMessages.
+
+So - unfrotuantely such a query is not currently possible in one round trip with the server.
+
+But what you could do, is, client side, split that SQL on the GO keyword, to get each batch of commands. Then for each batch, send an appropriate BulkRequestMessage for that batch.
+
+## Conclusion
+
+The BulkRequestMessage provides the ability to send a single "batch" of commands to the server. Thinking from a SQL perspective, this is like to sending all the statements upto a given "GO" keyword. It will not support sending multiple batches in a single message to the server for processing.
+
+If you need to send multiple batches of commands, it seems you will need to implement your own client side functionality that submits each "batch" as seperate BulkRequestMessage, and then, to get the same behaviour as SQL server, you would submit each batche / BulkRequestMessage in the correct sequential order, and would handle / each result / BulkResponsetMessage in the same sequential order.
+
+
+
+
+
 
 
 
