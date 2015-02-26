@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-bulkrequestmessage-get-you/</loc>
+    <lastmod>2015-02-26T00:00:00+00:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>http://darrelltunnell.net/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install/</loc>
     <lastmod>2015-01-18T00:00:00+00:00</lastmod>
     <priority>0.8</priority>
@@ -22,13 +27,13 @@
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/archives/</loc>
-    <lastmod>2015-01-18T18:43:56+00:00</lastmod>
+    <lastmod>2015-02-26T17:48:48+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://darrelltunnell.net/</loc>
-    <lastmod>2015-01-18T18:43:56+00:00</lastmod>
+    <lastmod>2015-02-26T17:48:48+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

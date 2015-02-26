@@ -1,0 +1,518 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>How Far Does the XRM SDK&#8217;s BulkRequestMessage Get You? - Darrell Tunnell&#8217;s Blog</title>
+  <meta name="author" content="Darrell Tunnell">
+
+  
+  <meta name="description" content="BulkRequestMessage - Let&rsquo;s take it to the max In this post, I will explore what kinds of things can be achieved using the SDK&rsquo;s &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-bulkrequestmessage-get-you">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Darrell Tunnell's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-49278315-3']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><div class="googleads">
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Leaderboard -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3955671646826756"
+     data-ad-slot="6503715024"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+<hgroup>
+  <h1><a href="/">Darrell Tunnell&#8217;s Blog</a></h1>
+  
+    <h2>Radiating Awesomeness, One Blog Post at a Time.</h2>
+  
+</hgroup>
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:darrelltunnell.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">How Far Does the XRM SDK&#8217;s BulkRequestMessage Get You?</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-26T00:00:00+00:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>BulkRequestMessage - Let&rsquo;s take it to the max</h2>
+
+<p>In this post, I will explore what kinds of things can be achieved using the SDK&rsquo;s BulkRequestMessage, by starting of with a simple SQL command, and implementing a semantically equivalent BulkRequestMessage, and then slowly introducing some additional complexity - so that, we can see some areas where the SDK starts to fall short!</p>
+
+<!-- more -->
+
+
+<h2>Starting Simple</h2>
+
+<p>Consider this SQL:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Well you hardly need a BulkRequestMessage for this, but if you really wanted to you could create one no problem. I am going to assume you are already familiar with the code to create a BulkRequestMessage - if not it&rsquo;s described <a href="https://msdn.microsoft.com/en-gb/library/jj863631.aspx">here.</a></p>
+
+<p>This equates to the following:</p>
+
+<p>Either:
+1. A single CreateRequestMessage
+2. A BulkRequestMessage containing a single CreateRequestMessage.</p>
+
+<p>I hope you are with me so far..</p>
+
+<h2>Take It Up A Notch</h2>
+
+<p>Let&rsquo;s now imagine that when a contact is INSERTED, an <code>accountnumber</code> is generated on the server, and that we want to grab this value using a single roundtrip with the server.</p>
+
+<p>Here&rsquo;s it is in T-SQL:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">OUTPUT</span> <span class="n">inserted</span><span class="p">.</span><span class="n">accountnumber</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This equates to the following using the SDK:</p>
+
+<p>SORRRY DAVE. YOU CAN&rsquo;T DO THAT.</p>
+
+<p>The problem being, is that to do this in one roundtrip with the CRM server means building a BulkRequestMessage that contains:-
+1. A CreateRequestMessage (to insert / create the contact)
+2. A RetrieveRequestMessage (to retrieve the accountnumber of the inserted contact)</p>
+
+<p>However in order to construct the appropriate RetrieveRequestMessage we need to know the ID of what the inserted contact will be in advance. If you look at the SQL query - we are not specifying an ID in advance - therefore we cannot perform the equivalent to this query.</p>
+
+<h2>A bit further..</h2>
+
+<p>With the previous example in mind, consider the following SQL</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">contactid</span><span class="p">,</span> <span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">OUTPUT</span> <span class="n">inserted</span><span class="p">.</span><span class="n">accountnumber</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">,</span> <span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you are quick, you&rsquo;ve already cottoned on that this one is possible, and it equates to:</p>
+
+<p>A BulRequestMessage:-
+1. ContinueOnError = false
+2. Containing a CreateRequestMessage (to insert / create the contact)
+3. Containing a RetrieveRequestMessage - to retrieve the &ldquo;accountnumber&rdquo; of target entity: &lsquo;2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&rsquo;</p>
+
+<h2>Let&rsquo;s start pushing the boat out a bit.</h2>
+
+<p>Here is a batch of T-SQL commands:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">UPDATE</span> <span class="n">contact</span> <span class="k">SET</span> <span class="n">lastname</span> <span class="o">=</span> <span class="s1">&#39;Johnson&#39;</span> <span class="k">WHERE</span> <span class="n">contactid</span> <span class="o">=</span> <span class="s1">&#39;3a4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">contact</span> <span class="k">WHERE</span> <span class="n">contactid</span> <span class="o">=</span> <span class="s1">&#39;4b4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, we know that SQL Server would execute that SQL, by executing each sql command within that batch in sequence, and if there were any errors it will not continue to process the rest of the commands in the same batch. It would also not execute that batch within a transaction, so it would not roll back should errors occur half way through etc.</p>
+
+<p>This equates to:</p>
+
+<p>A BulkRequestMessage (ContinueOnError = false) - containing the following messages:
+1. A CreateRequestMessage (to insert / create the contact)
+2. An UpdateRequestMessage(to update the contact)
+3. A DeleteRequestMessage</p>
+
+<p>It seems like this is a good fit between the SQL and a BulkRequestMessage.</p>
+
+<h2>The boat is now heading towards the open ocean</h2>
+
+<p>Let&rsquo;s add a bit of complexity to the previous T-SQL - consider this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">contactid</span><span class="p">,</span> <span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">OUTPUT</span> <span class="n">inserted</span><span class="p">.</span><span class="n">accountnumber</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">,</span> <span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">UPDATE</span> <span class="n">contact</span> <span class="k">SET</span> <span class="n">lastname</span> <span class="o">=</span> <span class="s1">&#39;Johnson&#39;</span> <span class="k">WHERE</span> <span class="n">contactid</span> <span class="o">=</span> <span class="s1">&#39;3a4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">contact</span> <span class="k">WHERE</span> <span class="n">contactid</span> <span class="o">=</span> <span class="s1">&#39;4b4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The first command in that batch of SQL commands is this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">contactid</span><span class="p">,</span> <span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">OUTPUT</span> <span class="n">inserted</span><span class="p">.</span><span class="n">accountnumber</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">,</span> <span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And we know that this actually equates to 2 seperate RequestMessages, a CreateRequest and a RetrieveRequest. We then also need to do an Update and a then a Delete. So this equates to:</p>
+
+<p>A BulkRequestMessage (ContinueOnError = false)</p>
+
+<p>Containing:
+1. A CreateRequestMessage (to insert / create the contact)
+2. A RetrieveRequestMessage - to retrieve the &ldquo;accountnumber&rdquo; of target entity: &lsquo;2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&rsquo;
+3. An UpdateRequestMessage
+4. A DeleteRequestMessage</p>
+
+<p>Ok good so far!</p>
+
+<h2>Should look at Boat Breakdown cover</h2>
+
+<p>Now consider this one:</p>
+
+<p>INSERT INTO contact (firstname, lastname) OUTPUT inserted.accountnumber VALUES (&lsquo;albert&rsquo;, &lsquo;einstein&rsquo;);
+GO
+DELETE FROM contact WHERE contactid = &lsquo;6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&rsquo;</p>
+
+<p>What this says is:</p>
+
+<ol>
+<li>We want to Insert a Contact, output its account number.</li>
+<li>We want to Delete a contact. This is regardless of whether any previous statements succeed or fail - as this statement is in a seperate batch (indicated by the GO keyword, which is used as a batch seperator)</li>
+</ol>
+
+
+<p>What this translates into is:</p>
+
+<ol>
+<li>A CreateRequest that allways needs to be executed.</li>
+<li>A RetreiveRequest (to retrieve the &ldquo;accountnumber&rdquo;) which should only be executed if the preceeding CreateRequest succeeds.</li>
+<li>A DeleteRequest that allways needs to be executed.</li>
+</ol>
+
+
+<p>Can we construct the equivalent BulkRequestMessage to do that?</p>
+
+<p>Well.. the answer is.. we can semantically construct an appropriate BulkRequestMessage, but it won&rsquo;t be supported by CRM - because you are not allowed to nest BulkRequestMessages inside BulkRequestMessages - if you do the CRM server will throw an error when you send it such a request.</p>
+
+<p>Here is what that looks like though (if only it was supported by the server!)</p>
+
+<ol>
+<li>A BulkRequestMessage (ContinueOnError = true) Containing:
+
+<ol>
+<li>A BulkRequestMessage (ContinueOnError = false) Containing:
+
+<ol>
+<li>A CreateRequest to create the contact</li>
+<li>A RetrieveRequestMessage - to retrieve the &ldquo;accountnumber&rdquo; of created entity</li>
+</ol>
+</li>
+<li>A DeleteRequestMessage</li>
+</ol>
+</li>
+</ol>
+
+
+<p>As I say, constructing such a Request is possible, but the CRM server won&rsquo;t process it due to current runtime limitations that are imposed about not allowing nested BulkRequestMessages.</p>
+
+<p>So - unfortunately we have hit a CRM limitation here.</p>
+
+<p>But what you could do, is, on the client side, split that SQL statement on the GO keyword, to get each <code>batch</code> of commands. Then for each batch, consturct and send an appropriate BulkRequestMessage.</p>
+
+<h2>What have we learned so far</h2>
+
+<p>The BulkRequestMessage provides the ability to send a single &ldquo;batch&rdquo; of commands to the server. Thinking from a SQL perspective, this is akin to sending all the statements upto a &ldquo;GO&rdquo; keyword.</p>
+
+<p>The BulkRequestMessage should not be used for sending multiple individual <code>batches</code> of operations as there is no way to group the operations within a batch. For this reason it&rsquo;s probably best to think of BulkRequestMessage as a SQL batch.</p>
+
+<h2>A weird scenario - can send multiple batches in one go - as long as each batch contains 1 RequestMessage only.</h2>
+
+<p>Consider the following T-SQL:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='SQL'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">GO</span>
+</span><span class='line'><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">contact</span> <span class="k">WHERE</span> <span class="n">contactid</span> <span class="o">=</span> <span class="s1">&#39;6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">GO</span>
+</span><span class='line'><span class="k">UPDATE</span> <span class="n">contact</span> <span class="k">SET</span> <span class="n">firstname</span> <span class="o">=</span> <span class="s1">&#39;bob&#39;</span> <span class="k">WHERE</span> <span class="n">lastname</span> <span class="o">=</span> <span class="s1">&#39;Hoskins&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">GO</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this scenario - each batch of commands contains only a single command. What this means is that you can construct a BulkRequestMessage with &lsquo;ContinueOnError&rsquo; set to true, and there will be no danger that a particular command in a batch will error, and that the rest of the commands in that batch will execute regardless - because there is only a single command in each batch!</p>
+
+<p>For an example of the danger I am referring to here, consider this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='SQL'><span class='line'><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">contact</span> <span class="k">WHERE</span> <span class="n">contactid</span> <span class="o">=</span> <span class="s1">&#39;6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">account</span> <span class="k">WHERE</span> <span class="n">primarycontactid</span> <span class="o">=</span> <span class="s1">&#39;6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">GO</span>
+</span><span class='line'><span class="k">UPDATE</span> <span class="n">contact</span> <span class="k">SET</span> <span class="n">firstname</span> <span class="o">=</span> <span class="s1">&#39;bob&#39;</span> <span class="k">WHERE</span> <span class="n">lastname</span> <span class="o">=</span> <span class="s1">&#39;Hoskins&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">GO</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The first batch above, contains 2 operations. The second batch contains 1.</p>
+
+<p>Now imagine, that for the above - we constructed a BulkRequestMessage, and set &lsquo;ContinueOnError&rsquo; to true (to enable the server to process both batches regardless of whether the first batch fails.)
+Well in that scenario, because the first batch actually contains 2 operations, the &lsquo;ContinueOnError&rsquo; = true would actually apply to each operation within that batch as well. So you could hit a scenario where the first Delete in that first batch errored, but then CRM continued on regardless to execute the second DELETE etc. This is not what the semantics of the above SQL query conveys - i.e the equivalent CRM beahviour for the above SQL query would be for it to stop processing a particular batch as soon as it hits an error. The only way this can be satisfied at present is if each batch only contains a single RequestMessage.</p>
+
+<h2>Conclusion</h2>
+
+<p>If you would like to send a batch of commands to the CRM server in one go, the good news is you can. The bad news is, it&rsquo;s not perfect, there are limitations, and hopefully I have shown you just about how far you can stretch things.</p>
+
+<p>If you need to send multiple batches of commands to the CRM server in one go, the good news is you can if each batch contains only a single request message (i.e Create, Retreive, Delete, Update etc) - the bad news is, if thats not the case, then you will need to send each batch as an individual BulkRequestMessage, and implement your own &ldquo;ContinueOnError&rdquo; behaviour clientside such that should one batch fail to be processed it doesn&rsquo;t halt subsequent batches from being processed.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Darrell Tunnell</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-02-26T00:00:00+00:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:00 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/crm/'>crm</a>, <a class='category' href='/blog/categories/dynamics/'>dynamics</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-bulkrequestmessage-get-you/" data-via="dazinate" data-counturl="http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-bulkrequestmessage-get-you/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install/" title="Previous Post: ASP.NET 5 (vNext) Projects - Your NuGet Package May Fail to Install Correctly">&laquo; ASP.NET 5 (vNext) Projects - Your NuGet Package May Fail to Install Correctly</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/02/26/how-far-does-the-xrm-sdk-s-bulkrequestmessage-get-you/">How Far Does the XRM SDK&#8217;s BulkRequestMessage Get You?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install/">ASP.NET 5 (vNext) Projects - Your NuGet Package May Fail to Install Correctly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/">CRM / Plugin Generated Values - and Reducing Roundtrips!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/14/unit-testing-crm-plugins/">Unit Testing Dynamics CRM Plugins</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/16/a-proclamation/">A Proclamation</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/dazinator">@dazinator</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'dazinator',
+            count: 10,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/darrelltunnell?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Darrell Tunnell -
+  <span class="credit">Powered a by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'darrelltunnellsblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-bulkrequestmessage-get-you/';
+        var disqus_url = 'http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-bulkrequestmessage-get-you/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+<div class="googleads">
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Leaderboard -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3955671646826756"
+     data-ad-slot="6503715024"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+
+</body>
+</html>
