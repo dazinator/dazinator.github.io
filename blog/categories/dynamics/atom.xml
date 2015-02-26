@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Dynamics | Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/blog/categories/dynamics/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2015-02-26T17:56:01+00:00</updated>
+  <updated>2015-02-26T18:00:47+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -112,11 +112,15 @@ DELETE FROM contact WHERE contactid = '4b4941ec-2f6f-4c7f-8adc-c6f4fb002d42'
 
 <p>A BulkRequestMessage (ContinueOnError = false)</p>
 
-<p>Containing:
-1. A CreateRequestMessage (to insert / create the contact)
-2. A RetrieveRequestMessage - to retrieve the &ldquo;accountnumber&rdquo; of the created entity.
-3. An UpdateRequestMessage
-4. A DeleteRequestMessage</p>
+<p>Containing:</p>
+
+<ol>
+<li>A CreateRequestMessage (to insert / create the contact)</li>
+<li>A RetrieveRequestMessage - to retrieve the &ldquo;accountnumber&rdquo; of the created entity.</li>
+<li>An UpdateRequestMessage</li>
+<li>A DeleteRequestMessage</li>
+</ol>
+
 
 <p>Ok good so far!</p>
 
