@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Dynamics | Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/blog/categories/dynamics/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2015-02-26T18:04:28+00:00</updated>
+  <updated>2015-02-26T18:11:04+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -36,9 +36,13 @@
 
 <p>This equates to the following:</p>
 
-<p>Either:-
-    1. A single CreateRequestMessage
-    2. A BulkRequestMessage containing a single CreateRequestMessage.</p>
+<p>Either:-</p>
+
+<ol>
+  <li>A single CreateRequestMessage.</li>
+  <li>A BulkRequestMessage containing a single CreateRequestMessage.</li>
+</ol>
+
 
 <p>I hope you are with me so far..</p>
 
@@ -55,9 +59,13 @@
 
 <p>SORRRY DAVE. YOU CAN&rsquo;T DO THAT.</p>
 
-<p>The problem being, is that to do this in one roundtrip with the CRM server means building a BulkRequestMessage that contains:-
-1. A CreateRequestMessage (to insert / create the contact)
-2. A RetrieveRequestMessage (to retrieve the accountnumber of the inserted contact)</p>
+<p>The problem being, is that to do this in one roundtrip with the CRM server means building a BulkRequestMessage that contains:-</p>
+
+<ol>
+  <li>A CreateRequestMessage (to insert / create the contact)</li>
+  <li>A RetrieveRequestMessage (to retrieve the accountnumber of the inserted contact)</li>
+</ol>
+
 
 <p>However in order to construct the appropriate RetrieveRequestMessage we need to know the ID of what the inserted contact will be in advance. If you look at the SQL query - we are not specifying an ID in advance - therefore we cannot perform the equivalent to this query.</p>
 
@@ -68,11 +76,16 @@
 <pre><code class="sql">INSERT INTO contact (contactid, firstname, lastname) OUTPUT inserted.accountnumber VALUES ('2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42', 'albert', 'einstein');
 </code></pre>
 
-<p>If you are quick, you&rsquo;ve already cottoned on that this one is possible, and it equates to:</p>
+<p>If you are quick, you&rsquo;ve already cottoned on that this one is possible, and it equates to:-</p>
 
-<p>A BulRequestMessage (ContinueOnError = false) containing:-
-1. A CreateRequestMessage (to insert / create the contact)
-2. A RetrieveRequestMessage - to retrieve the &ldquo;accountnumber&rdquo; of the created entity</p>
+<p>A BulkRequestMessage (ContinueOnError = false) containing:-</p>
+
+<ol>
+  <li>A CreateRequestMessage (to insert / create the contact) 
+  </li>
+  <li>A RetrieveRequestMessage - to retrieve the &#8220;accountnumber&#8221; of the created entity)</li>
+</ol>
+
 
 <h2>Let&rsquo;s start to push the boat out a little.</h2>
 
@@ -87,10 +100,15 @@ DELETE FROM contact WHERE contactid = '4b4941ec-2f6f-4c7f-8adc-c6f4fb002d42'
 
 <p>This equates to:</p>
 
-<p>A BulkRequestMessage (ContinueOnError = false) - containing the following messages:
-1. A CreateRequestMessage (to insert / create the contact)
-2. An UpdateRequestMessage(to update the contact)
-3. A DeleteRequestMessage</p>
+<p>A BulkRequestMessage (ContinueOnError = false) - containing the following messages:</p>
+
+<ol>
+  <li>A CreateRequestMessage (to insert / create the contact) 
+  </li>
+  <li>An UpdateRequestMessage(to update the contact)</li>
+  <li>A DeleteRequestMessage</li>
+</ol>
+
 
 <p>It seems like this is a good fit between the SQL and a BulkRequestMessage.</p>
 
@@ -115,10 +133,11 @@ DELETE FROM contact WHERE contactid = '4b4941ec-2f6f-4c7f-8adc-c6f4fb002d42'
 <p>Containing:</p>
 
 <ol>
-<li>A CreateRequestMessage (to insert / create the contact)</li>
-<li>A RetrieveRequestMessage - to retrieve the &ldquo;accountnumber&rdquo; of the created entity.</li>
-<li>An UpdateRequestMessage</li>
-<li>A DeleteRequestMessage</li>
+  <li>A CreateRequestMessage (to insert / create the contact) 
+  </li>
+  <li>A RetrieveRequestMessage - to retrieve the &#8220;accountnumber&#8221; of the created entity.</li>
+  <li>An UpdateRequestMessage</li>
+  <li>A DeleteRequestMessage</li>
 </ol>
 
 
