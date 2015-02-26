@@ -3,7 +3,7 @@ layout: post
 published: true
 title: "How far does the XRM SDK's BulkRequestMessage get you?"
 comments: true
-categories: "Dynamics, CRM"
+categories: Dynamics CRM
 ---
 
 ## BulkRequestMessage - Let's take it to the max
