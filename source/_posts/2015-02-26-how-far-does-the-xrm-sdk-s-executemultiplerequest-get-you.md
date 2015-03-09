@@ -138,8 +138,7 @@ DELETE FROM contact WHERE contactid = '6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42'
 What this says is:
 
 1. We want to Insert a Contact, output its account number. 
-2. We want to Delete a contact. This is regardless of whether any previous statements
-succeed or fail - as this statement is in a seperate batch (indicated by the GO keyword, which is used as a batch seperator)
+2. Then in a second "batch" of sql statements - we want to Delete a contact. The second batch needs to execute regardless of any problem or outcome from the first batch - (The GO keyword is used as a batch seperator in T-SQL)
 
 What this translates into is:
 
@@ -163,13 +162,13 @@ As I say, constructing such a Request is possible, but the CRM server won't proc
 
 So - unfortunately we have hit a CRM limitation here.
 
-But what you could do, is, on the client side, split that SQL statement on the GO keyword, to get each `batch` of commands. Then for each batch, consturct and send an appropriate ExecuteMultipleRequest.
+But what you could do, is, on the client side, split that SQL statement on the `GO` keyword, to get each `batch` of T-SQL commands. Then for each batch, construct and send an appropriate ExecuteMultipleRequest for the statements in that batch.
 
 ## What have we learned so far
 
-The ExecuteMultipleRequest provides the ability to send a single "batch" of commands to the server. Thinking from a SQL perspective, this is akin to sending all the statements upto a "GO" keyword. 
+The ExecuteMultipleRequest provides the ability to send a single "batch" of commands to the server. Thinking from a SQL perspective, this is akin to sending all the statements upto a "GO" keyword (batch seperator). To get the same behaviour as SQL though, you should set `ContinueOnError` to false - so that processing halts if any request in the batch errors.
 
-The ExecuteMultipleRequest should not be used for sending multiple individual `batches` of operations as there is no way to group the operations within a batch. For this reason it's probably best to think of ExecuteMultipleRequest as a single SQL batch.
+The ExecuteMultipleRequest is not a good fit for sending multiple individual `batches` of operations to the CRM server, as there is no way to group the Requests within a ExecuteMultipleRequest into their batches. For this reason it's probably best to think of ExecuteMultipleRequest as a single SQL batch and to always use `ContinueOnError` = false if you want to mirror the behaviour of SQL as closely as possible.
 
 ## A weird scenario - can send multiple batches in one go - as long as each batch contains 1 RequestMessage only.
 
