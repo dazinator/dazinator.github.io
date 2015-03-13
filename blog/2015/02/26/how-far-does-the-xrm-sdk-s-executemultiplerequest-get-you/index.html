@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>How Far Does the XRM SDK&#8217;s BulkRequestMessage Get You? - Darrell Tunnell&#8217;s Blog</title>
+  <title>How Far Does the XRM SDK&#8217;s ExecuteMultipleRequest Get You? - Darrell Tunnell&#8217;s Blog</title>
   <meta name="author" content="Darrell Tunnell">
 
   
-  <meta name="description" content="BulkRequestMessage - Let&rsquo;s take it to the max In this post, I will explore what kinds of things can be achieved using the SDK&rsquo;s &hellip;">
+  <meta name="description" content="ExecuteMultipleRequest - Let&rsquo;s take it to the max In this post, I will explore what kinds of things can be achieved using the SDK&rsquo;s &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-bulkrequestmessage-get-you">
+  <link rel="canonical" href="http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-executemultiplerequest-get-you">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Darrell Tunnell's Blog" type="application/atom+xml">
@@ -89,7 +89,7 @@
   
   <header>
     
-      <h1 class="entry-title">How Far Does the XRM SDK&#8217;s BulkRequestMessage Get You?</h1>
+      <h1 class="entry-title">How Far Does the XRM SDK&#8217;s ExecuteMultipleRequest Get You?</h1>
     
     
       <p class="meta">
@@ -105,9 +105,9 @@
   </header>
 
 
-<div class="entry-content"><h2>BulkRequestMessage - Let&rsquo;s take it to the max</h2>
+<div class="entry-content"><h2>ExecuteMultipleRequest - Let&rsquo;s take it to the max</h2>
 
-<p>In this post, I will explore what kinds of things can be achieved using the SDK&rsquo;s BulkRequestMessage, by starting of with a simple SQL command, and implementing a semantically equivalent BulkRequestMessage, and then slowly introducing some additional complexity - so that, we can see some areas where the SDK starts to fall short!</p>
+<p>In this post, I will explore what kinds of things can be achieved using the SDK&rsquo;s ExecuteMultipleRequest, by starting of with a simple SQL command, and implementing a semantically equivalent ExecuteMultipleRequest, and then slowly introducing some additional complexity - so that, we can see some areas where the SDK starts to fall short!</p>
 
 <!-- more -->
 
@@ -121,7 +121,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Well you hardly need a BulkRequestMessage for this, but if you really wanted to you could create one no problem. I am going to assume you are already familiar with the code to create a BulkRequestMessage - if not it&rsquo;s described <a href="https://msdn.microsoft.com/en-gb/library/jj863631.aspx">here.</a></p>
+<p>Well you hardly need a ExecuteMultipleRequest for this, but if you really wanted to you could create one no problem. I am going to assume you are already familiar with the code to create a ExecuteMultipleRequest - if not it&rsquo;s described <a href="https://msdn.microsoft.com/en-gb/library/jj863631.aspx">here.</a></p>
 
 <p>This equates to the following:</p>
 
@@ -129,7 +129,7 @@
 
 <ol>
   <li>A single CreateRequestMessage.</li>
-  <li>A BulkRequestMessage containing a single CreateRequestMessage.</li>
+  <li>An ExecuteMultipleRequest containing a single CreateRequestMessage.</li>
 </ol>
 
 
@@ -150,7 +150,7 @@
 
 <p>SORRRY DAVE. YOU CAN&rsquo;T DO THAT.</p>
 
-<p>The problem being, is that to do this in one roundtrip with the CRM server means building a BulkRequestMessage that contains:-</p>
+<p>The problem being, is that to do this in one roundtrip with the CRM server means building an ExecuteMultipleRequest that contains:-</p>
 
 <ol>
   <li>A CreateRequestMessage (to insert / create the contact)</li>
@@ -171,7 +171,7 @@
 
 <p>If you are quick, you&rsquo;ve already cottoned on that this one is possible, and it equates to:-</p>
 
-<p>A BulkRequestMessage (ContinueOnError = false) containing:-</p>
+<p>An ExecuteMultipleRequest (ContinueOnError = false) containing:-</p>
 
 <ol>
   <li>A CreateRequestMessage (to insert / create the contact) 
@@ -197,7 +197,7 @@
 
 <p>This equates to:</p>
 
-<p>A BulkRequestMessage (ContinueOnError = false) - containing the following messages:</p>
+<p>An ExecuteMultipleRequest (ContinueOnError = false) - containing the following messages:</p>
 
 <ol>
   <li>A CreateRequestMessage (to insert / create the contact) 
@@ -207,7 +207,7 @@
 </ol>
 
 
-<p>It seems like this is a good fit between the SQL and a BulkRequestMessage.</p>
+<p>It seems like this is a good fit between the SQL and an ExecuteMultipleRequest.</p>
 
 <h2>The boat is now heading towards the open ocean</h2>
 
@@ -231,7 +231,7 @@
 
 <p>And we know that this actually equates to 2 seperate RequestMessages, a CreateRequest and a RetrieveRequest. We then also need to do an Update and a then a Delete. So this equates to:</p>
 
-<p>A BulkRequestMessage (ContinueOnError = false)</p>
+<p>An ExecuteMultipleRequest (ContinueOnError = false)</p>
 
 <p>Containing:</p>
 
@@ -263,8 +263,7 @@
 
 <ol>
 <li>We want to Insert a Contact, output its account number.</li>
-<li>We want to Delete a contact. This is regardless of whether any previous statements
-succeed or fail - as this statement is in a seperate batch (indicated by the GO keyword, which is used as a batch seperator)</li>
+<li>Then in a second &ldquo;batch&rdquo; of sql statements - we want to Delete a contact. The second batch needs to execute regardless of any problem or outcome from the first batch - (The GO keyword is used as a batch seperator in T-SQL)</li>
 </ol>
 
 
@@ -277,17 +276,17 @@ succeed or fail - as this statement is in a seperate batch (indicated by the GO 
 </ol>
 
 
-<p>Can we construct the equivalent BulkRequestMessage to do that?</p>
+<p>Can we construct the equivalent ExecuteMultipleRequest to do that?</p>
 
-<p>Well.. the answer is.. we can semantically construct an appropriate BulkRequestMessage, but it won&rsquo;t be supported by CRM - because you are not allowed to nest BulkRequestMessages inside BulkRequestMessages - if you do the CRM server will throw an error when you send it such a request.</p>
+<p>Well.. the answer is.. we can semantically construct an appropriate ExecuteMultipleRequest, but it won&rsquo;t be supported by CRM - because you are not allowed to nest ExecuteMultipleRequest - if you do the CRM server will throw an error when you send it such a request.</p>
 
 <p>Here is what that looks like though (if only it was supported by the server!)</p>
 
 <ol>
-<li>A BulkRequestMessage (ContinueOnError = true) Containing:
+<li>An ExecuteMultipleRequest (ContinueOnError = true) Containing:
 
 <ol>
-<li>A BulkRequestMessage (ContinueOnError = false) Containing:
+<li>An ExecuteMultipleRequest (ContinueOnError = false) Containing:
 
 <ol>
 <li>A CreateRequest to create the contact</li>
@@ -300,17 +299,17 @@ succeed or fail - as this statement is in a seperate batch (indicated by the GO 
 </ol>
 
 
-<p>As I say, constructing such a Request is possible, but the CRM server won&rsquo;t process it due to current runtime limitations that are imposed about not allowing nested BulkRequestMessages.</p>
+<p>As I say, constructing such a Request is possible, but the CRM server won&rsquo;t process it due to current runtime limitations that are imposed about not allowing nested ExecuteMultipleRequests.</p>
 
 <p>So - unfortunately we have hit a CRM limitation here.</p>
 
-<p>But what you could do, is, on the client side, split that SQL statement on the GO keyword, to get each <code>batch</code> of commands. Then for each batch, consturct and send an appropriate BulkRequestMessage.</p>
+<p>But what you could do, is, on the client side, split that SQL statement on the <code>GO</code> keyword, to get each <code>batch</code> of T-SQL commands. Then for each batch, construct and send an appropriate ExecuteMultipleRequest for the statements in that batch.</p>
 
 <h2>What have we learned so far</h2>
 
-<p>The BulkRequestMessage provides the ability to send a single &ldquo;batch&rdquo; of commands to the server. Thinking from a SQL perspective, this is akin to sending all the statements upto a &ldquo;GO&rdquo; keyword.</p>
+<p>The ExecuteMultipleRequest provides the ability to send a single &ldquo;batch&rdquo; of commands to the server. Thinking from a SQL perspective, this is akin to sending all the statements upto a &ldquo;GO&rdquo; keyword (batch seperator). To get the same behaviour as SQL though, you should set <code>ContinueOnError</code> to false - so that processing halts if any request in the batch errors.</p>
 
-<p>The BulkRequestMessage should not be used for sending multiple individual <code>batches</code> of operations as there is no way to group the operations within a batch. For this reason it&rsquo;s probably best to think of BulkRequestMessage as a SQL batch.</p>
+<p>The ExecuteMultipleRequest is not a good fit for sending multiple individual <code>batches</code> of operations to the CRM server, as there is no way to group the Requests within a ExecuteMultipleRequest into their batches. For this reason it&rsquo;s probably best to think of ExecuteMultipleRequest as a single SQL batch and to always use <code>ContinueOnError</code> = false if you want to mirror the behaviour of SQL as closely as possible.</p>
 
 <h2>A weird scenario - can send multiple batches in one go - as long as each batch contains 1 RequestMessage only.</h2>
 
@@ -331,7 +330,7 @@ succeed or fail - as this statement is in a seperate batch (indicated by the GO 
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>In this scenario - each batch of commands contains only a single command. What this means is that you can construct a BulkRequestMessage with &lsquo;ContinueOnError&rsquo; set to true, and there will be no danger that a particular command in a batch will error, and that the rest of the commands in that batch will execute regardless - because there is only a single command in each batch!</p>
+<p>In this scenario - each batch of commands contains only a single command. What this means is that you can construct an ExecuteMultipleRequest with &lsquo;ContinueOnError&rsquo; set to true, and there will be no danger that a particular command in a batch will error, and that the rest of the commands in that batch will execute regardless - because there is only a single command in each batch!</p>
 
 <p>For an example of the danger I am referring to here, consider this:</p>
 
@@ -350,14 +349,14 @@ succeed or fail - as this statement is in a seperate batch (indicated by the GO 
 
 <p>The first batch above, contains 2 operations. The second batch contains 1.</p>
 
-<p>Now imagine, that for the above - we constructed a BulkRequestMessage, and set &lsquo;ContinueOnError&rsquo; to true (to enable the server to process both batches regardless of whether the first batch fails.)
+<p>Now imagine, that for the above - we constructed an ExecuteMultipleRequest, and set &lsquo;ContinueOnError&rsquo; to true (to enable the server to process both batches regardless of whether the first batch fails.)
 Well in that scenario, because the first batch actually contains 2 operations, the &lsquo;ContinueOnError&rsquo; = true would actually apply to each operation within that batch as well. So you could hit a scenario where the first Delete in that first batch errored, but then CRM continued on regardless to execute the second DELETE etc. This is not what the semantics of the above SQL query conveys - i.e the equivalent CRM beahviour for the above SQL query would be for it to stop processing a particular batch as soon as it hits an error. The only way this can be satisfied at present is if each batch only contains a single RequestMessage.</p>
 
 <h2>Conclusion</h2>
 
 <p>If you would like to send a batch of commands to the CRM server in one go, the good news is you can. The bad news is, it&rsquo;s not perfect, there are limitations, and hopefully I have shown you just about how far you can stretch things.</p>
 
-<p>If you need to send multiple batches of commands to the CRM server in one go, the good news is you can if each batch contains only a single request message (i.e Create, Retreive, Delete, Update etc) - the bad news is, if thats not the case, then you will need to send each batch as an individual BulkRequestMessage, and implement your own &ldquo;ContinueOnError&rdquo; behaviour clientside such that should one batch fail to be processed it doesn&rsquo;t halt subsequent batches from being processed.</p>
+<p>If you need to send multiple batches of commands to the CRM server in one go, the good news is you can if each batch contains only a single request message (i.e Create, Retreive, Delete, Update etc) - the bad news is, if thats not the case, then you will need to send each batch as an individual ExecuteMultipleRequest, and implement your own &ldquo;ContinueOnError&rdquo; behaviour clientside such that should one ExecuteMultipleRequest fail to be processed it doesn&rsquo;t halt subsequent batches (ExecuteMultipleRequests) from being processed.</p>
 </div>
 
 
@@ -387,7 +386,7 @@ Well in that scenario, because the first batch actually contains 2 operations, t
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-bulkrequestmessage-get-you/" data-via="dazinate" data-counturl="http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-bulkrequestmessage-get-you/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-executemultiplerequest-get-you/" data-via="dazinate" data-counturl="http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-executemultiplerequest-get-you/" >Tweet</a>
   
   
   
@@ -418,7 +417,7 @@ Well in that scenario, because the first batch actually contains 2 operations, t
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2015/02/26/how-far-does-the-xrm-sdk-s-bulkrequestmessage-get-you/">How Far Does the XRM SDK&#8217;s BulkRequestMessage Get You?</a>
+        <a href="/blog/2015/02/26/how-far-does-the-xrm-sdk-s-executemultiplerequest-get-you/">How Far Does the XRM SDK&#8217;s ExecuteMultipleRequest Get You?</a>
       </li>
     
       <li class="post">
@@ -501,8 +500,8 @@ Well in that scenario, because the first batch actually contains 2 operations, t
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-bulkrequestmessage-get-you/';
-        var disqus_url = 'http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-bulkrequestmessage-get-you/';
+        var disqus_identifier = 'http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-executemultiplerequest-get-you/';
+        var disqus_url = 'http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-executemultiplerequest-get-you/';
         var disqus_script = 'embed.js';
       
     (function () {
