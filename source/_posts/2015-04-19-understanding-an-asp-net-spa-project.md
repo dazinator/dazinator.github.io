@@ -6,15 +6,17 @@ comments: true
 categories: "ASP.NET,SPA"
 ---
 
-## Understanding an ASP.NET SPA project
+## Understanding an ASP.NET Single Page Application project
 
-Like may you may have noticed, that when creating a new ASP.NET project in Visual Studio - there is now an option for an SPA (single page application) project.
+Like me, you may have noticed, that when creating a new ASP.NET project in Visual Studio - there is now the option for an single page application.
 
 Let's see what that's about!
 
 # Creating a project
 
+1. Within the New Project dialog, select ASP.NET Web Application
 ![New ASP.NET Project.PNG](/source/assets/posts/New ASP.NET Project.PNG)
 
+2. ![Spa.PNG](/source/assets/posts/Spa.PNG)
+ 
 Having
-
