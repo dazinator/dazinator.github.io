@@ -8,7 +8,7 @@ categories: "ASP.NET,SPA"
 
 ## Understanding an ASP.NET Single Page Application project
 
-Like me, you may have noticed that when creating a new ASP.NET project in Visual Studio - there is now the option for a single page application.
+Like me, you may have noticed that when creating a new ASP.NET project in Visual Studio - there is the option to create a single page application.
 
 Let's see what that's about!
 
