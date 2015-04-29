@@ -3,6 +3,7 @@ layout: post
 published: true
 title: Automating DotNetNuke deployments with Octopus Deploy
 comments: true
+categories: "DotNetNuke,Octopus,Deployment"
 ---
 
 ## Automating DotNetNuke Deployments using Octopus Deploy
