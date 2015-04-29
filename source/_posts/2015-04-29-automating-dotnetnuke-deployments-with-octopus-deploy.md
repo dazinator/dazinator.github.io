@@ -47,9 +47,18 @@ You should now be in a postion where you can roll out a DotNetNuke website via O
 
 1. When you build your module projects (via build server etc) you want them packaged as DotNetNuke install packages, inside a NuGet deployment package, which is then published to your NuGet feed. You can use [DnnPackager](https://github.com/dazinator/DnnPackager) for this (which is something I created).
 
-2. Create a console application, that can take a set of zip files, copy them to a given directory, and then call the DotNetNuke url to install packages. It should wait for a response from DotNetNuke, and should re-check the directory to see if any zips are still present. 
+2. You'd need something that can copy a set of zip files to the "Install/Module" folder of a DotNetNuke website, and then monitor that folder, whilst calling the DotNetNuke url to install packages (www.dotnetnuke.com/install/install.aspx?mode=installresources). I wrote a quick console application to do this. It repeats calls to that URL all the time the number of zips in the install folder decrements (dotnetnuke deletes them after they are installed). If after x calls, there are the same number of zips left in the directory, it assumes they cannot be installed and reports a failure (return code).
+You should package this tool up into a NuGet package and, you guessed it, stick it on your internal feed.
 
-1. Create a NuGet package containing the DotNetNuke website. This is literally just the website folder that you would typically set up within IIS.
+3.Create a project in Octopus for "Module" deployment. You want the deployment process to:
+
+  - Dowload the NuGet package containing your module zips.
+  - Download the NuGet package containing your module deployment utility (that console app i spoke of)
+  - Invoke your deployment tool exe, passing in arguments for where the module zip files were placed, what the website url is, and potentially the path to the Install/Modules folder on disk (although my own tool interrogated IIS based on the website URL to find the website directory)
+  
+ ## Full Congratulations
+ 
+ You will now find that you can create a release of your module project in Octopus and deploy all your lates modules to any DotNetNuke website at the push of a button.
 
 
 
