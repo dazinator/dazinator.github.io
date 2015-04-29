@@ -118,7 +118,7 @@
 <li>Stop the website. Create a NuGet package containing the website folder.</li>
 <li>Put that on your internal NuGet feed.</li>
 <li>Go to the dotnetnuke database, and generate the create scripts (with data).</li>
-<li>Create a new console application that uses dbup to run the above sql scripts when it is executed (as described <a href="http://dbup.github.io/">here</a>). Remember to replace things like server name etc in the sql scripts with appropriate $variablename$. Dbup can substitute $variablename$ in the sql scripts with their actual values (which you can pass through from Octopus) before it executes them.</li>
+<li>Create a new console application that uses <a href="http://dbup.github.io/">dbup</a> to run the above sql scripts when it is executed (as described <a href="http://dbup.github.io/">here</a>). Remember to replace things like server name etc in the sql scripts with appropriate $variablename$. Dbup can substitute $variablename$ in the sql scripts with their actual values (which you can pass through from Octopus) before it executes them.</li>
 <li>Add <a href="http://docs.octopusdeploy.com/display/OD/Using+OctoPack">OctoPack</a> to your Console Application so that it is packaged up into a NuGet package. Put this NuGet package on your internal NuGet feed.</li>
 </ol>
 
@@ -126,12 +126,12 @@
 <p>You should now be in this position:</p>
 
 <ol>
-<li>You have a DotNetNuke website (the website content) as a NuGet package on your feed.</li>
-<li>You have the DotNetNuke database (as it appeared after a vanilla installation) pacakged up as an executable (DbUp based) within a NuGet package on your feed.</li>
+<li>You have a NuGet package on your feed containing the DotNetNuke website content</li>
+<li>You have a NuGet package on your feed containing your wonderful console application (DbUp) which will run the database scripts.</li>
 </ol>
 
 
-<p>Now that&rsquo;s done:</p>
+<p>Next Step - to Octopus!</p>
 
 <p>1 Create a project in Octopus to deploy a &ldquo;DotNetNuke&rdquo; website. For the deployment process you will need the NuGet packages prepared previously. The deployment process should:</p>
 
