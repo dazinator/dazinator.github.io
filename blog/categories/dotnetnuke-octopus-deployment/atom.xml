@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Dotnetnuke,octopus,deployment | Darrell Tunnell's Blog]]></title>
+  <link href="http://darrelltunnell.net/blog/categories/dotnetnuke-octopus-deployment/atom.xml" rel="self"/>
+  <link href="http://darrelltunnell.net/"/>
+  <updated>2015-04-29T23:19:33+01:00</updated>
+  <id>http://darrelltunnell.net/</id>
+  <author>
+    <name><![CDATA[Darrell Tunnell]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Automating DotNetNuke Deployments With Octopus Deploy]]></title>
+    <link href="http://darrelltunnell.net/blog/2015/04/29/automating-dotnetnuke-deployments-with-octopus-deploy/"/>
+    <updated>2015-04-29T00:00:00+01:00</updated>
+    <id>http://darrelltunnell.net/blog/2015/04/29/automating-dotnetnuke-deployments-with-octopus-deploy</id>
+    <content type="html"><![CDATA[<h2>Automating DotNetNuke Deployments using Octopus Deploy</h2>
+
+<p>Because I am an awesome dude, i&rsquo;ll share with you how I automate dotnetnuke delivery / deployments. This works. It takes some effort to get this set up though, but it will be well worth it in the end.</p>
+
+<p>First i&rsquo;ll explain the process for automating the deployment of the DotNetNuke website itself. Then I&rsquo;ll explain how you can automate the deployment of modules / extensions on a continous basis.</p>
+
+<h2>Preparation work</h2>
+
+<ol>
+<li>Set up a brand new DotNetNuke website, and go through the install wizard until you are greeted with an empty default dotnetnuke website.</li>
+<li>Stop the website. Create a NuGet package containing the website folder.</li>
+<li>Put that on your internal NuGet feed.</li>
+<li>Go to the dotnetnuke database, and generate the create scripts (with data).</li>
+<li>Create a new console application that uses dbup to run the above sql scripts when it is executed (as described <a href="http://dbup.github.io/">here</a>). Remember to replace things like server name etc in the sql scripts with appropriate $variablename$. Dbup can substitute $variablename$ in the sql scripts with their actual values (which you can pass through from Octopus) before it executes them.</li>
+<li>Add <a href="http://docs.octopusdeploy.com/display/OD/Using+OctoPack">OctoPack</a> to your Console Application so that it is packaged up into a NuGet package. Put this NuGet package on your internal NuGet feed.</li>
+</ol>
+
+
+<p>You should now be in this position:</p>
+
+<ol>
+<li>You have a DotNetNuke website (the website content) as a NuGet package on your feed.</li>
+<li>You have the DotNetNuke database (as it appeared after a vanilla installation) pacakged up as an executable (DbUp based) within a NuGet package on your feed.</li>
+</ol>
+
+
+<p>Now that&rsquo;s done:</p>
+
+<p>1 Create a project in Octopus to deploy a &ldquo;DotNetNuke&rdquo; website. For the deployment process you will need the NuGet packages prepared previously. The deployment process should:</p>
+
+<ol>
+<li>Create a website in IIS using the website NuGet package.</li>
+<li>Create the database by executing the executable within the Database NuGet package.</li>
+</ol>
+
+
+<p>There are lot&rsquo;s of things to remember when deploying dotnetnuke. I won&rsquo;t go into detail but things like:</p>
+
+<ol>
+<li>Granting full permission to the app pool identity that the website runs under to the website folder.</li>
+<li>Updating the portalalias table with appropriate access url.</li>
+</ol>
+
+
+<p>&hellip; and other things. The Dnn install process has been covered elsewhere so I won&rsquo;t go into any further detail here.</p>
+
+<h2>Congratulations (partly)</h2>
+
+<p>You should now be in a postion where you can roll out a DotNetNuke website via Octopus.. BUT WHAT ABOUT THE MODULES I&rsquo;M DEVELOPING!! - I hear you exclaim.</p>
+
+<h2>Automating Module Deployments</h2>
+
+<ol>
+<li><p>When you build your module projects (via build server etc) you want them packaged as DotNetNuke install packages, inside a NuGet deployment package, which is then published to your NuGet feed. You can use <a href="https://github.com/dazinator/DnnPackager">DnnPackager</a> for this (which is something I created).</p></li>
+<li><p>You&rsquo;d need something that can copy a set of zip files to the &ldquo;Install/Module&rdquo; folder of a DotNetNuke website, and then monitor that folder, whilst calling the DotNetNuke url to install packages (www.dotnetnuke.com/install/install.aspx?mode=installresources). I wrote a quick console application to do this. It repeats calls to that URL all the time the number of zips in the install folder decrements (dotnetnuke deletes them after they are installed). If after x calls, there are the same number of zips left in the directory, it assumes they cannot be installed and reports a failure (return code).
+You should package this tool up into a NuGet package and, you guessed it, stick it on your internal feed.</p></li>
+</ol>
+
+
+<p>3.Create a project in Octopus for &ldquo;Module&rdquo; deployment. You want the deployment process to:</p>
+
+<ul>
+<li>Dowload the NuGet package containing your module zips.</li>
+<li>Download the NuGet package containing your module deployment utility (that console app i spoke of)</li>
+<li>Invoke your deployment tool exe, passing in arguments for where the module zip files were placed, what the website url is, and potentially the path to the Install/Modules folder on disk (although my own tool interrogated IIS based on the website URL to find the website directory)</li>
+</ul>
+
+
+<p> ## Full Congratulations</p>
+
+<p> You will now find that you can create a release of your module project in Octopus and deploy all your lates modules to any DotNetNuke website at the push of a button.</p>
+]]></content>
+  </entry>
+  
+</feed>
