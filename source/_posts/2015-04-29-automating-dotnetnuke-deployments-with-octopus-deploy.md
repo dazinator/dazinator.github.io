@@ -18,15 +18,15 @@ First i'll explain the process for automating the deployment of the DotNetNuke w
 2. Stop the website. Create a NuGet package containing the website folder.
 3. Put that on your internal NuGet feed.
 4. Go to the dotnetnuke database, and generate the create scripts (with data).
-5. Create a new console application that uses dbup to run the above sql scripts when it is executed (as described [here](http://dbup.github.io/)). Remember to replace things like server name etc in the sql scripts with appropriate $variablename$. Dbup can substitute $variablename$ in the sql scripts with their actual values (which you can pass through from Octopus) before it executes them.
+5. Create a new console application that uses [dbup](http://dbup.github.io/) to run the above sql scripts when it is executed (as described [here](http://dbup.github.io/)). Remember to replace things like server name etc in the sql scripts with appropriate $variablename$. Dbup can substitute $variablename$ in the sql scripts with their actual values (which you can pass through from Octopus) before it executes them.
 6. Add [OctoPack](http://docs.octopusdeploy.com/display/OD/Using+OctoPack) to your Console Application so that it is packaged up into a NuGet package. Put this NuGet package on your internal NuGet feed.
 
 You should now be in this position:
 
-1. You have a DotNetNuke website (the website content) as a NuGet package on your feed.
-2. You have the DotNetNuke database (as it appeared after a vanilla installation) pacakged up as an executable (DbUp based) within a NuGet package on your feed.
+1. You have a NuGet package on your feed containing the DotNetNuke website content 
+2. You have a NuGet package on your feed containing your wonderful console application (DbUp) which will run the database scripts.
 
-Now that's done:
+Next Step - to Octopus!
 
 1 Create a project in Octopus to deploy a "DotNetNuke" website. For the deployment process you will need the NuGet packages prepared previously. The deployment process should:
 
@@ -60,7 +60,3 @@ You should package this tool up into a NuGet package and, you guessed it, stick 
  ## Full Congratulations
  
  You will now find that you can create a release of your module project in Octopus and deploy all your lates modules to any DotNetNuke website at the push of a button.
-
-
-
-
