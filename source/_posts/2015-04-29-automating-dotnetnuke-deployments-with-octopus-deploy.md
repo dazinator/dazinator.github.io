@@ -28,15 +28,15 @@ You should now be in this position:
 
 Next Step - to Octopus!
 
-1 Create a project in Octopus to deploy a "DotNetNuke" website. For the deployment process you will need the NuGet packages prepared previously. The deployment process should:
+1. Create a project in Octopus to deploy a "DotNetNuke" website. For the deployment process you will need the NuGet packages prepared previously. The deployment process should:
 
-1. Create a website in IIS using the website NuGet package.
-2. Create the database by executing the executable within the Database NuGet package.
+  - Create a website in IIS using the website NuGet package.
+  - Create the database by executing the executable within the Database NuGet package.
 
 There are lot's of things to remember when deploying dotnetnuke. I won't go into detail but things like:
 
-1. Granting full permission to the app pool identity that the website runs under to the website folder.
-2. Updating the portalalias table with appropriate access url.
+  - Granting full permission to the app pool identity that the website runs under to the website folder.
+  - Updating the portalalias table with appropriate access url.
 
 ... and other things. The Dnn install process has been covered elsewhere so I won't go into any further detail here.
 
