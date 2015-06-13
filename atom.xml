@@ -4,7 +4,7 @@
   <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2015-06-13T14:58:02+01:00</updated>
+  <updated>2015-06-13T15:02:32+01:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -29,6 +29,9 @@
 
 
 <p>Both approaches require that you &ldquo;attach to process&rdquo; from within Visual Studio in order to debug your module.</p>
+
+<!-- more -->
+
 
 <h3>I hate approach #1</h3>
 
