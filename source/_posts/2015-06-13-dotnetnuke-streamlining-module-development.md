@@ -7,6 +7,7 @@ categories: "DotNetNuke,DnnPackager"
 ---
 
 
+
 ## Module Debugging - Two Approaches
 
 When developing DotNetNuke modules people take many different approaches but they boil down to two alternatives in terms of workflow:
@@ -17,6 +18,7 @@ When developing DotNetNuke modules people take many different approaches but the
 
 Both approaches require that you "attach to process" from within Visual Studio in order to debug your module.
 
+<!-- more -->
 ### I hate approach #1
 I have all sorts of issues with approach #1. Yes it’s technically possible, but it’s also nasty in my view (not very clean) - I have elaborated on that elsewhere so won’t do so again here in depth, aside to say that I believe #2 is the "cleanest" approach and that many forms of debugging use #2 as the approach, not #1. For example, xamarin devs, when they debug an android app, you will see that xamarin actually deploys their project to the device / emulator, and then attaches the debugger to the remote process that's running on the device / emulator. The result is that they click "Play" in VS, and a shortwhile later they are attached and stepping through their code.. It may not be obvious that a deployment took place - but it did. Lastly. i'll point out that #1 creates a coupling between how you structure your source code, and where it needs to be when it's actually deployed. 
 
