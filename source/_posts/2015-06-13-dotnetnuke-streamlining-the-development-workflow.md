@@ -39,6 +39,8 @@ This is a bit more streamlined! This makes approach #2 workable in my opinion.
 
 These things are all tedious. Most developers (new to DNN) expect to be able to click Debug and immediately be debugging their code - they don’t expect to have to jump through these additional hurdles / barriers.
 
+This is why DotNetNuke development can be a bit of a culture shock for many developers.
+
 ### Next Feature!
 So the next feature I am thinking of adding to DnnPackager is one that addresses those concerns mentioned above. I’d be really greatful if anyone with such a curiousity wouldn't mind reading it and offering their feedback on this proposed awesome feature https://github.com/dazinator/DnnPackager/issues/14 before I start on it. 
 
