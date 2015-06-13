@@ -3,7 +3,9 @@ layout: post
 published: true
 title: "DotNetNuke - Streamlining Module Development Workflow"
 comments: true
+categories: "DotNetNuke,DnnPackager"
 ---
+
 
 ## Module Debugging - Two Approaches
 
