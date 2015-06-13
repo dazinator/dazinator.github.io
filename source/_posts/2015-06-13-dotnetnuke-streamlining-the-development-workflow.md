@@ -1,7 +1,7 @@
 ---
 layout: post
 published: true
-title: "DotNetNuke - Streamlining the Development Workflow"
+title: "DotNetNuke - Module Debugging "
 comments: true
 ---
 
