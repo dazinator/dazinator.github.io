@@ -15,7 +15,7 @@ When you create a new ASP.NET 5 project, you will see all sorts of new-ness. I a
 1. Bundling and Minification.
 2. Auto browser refresh (as you make changes to files during development)
 
-In addition to adding these features we will talk about:
+In addition, I will touch upon important tooling that you need to be aware of:
 
 1. NPM
 2. Bower and why we are going to replace it with Jspm
