@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Darrell Tunnell&#8217;s Blog</title>
+  <title>ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia - Darrell Tunnell&#8217;s Blog</title>
   <meta name="author" content="Darrell Tunnell">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://darrelltunnell.net">
+  <link rel="canonical" href="http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Darrell Tunnell's Blog" type="application/atom+xml">
@@ -84,15 +84,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2015/08/16/aurelia-and-asp-net-5-mvc/">ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia</a></h1>
+      <h1 class="entry-title">ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia</h1>
     
     
       <p class="meta">
@@ -108,7 +105,7 @@
   </header>
 
 
-  <div class="entry-content"><p><strong>This post is part 1 of a series.</strong></p>
+<div class="entry-content"><p><strong>This post is part 1 of a series.</strong></p>
 
 <h2>ASP (A Sea of Packages).NET 5</h2>
 
@@ -216,373 +213,52 @@
 
 <p>If you are keen to for the next part, let me know in the comments!</p>
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/13/dotnetnuke-streamlining-module-development/">DotNetNuke - Streamlining Module Development Workflow</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-13T00:00:00+01:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Module Debugging - Two Approaches</h2>
-
-<p>When developing DotNetNuke modules people take many different approaches but they boil down to two alternatives in terms of workflow:</p>
-
-<ol>
-<li><p>Placing / checking out your source code directly into the \DesktopModules folder of a DotNetNuke website, and having your module dll&rsquo;s output to directly into the DotNetNuke website&rsquo;s \bin folder.</p></li>
-<li><p>Checking out and working on your code wherever you like, but having to deploy your module (content and assemblies) to a local DNN website when you are ready to run it.</p></li>
-</ol>
-
-
-<p>Both approaches require that you &ldquo;attach to process&rdquo; from within Visual Studio in order to debug your module.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/06/13/dotnetnuke-streamlining-module-development/">Read on &rarr;</a>
-    </footer>
   
 
+<span class="byline author vcard">Posted by <span class="fn">Darrell Tunnell</span></span>
 
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/04/29/automating-dotnetnuke-deployments-with-octopus-deploy/">Automating DotNetNuke Deployments With Octopus Deploy</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
 
-<time class='entry-date' datetime='2015-04-29T00:00:00+01:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Automating DotNetNuke Deployments using Octopus Deploy</h2>
-
-<p>Because I am an awesome dude, i&rsquo;ll share with you how I automate dotnetnuke delivery / deployments. This works. It takes some effort to get this set up though, but it will be well worth it in the end.</p>
-
-<p>First i&rsquo;ll explain the process for automating the deployment of the DotNetNuke website itself. Then I&rsquo;ll explain how you can automate the deployment of modules / extensions on a continous basis.</p>
-
-<h2>Preparation work</h2>
-
-<ol>
-<li>Set up a brand new DotNetNuke website, and go through the install wizard until you are greeted with an empty default dotnetnuke website.</li>
-<li>Stop the website. Create a NuGet package containing the website folder.</li>
-<li>Put that on your internal NuGet feed.</li>
-<li>Go to the dotnetnuke database, and generate the create scripts (with data).</li>
-<li>Create a new console application that uses <a href="http://dbup.github.io/">dbup</a> to run the above sql scripts when it is executed (as described <a href="http://dbup.github.io/">here</a>). Remember to replace things like server name etc in the sql scripts with appropriate $variablename$. Dbup can substitute $variablename$ in the sql scripts with their actual values (which you can pass through from Octopus) before it executes them.</li>
-<li>Add <a href="http://docs.octopusdeploy.com/display/OD/Using+OctoPack">OctoPack</a> to your Console Application so that it is packaged up into a NuGet package. Put this NuGet package on your internal NuGet feed.</li>
-</ol>
-
-
-<p>You should now be in this position:</p>
-
-<ol>
-<li>You have a NuGet package on your feed containing the DotNetNuke website content</li>
-<li>You have a NuGet package on your feed containing your wonderful console application (DbUp) which will run the database scripts.</li>
-</ol>
-
-
-<p>Next Step - to Octopus!</p>
-
-<ol>
-<li><p>Create a project in Octopus to deploy a &ldquo;DotNetNuke&rdquo; website. For the deployment process you will need the NuGet packages prepared previously. The deployment process should:</p></li>
-<li><p>Create a website in IIS using the website NuGet package.</p></li>
-<li>Create the database by executing the executable within the Database NuGet package.</li>
-</ol>
-
-
-<p>There are lot&rsquo;s of things to remember when deploying dotnetnuke. I won&rsquo;t go into detail but things like:</p>
-
-<ul>
-<li>Granting full permission to the app pool identity that the website runs under to the website folder.</li>
-<li>Updating the portalalias table with appropriate access url.</li>
-</ul>
-
-
-<p>&hellip; and other things. The Dnn install process has been covered elsewhere so I won&rsquo;t go into any further detail here.</p>
-
-<h2>Congratulations (partly)</h2>
-
-<p>You should now be in a postion where you can roll out a DotNetNuke website via Octopus.. BUT WHAT ABOUT THE MODULES I&rsquo;M DEVELOPING!! - I hear you exclaim.</p>
-
-<h2>Automating Module Deployments</h2>
-
-<ol>
-<li><p>When you build your module projects (via build server etc) you want them packaged as DotNetNuke install packages, inside a NuGet deployment package, which is then published to your NuGet feed. You can use <a href="https://github.com/dazinator/DnnPackager">DnnPackager</a> for this (which is something I created).</p></li>
-<li><p>You&rsquo;d need something that can copy a set of zip files to the &ldquo;Install/Module&rdquo; folder of a DotNetNuke website, and then monitor that folder, whilst calling the DotNetNuke url to install packages (www.dotnetnuke.com/install/install.aspx?mode=installresources). I wrote a quick console application to do this. It repeats calls to that URL all the time the number of zips in the install folder decrements (dotnetnuke deletes them after they are installed). If after x calls, there are the same number of zips left in the directory, it assumes they cannot be installed and reports a failure (return code).
-You should package this tool up into a NuGet package and, you guessed it, stick it on your internal feed.</p></li>
-</ol>
-
-
-<p>3.Create a project in Octopus for &ldquo;Module&rdquo; deployment. You want the deployment process to:</p>
-
-<ul>
-<li>Dowload the NuGet package containing your module zips.</li>
-<li>Download the NuGet package containing your module deployment utility (that console app i spoke of)</li>
-<li>Invoke your deployment tool exe, passing in arguments for where the module zip files were placed, what the website url is, and potentially the path to the Install/Modules folder on disk (although my own tool interrogated IIS based on the website URL to find the website directory)</li>
-</ul>
-
-
-<p> ## Full Congratulations</p>
-
-<p> You will now find that you can create a release of your module project in Octopus and deploy all your lates modules to any DotNetNuke website at the push of a button.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
+<time class='entry-date' datetime='2015-08-16T00:00:00+01:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:00 am</span></time>
       
-  <header>
+
+
+    </p>
     
-      <h1 class="entry-title"><a href="/blog/2015/02/26/how-far-does-the-xrm-sdk-s-executemultiplerequest-get-you/">How Far Does the XRM SDK&#8217;s ExecuteMultipleRequest Get You?</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-26T00:00:00+00:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>ExecuteMultipleRequest - Let&rsquo;s take it to the max</h2>
-
-<p>In this post, I will explore what kinds of things can be achieved using the SDK&rsquo;s ExecuteMultipleRequest, by starting of with a simple SQL command, and implementing a semantically equivalent ExecuteMultipleRequest, and then slowly introducing some additional complexity - so that, we can see some areas where the SDK starts to fall short!</p>
-
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc/" data-via="dazinate" data-counturl="http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc/" >Tweet</a>
+  
+  
+  
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/02/26/how-far-does-the-xrm-sdk-s-executemultiplerequest-get-you/">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
+    
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install/">ASP.NET 5 (vNext) Projects - Your NuGet Package May Fail to Install Correctly</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-01-18T00:00:00+00:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Don&rsquo;t assume NuGet Packages that you have authored will continue to work with ASP.NET 5 (vNext) projects.</h3>
-
-<p>Over the past year or so, I have authored <a href="https://www.nuget.org/packages?q=darrell.tunnell">a number of NuGet packages</a> - because, well&hellip; I am just an all around great guy.</p>
-
-<p>Recently, <a href="http://stackoverflow.com/questions/27762659/error-while-adding-nuget-package-to-asp-net-vnext-project#comment44383264_27762659">I was contacted by someone</a> who was trying to use one of my NuGet packages with an ASP.NET vNext project (Preview release). Not something I have tried before - and this is where things get a little interesting.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
+        <a class="basic-alignment left" href="/blog/2015/06/13/dotnetnuke-streamlining-module-development/" title="Previous Post: DotNetNuke - Streamlining Module Development Workflow">&laquo; DotNetNuke - Streamlining Module Development Workflow</a>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/">CRM / Plugin Generated Values - and Reducing Roundtrips!</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-12-22T00:00:00+00:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2014</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Setting the Scene</h2>
-
-<p>Imagine we have an application that uses the CRM SDK. It needs to:</p>
-
-<ol>
-<li>Create a new <code>account</code> entity in crm.</li>
-<li>Get some value that was just generated as a result of a synchronous plugin that fires on the create. For example, suppose there is a plugin that generates an account reference number.</li>
-</ol>
-
-
-<h2>The &ldquo;I don&rsquo;t care about network latency method!&rdquo;</h2>
-
-<p>The &lsquo;I don&rsquo;t care about network latency&rsquo; way of dealing with this is to just do 2 seperate Requests (roundtrips) with the CRM server.</p>
-
-<ol>
-<li>Create the new <code>account</code> which returns you the ID.</li>
-<li>Retrieve the <code>account</code> using that ID, along with the values that you need.</li>
-</ol>
-
-
-<p>This approach is sub optimal where network latency is a concern, as it incurs the penalty of making two roundtrips accross the network with the server, where 1 is possible.</p>
-
-<p>Let&rsquo;s now have a look at the &ldquo;I&rsquo;m running on a 56k modem method&rdquo; of doing the same thing!</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/12/14/unit-testing-crm-plugins/">Unit Testing Dynamics CRM Plugins</a></h1>
-    
-    
-      <p class="meta">
-        
+    </p>
+  </footer>
+</article>
 
-
-
-
-<time class='entry-date' datetime='2014-12-14T17:50:00+00:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>5:50 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>There is no <del>Spoon</del> CRM</h2>
-
-<p>The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a unit test with the least possible effort. Reduced Effort == Reduced Person Hours == Reduced Cost.</p>
-
-<p>Remember, this is Unit Testing, not Integration testing - so at test time - there is no CRM!</p>
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/12/14/unit-testing-crm-plugins/">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/16/a-proclamation/">A Proclamation</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-11-16T16:20:59+00:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>4:20 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>On this day the 16th November 2014, let it be known that Darrell&rsquo;s blog was rendered forth unto the internet.</p>
-
-<p>Let the knowledge and manner of its creation also be recorded, lest it be lost from mortal ken. Thus humanity, need not be stricken in ignorance and awe, and need not refer to my blogging website as &ldquo;Witchcraft&rdquo; or &ldquo;Devilry&rdquo;.</p>
-
-<h2>The Mechanism of Creation</h2>
-
-<ol>
-<li>Inspiration taken from JakeGinnivan&rsquo;s blog which is powered by OctoPress: <a href="http://jake.ginnivan.net/">http://jake.ginnivan.net/</a></li>
-<li>Purchased a domain name: darrelltunnell.net</li>
-<li>Followed this OctoPress documentation: <a href="http://octopress.org/docs/setup/">http://octopress.org/docs/setup/</a></li>
-<li>Hosted on <a href="https://github.com/">https://github.com/</a></li>
-</ol>
-
-
-<h2>A revelation</h2>
-
-<p>And so it came to pass that Darrell Tunnell&rsquo;s blog was incredibly useful to others. Darrell&rsquo;s blog is currently read by 3.1 million people. Web browser requests for Darrell&rsquo;s blog constitute approximately 85.2% of all browser requests made, worldwide. NetFlix was eventually absorbed into Darrell&rsquo;s Blog at the end of 2014, through internet osmosis.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -657,6 +333,7 @@ You should package this tool up into a NuGet package and, you guessed it, stick 
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -671,7 +348,10 @@ You should package this tool up into a NuGet package and, you guessed it, stick 
       var disqus_shortname = 'darrelltunnellsblog';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc/';
+        var disqus_url = 'http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
