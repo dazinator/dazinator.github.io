@@ -58,12 +58,12 @@ However, in this walkthrough, we shall be scrapping `Bower` and using a differen
 
 Gulp basically lets you define `tasks` in a javascript file (gulpfile.js) that can then be run at an appropirate point. VS 2015 has a `Task Runner Explorer` window in which you can pick which Gulp tasks (the ones defined in your gulpfile.js) that you would like to run and when. For example, you can have your gulp task executed whenever the project is built, or cleaned etc. You can also execute your gulp task via the command line (see the Gulp docs)
 
-We are going to write some Gulp tasks, that mean that when we build our web project, the javascript files that we need, are bundled up / minified, and output to a "dist" folder. 
+We are going to write some Gulp tasks in gulpfile.js, and have them executed as part of the our project's build process. These tasks are going to automatically handle bundling and minification of our javascript files for us. 
 
-Our web application is going to reference the "bundled" file from the dist folder rather than individual javascript files - which means its nice and optimised as the browser will have to do less roundtrips with the server (network requests) overall to load all the required javascript.
+Our web application is going to reference the "bundle" of javascript that gulp outputs, rather than the individual javascript files that we download using jspm. Which means our application is going to be nice and optimised as the browser will have to do less roundtrips with the server (network requests) to load the required javascript.
 
 ### But won't bundling and minification lead to a poor debugging experience?
 
-Not if sourcemaps are enabled. I will show you how to enable this. This will mean the browser will be requesting and running the optimised bundle of javascript - but you the developer, will be stepping through and reading the original source code in your browser dev tools, thanks to the magical power of source maps.
+Not if sourcemaps are enabled. I will show you how to enable this. This will mean the browser will be requesting and running the optimised bundle of javascript - but you the developer, will be stepping through and reading the original source code in your browser's dev tools, thanks to the magical power of source maps.
 
-However, I will also show you what to do if you just don't want to bundle / minify your javascript during development, and only want to do this at the time of a release build - which is pretty sensible too.
+However, I will also show you what to do if you just don't want to bundle / minify your javascript during development (not all browsers will support source maps yet). If bundling and minification is something you only want to do at the time of a release build - which is pretty sensible - then I'll cover that too.
