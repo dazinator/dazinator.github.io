@@ -4,7 +4,7 @@
   <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2015-08-16T20:12:05+01:00</updated>
+  <updated>2015-08-16T20:15:48+01:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -40,6 +40,9 @@
 
 
 <p>To be able to do all of this, we will be creating an ASP.NET MVC 5 project, and then we will be using <a href="http://aurelia.io/">Aurelia</a> to run an Aurelia application on Home page (Index.cshtml)</p>
+
+<!-- more -->
+
 
 <h2>New Project</h2>
 
