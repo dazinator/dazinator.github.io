@@ -66,7 +66,7 @@ Bower is a NodeJs program, and is therefore distributed as a NodeJs package, via
 However, in this walkthrough, we shall be scrapping `Bower` and using a different package manager for our JQueries and our Bootstraps. One called [Jspm](http://jspm.io/). Jspm is recomended for it's additional capabilities, mainly that it provides not just package management features (at dev time) but package loading features, that your application uses at runtime. 
 
 ### Gulp
-- [Gulp](http://gulpjs.com/) is what all the cool kids are using to automate their development workflows.
+[Gulp](http://gulpjs.com/) is what all the cool kids are using to automate their development workflows.
 
 Gulp basically lets you define `tasks` in a javascript file (gulpfile.js) that can then be run at an appropirate point. VS 2015 has a `Task Runner Explorer` window in which you can pick which Gulp tasks (the ones defined in your gulpfile.js) that you would like to run and when. For example, you can have your gulp task executed whenever the project is built, or cleaned etc. You can also execute your gulp task via the command line (see the Gulp docs)
 
