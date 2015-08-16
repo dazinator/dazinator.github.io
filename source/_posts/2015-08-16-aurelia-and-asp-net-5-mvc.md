@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-categories: ""
+categories: ASP.NET Aurelia Gulp
 published: true
 title: "ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia"
 ---
