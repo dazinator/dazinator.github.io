@@ -56,7 +56,7 @@ If you aren't yet familiar with NPM, stop here and do yourself a favour - go [ge
 NuGet is for .NET libraries like log4net silly. Npm has a vast array of packages not available through NuGet. Why wouldn't you want to tap into those also? 
 
 ### Bower
-Here is where things get a tiny bit confusing. Bower is a package that is also another package manager. I am tempted to move on and let that hang.. but I'll explain.
+Here is where things get a tiny bit confusing. Bower is a package, that is also another package manager. I am tempted to move on.. but I'll explain.
 
 Bower is a NodeJs program, and is therefore distributed as a NodeJs package, via `NPM`. However it's purpose is to be a package manager itself, but specifically for website dependencies such as javascript or css. Think Jquery. If you want to add Jquery, or Bootstrap, or any other client side library to your project, then Bower would be the package manager to use to achieve that. Not NPM ([although you could](https://www.npmjs.com/package/jquery)), and not NuGet ([although you could](https://www.nuget.org/packages/jQuery/)). The ASP.NET team thinks `Bower` is the package manager to use as Bower specialises for client dependencies - so the ASP.NET 5 project is set up by default to use Bower and you may allready see some Bower packages downloaded into your `bower_components` folder within your project. The `bower.json` file keeps track of your bower dependencies.
 
