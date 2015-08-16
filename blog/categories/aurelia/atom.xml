@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Aurelia | Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/blog/categories/aurelia/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2015-08-16T20:15:48+01:00</updated>
+  <updated>2015-08-16T20:22:06+01:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -51,9 +51,9 @@
 <ol>
 <li>In VS 2015, File &ndash;> New Project</li>
 <li>&ldquo;ASP.NET Web Application&rdquo;
-<img src="/source/assets/posts/new%20aspnet%20project.PNG" alt="new aspnet project.PNG" /></li>
+<img src="/assets/posts/new%20aspnet%20project.PNG" alt="new aspnet project.PNG" /></li>
 <li>&ldquo;Web Application&rdquo;
-<img src="/source/assets/posts/new%20aspnet%20project%202.PNG" alt="new aspnet project 2.PNG" /></li>
+<img src="/assets/posts/new%20aspnet%20project%202.PNG" alt="new aspnet project 2.PNG" /></li>
 </ol>
 
 
@@ -61,7 +61,7 @@
 
 <p>At this point, with the project created, let&rsquo;s stop and appreciate some noteworthy files in our new project.</p>
 
-<p><img src="/source/assets/posts/asp%20net%20project%20sol%20explorer.PNG" alt="asp net project sol explorer.PNG" /></p>
+<p><img src="/assets/posts/asp%20net%20project%20sol%20explorer.PNG" alt="asp net project sol explorer.PNG" /></p>
 
 <ul>
 <li><code>project.json</code> - this is the new form of the project file. It replaces for example the older <code>.csproj</code> and <code>.vbproj</code> files.</li>
@@ -76,7 +76,7 @@
 
 <p><a href="https://docs.npmjs.com/">NPM</a> is now a first class citizen of an ASP.NET 5 project. This is why you have a <code>package.json</code> file in your project.</p>
 
-<p><img src="/source/assets/posts/packages%20json%20file.PNG" alt="packages json file.PNG" /></p>
+<p><img src="/assets/posts/packages%20json%20file.PNG" alt="packages json file.PNG" /></p>
 
 <p>NPM is a package manager - the Node Package Manager to be precise. Think <code>NuGet</code> but for NodeJs packages. You could be forgiven for thinking it stands for &ldquo;Not another Package Manager&rdquo; - it doesn&rsquo;t, I checked.</p>
 
