@@ -56,7 +56,7 @@ However, in this walkthrough, we shall be scrapping `Bower` and using a differen
 ### Gulp
 - [Gulp](http://gulpjs.com/) is what all the cool kids are using to automate their development workflows.
 
-Gulp basically lets you define `tasks` in a javascript file gulpfile.js that can then be run at an appropirate point. VS 2015 has a `Task Runner Explorer` window in which you can pick which Gulp tasks (the ones defined in your gulpfile.js) that you would like to run and when. For example, you can have your gulp task executed whenever the project is built, or cleaned etc. You can also execute your gulp task at any point via a call to `gulp` on the command line passing the correct args (see the Gulp docs)
+Gulp basically lets you define `tasks` in a javascript file (gulpfile.js) that can then be run at an appropirate point. VS 2015 has a `Task Runner Explorer` window in which you can pick which Gulp tasks (the ones defined in your gulpfile.js) that you would like to run and when. For example, you can have your gulp task executed whenever the project is built, or cleaned etc. You can also execute your gulp task at any point via a call to `gulp` on the command line passing the correct args (see the Gulp docs)
 
 We are going to write some Gulp tasks, that mean that when we build our web project, the javascript files that we need, are bundled up / minified, and output to a "dist" folder. 
 
