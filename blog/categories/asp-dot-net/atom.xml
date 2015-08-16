@@ -4,7 +4,7 @@
   <title><![CDATA[Category: asp.net | Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/blog/categories/asp-dot-net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2015-08-16T20:22:06+01:00</updated>
+  <updated>2015-08-16T20:26:27+01:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -96,10 +96,7 @@
 
 <h3>Gulp</h3>
 
-<ul>
-<li><a href="http://gulpjs.com/">Gulp</a> is what all the cool kids are using to automate their development workflows.</li>
-</ul>
-
+<p><a href="http://gulpjs.com/">Gulp</a> is what all the cool kids are using to automate their development workflows.</p>
 
 <p>Gulp basically lets you define <code>tasks</code> in a javascript file (gulpfile.js) that can then be run at an appropirate point. VS 2015 has a <code>Task Runner Explorer</code> window in which you can pick which Gulp tasks (the ones defined in your gulpfile.js) that you would like to run and when. For example, you can have your gulp task executed whenever the project is built, or cleaned etc. You can also execute your gulp task via the command line (see the Gulp docs)</p>
 
