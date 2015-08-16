@@ -7,6 +7,7 @@ title: "ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia"
 ---
 
 
+
 **This post is part 1 of a series.**
 ## ASP (A Sea of Packages).NET 5
 
@@ -22,6 +23,7 @@ In addition, I will touch upon important tooling that you need to be aware of:
 3. Gulp - and why is it useful
 
 To be able to do all of this, we will be creating an ASP.NET MVC 5 project, and then we will be using [Aurelia](http://aurelia.io/) to run an Aurelia application on Home page (Index.cshtml) 
+<!-- more -->
 
 ## New Project
 The first step on our quest is simply to create a new ASP.NET application. I am sure you know the drill:
