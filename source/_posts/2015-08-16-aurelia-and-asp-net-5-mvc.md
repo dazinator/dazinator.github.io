@@ -28,7 +28,7 @@ The first step on our quest is simply to create a new ASP.NET application.
 ## Project Structure
 At this point, let's stop and appreciate some noteworthy files in our new project.
 
-- `project.json` - this is the new form of the project file. It replaces for example the older `.csproj / .vbproj` files.
+- `project.json` - this is the new form of the project file. It replaces for example the older `.csproj` and `.vbproj` files.
 - `package.json` - this file is managed by [NPM](https://docs.npmjs.com/). It records the dependencies that your application has on NPM packages. More on NPM later.
 - `bower.json` - this file is managed by [Bower](http://bower.io/). It records the dependencies that your application has on Bower packages. More on Bower later. 
 - `gulpfile.js` - this file contains `tasks` that can be executed by [Gulp](http://gulpjs.com/) as part of your development workflow, for example, whenever the project is built, cleaned etc. More on this later.
@@ -43,7 +43,7 @@ NPM is a package manager - the Node Package Manager to be precise. Think `NuGet`
 
 If you aren't yet familiar with NPM, stop here and do yourself a favour - go [get familiar](https://docs.npmjs.com/), you will be seeing a lot of it in your ASP.NET 5 projects in the days to come!
 
-### Hold, another Package Manager? But we allready have NuGet?
+### Hold on, another Package Manager? But we allready have NuGet?
 NuGet is for .NET libraries like log4net silly. Npm has a vast array of packages not available through NuGet. Why wouldn't you want to tap into those also? 
 
 ### Bower
