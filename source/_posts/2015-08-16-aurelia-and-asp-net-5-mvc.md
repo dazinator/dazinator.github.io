@@ -90,4 +90,4 @@ In the next post, we will begin modifying our ASP.NET 5 project to do the things
 5. Enable automatic browser refresh
 6. Disable bundling when our application is running in development (to maintain an easy debugging experience should your browser not support source maps)
 
-If you are keen to for the next part, let me know in the comments!
+If you are keen for the next part, let me know in the comments!
