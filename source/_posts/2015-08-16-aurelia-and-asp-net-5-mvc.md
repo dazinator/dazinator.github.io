@@ -10,7 +10,7 @@ title: "ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia"
 **This post is part 1 of a series.**
 ## ASP (A Sea of Packages).NET 5
 
-When you create a new ASP.NET 5 project, you will see all sorts of new-ness. I am going to guide you, the uninitiated ASP.NET 5 web developer, through creating your first ASP.NET 5 MVC application - but we won't stop there. We will then enhance your project with a number of features:
+When you create a new ASP.NET 5 project, you will see all sorts of new-ness. I am going to guide you, the uninitiated ASP.NET 5 web developer, through creating your first ASP.NET 5 MVC application, but we won't stop there. In the next post of this series, we will then enhance the project with a number of features:
 
 1. Bundling and Minification.
 2. Auto browser refresh (as you make changes to files during development)
@@ -24,10 +24,18 @@ In addition to adding these features we will talk about:
 To be able to do all of this, we will be creating an ASP.NET MVC 5 project, and then we will be using [Aurelia](http://aurelia.io/) to run an Aurelia application on Home page (Index.cshtml) 
 
 ## New Project
-The first step on our quest is simply to create a new ASP.NET application.
+The first step on our quest is simply to create a new ASP.NET application. I am sure you know the drill:
+
+1. In VS 2015, File --> New Project
+2. "ASP.NET Web Application"
+![new aspnet project.PNG]({{site.baseurl}}/source/assets/posts/new aspnet project.PNG)
+3. "Web Application"
+![new aspnet project 2.PNG]({{site.baseurl}}/source/assets/posts/new aspnet project 2.PNG)
 
 ## Project Structure
-At this point, let's stop and appreciate some noteworthy files in our new project.
+At this point, with the project created, let's stop and appreciate some noteworthy files in our new project.
+
+![asp net project sol explorer.PNG]({{site.baseurl}}/source/assets/posts/asp net project sol explorer.PNG)
 
 - `project.json` - this is the new form of the project file. It replaces for example the older `.csproj` and `.vbproj` files.
 - `package.json` - this file is managed by [NPM](https://docs.npmjs.com/). It records the dependencies that your application has on NPM packages. More on NPM later.
