@@ -3,41 +3,67 @@ layout: post
 comments: true
 categories: ""
 published: true
-title: The beginners guide to ASP.NET 5 projects
+title: "ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia"
 ---
 
 
-## ASP.NET 5 stands for A Sea of Packages.NET 5 
+## ASP (A Sea of Packages).NET 5
 
-If you have just created an ASP.NET 5 project, and then felt somewhat lost, let me try and bring you up to speed.
+When you create a new ASP.NET 5 project, you will see all sorts of new-ness. I am going to guide you, the uninitiated ASP.NET 5 web developer, through creating your first ASP.NET 5 MVC application - but we won't stop there. We will then enhance your project with a number of features:
 
-## NPM - it's an important citizen
-NPM is now a first class citizen of an ASP.NET 5 project.
-It's a package manager - the Node Package Manager to be precise. You may be thinking it stands for "Not another Package Manager" - it doesn't - I checked.
+1. Bundling and Minification.
+2. Auto browser refresh (as you make changes to files during development)
 
-Stop here and do yourself a favour - if you aren't familiar with NPM - go get familiar with it now, you will be seeing a lot of it in your ASP.NET 5 projects in the days to come.
+In addition to adding these features we will talk about:
 
-##
+1. NPM
+2. Bower and why we are going to replace it with Jspm
+3. Gulp - and why is it useful
 
-## A Sea of tools, mainly Package Managers!
+To be able to do all of this, we will be creating an ASP.NET MVC 5 project, and then we will be using [Aurelia](http://aurelia.io/) to run an Aurelia application on Home page (Index.cshtml) 
 
-Let me break it down for you.
-These are the tools you need to get familiar:
+## New Project
+The first step on our quest is simply to create a new ASP.NET application.
 
-- Visual Studio 2015 (hopefully goes without saying). I am using the community edition.
-- NPM. This is the package manager for programs that run on NodeJs. The ASP.NET 5 project system is integrated with NPM.
-- Bower. This is also a package manager. It is distributed as an NPM package, but Bower specialises in package management for website dependencies such as javascript files and css. By default, ASP.NET 5 projects are set up to use Bower (Bower is installed as a dependency via NPM) and therefore there is a corresponding Bower.json file in your project which lists the Bower packages that your website depends upon - such as Jquery etc.
-- JSPM. This is an alternative package manager to Bower for managing your website dependencies. By default ASP.NET 5 projects *are not* set up to use JSPM (they use Bower) - however, in the walktrhough I will show how to switch to using JSPM because JSPM is deemed as the superior package manager by Aurelia due to it's additional loader capabilities. This just means in addition to managing packages during development, it also offers a javascript file which your application uses at runtime, to be able to resolve those javascript dependencies and load them into your application when needed. This loader has all kinds of nice features, like automatic transpiling of ES6 javascript for example.
-- Gulp. ASP.NET 5 projects are setup to use Gulp by default. You will see a corresponding `gulpfile.js` in your project. Gulp itself is an NPM package. 
+## Project Structure
+At this point, let's stop and appreciate some noteworthy files in our new project.
 
-## That's a lot of Package Mangers
-Before ASP.NET 5 projects, VS developers primarily used NuGet as the package manager. Now we have NuGet and NPM, as well as Bower or Jspm.
-Here is my guidance.
-For .NET libraries such as log4net - NuGet is the defacto package manager.
-For tooling, some tools will be NodeJS based - in which case you will find them on NPM. Some tools will be NuGet based so use NuGet. Gulp is a useful tool that is NPM based. MSBuild tasks however, is NuGet based.
-Bower is good at what it does (managing javascript packages), it just isn't as complete of a solution as Jspm which t
+- `project.json` - this is the new form of the project file. It replaces for example the older `.csproj / .vbproj` files.
+- `package.json` - this file is managed by [NPM](https://docs.npmjs.com/). It records the dependencies that your application has on NPM packages. More on NPM later.
+- `bower.json` - this file is managed by [Bower](http://bower.io/). It records the dependencies that your application has on Bower packages. More on Bower later. 
+- `gulpfile.js` - this file contains `tasks` that can be executed by [Gulp](http://gulpjs.com/) as part of your development workflow, for example, whenever the project is built, cleaned etc. More on this later.
+- `Startup.cs` this is the entry point for your application. For the purposes of this article, the default code is fine and we won't be amending anything in this file. It contains bootstrapping code such as setting up and registering services such as authentication.
 
+### NPM - it's an important citizen
+[NPM](https://docs.npmjs.com/) is now a first class citizen of an ASP.NET 5 project. This is why you have a `package.json` file in your project.
 
-The Aurelia tutorials do a nice job of explaining why JSPM is However, Aurelia recommend JSPM as it also provides a `loader` for loading your javascript dependencies at runtime via a call to `system.import` and some nice features like transpiling those scripts on the fly so you can use ES6. It's basically a package manager *plus* a package loader at runtime - which results in a more complete system than using Bower alone, it's less work for you overall.
+![packages json file.PNG]({{site.baseurl}}/source/assets/posts/packages json file.PNG)
 
-## Setup
+NPM is a package manager - the Node Package Manager to be precise. Think `NuGet` but for NodeJs packages. You could be forgiven for thinking it stands for "Not another Package Manager" - it doesn't, I checked.
+
+If you aren't yet familiar with NPM, stop here and do yourself a favour - go [get familiar](https://docs.npmjs.com/), you will be seeing a lot of it in your ASP.NET 5 projects in the days to come!
+
+### Hold, another Package Manager? But we allready have NuGet?
+NuGet is for .NET libraries like log4net silly. Npm has a vast array of packages not available through NuGet. Why wouldn't you want to tap into those also? 
+
+### Bower
+Here is where things get a tiny bit confusing. Bower is also a package manager. I am tempted to move on and let that hang.. but I'll explain.
+
+Bower is a NodeJs program, and is therefore distributed as a NodeJs package, via `NPM`. However it's purpose is to be a package manager itself, but specifically for website dependencies such as javascript or css. Think Jquery. If you want to add Jquery, or Bootstrap, or any other client side library to your project, then Bower would be the package manager to use to achieve that. Not NPM (although you could), and not NuGet (although you could). The ASP.NET team thinks `Bower` is the package manager to use as it specialises for this - so the ASP.NET 5 project is set up by default to use Bower and you may allready see some Bower packages downloaded into your `bower_components` folder within your project. The `bower.json` file keeps track of your bower dependencies.
+
+However, in this walkthrough, we shall be scrapping `Bower` and using a different package manager for our JQueries and our Bootstraps. One called [Jspm](http://jspm.io/). Jspm is recomended for it's additional capabilities that streamline our development processes and make all our lives just a little bit easier.
+
+### Gulp
+- [Gulp](http://gulpjs.com/) is what all the cool kids are using to automate their development workflows.
+
+Gulp basically lets you define `tasks` in a javascript file gulpfile.js that can then be run at an appropirate point. VS 2015 has a `Task Runner Explorer` window in which you can pick which Gulp tasks (the ones defined in your gulpfile.js) that you would like to run and when. For example, you can have your gulp task executed whenever the project is built, or cleaned etc. You can also execute your gulp task at any point via a call to `gulp` on the command line passing the correct args (see the Gulp docs)
+
+We are going to write some Gulp tasks, that mean that when we build our web project, the javascript files that we need, are bundled up / minified, and output to a "dist" folder. 
+
+Our web application is going to reference the "bundled" file from the dist folder rather than individual javascript files - which means its nice and optimised as the browser will have to do less roundtrips with the server (network requests) overall to load all the required javascript.
+
+### But won't bundling and minification lead to a poor debugging experience?
+
+Not if sourcemaps are enabled. I will show you how to enable this. This will mean the browser will be requesting and running the optimised bundle of javascript - but you the developer, will be stepping through and reading the original source code in your browser dev tools, thanks to the magical power of source maps.
+
+However, I will also show you what to do if you just don't want to bundle / minify your javascript during development, and only want to do this at the time of a release build - which is pretty sensible too.
