@@ -51,7 +51,7 @@ Here is where things get a tiny bit confusing. Bower is also a package manager. 
 
 Bower is a NodeJs program, and is therefore distributed as a NodeJs package, via `NPM`. However it's purpose is to be a package manager itself, but specifically for website dependencies such as javascript or css. Think Jquery. If you want to add Jquery, or Bootstrap, or any other client side library to your project, then Bower would be the package manager to use to achieve that. Not NPM (although you could), and not NuGet (although you could). The ASP.NET team thinks `Bower` is the package manager to use as it specialises for this - so the ASP.NET 5 project is set up by default to use Bower and you may allready see some Bower packages downloaded into your `bower_components` folder within your project. The `bower.json` file keeps track of your bower dependencies.
 
-However, in this walkthrough, we shall be scrapping `Bower` and using a different package manager for our JQueries and our Bootstraps. One called [Jspm](http://jspm.io/). Jspm is recomended for it's additional capabilities that streamline our development processes and make all our lives just a little bit easier.
+However, in this walkthrough, we shall be scrapping `Bower` and using a different package manager for our JQueries and our Bootstraps. One called [Jspm](http://jspm.io/). Jspm is recomended for it's additional capabilities, mainly that it provides not just package management features (at dev time) but package loading features, that your application uses at runtime. 
 
 ### Gulp
 - [Gulp](http://gulpjs.com/) is what all the cool kids are using to automate their development workflows.
