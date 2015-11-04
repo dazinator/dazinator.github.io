@@ -95,7 +95,7 @@ I created a NuGet package called [TestyDroid](https://www.nuget.org/packages/Xam
 - Collates the Results of the tests, and reports them via Standard Output, with option to report in TeamCity friendly format so that Team City displays the tests in the UI when it calls this exe during a build.
 - Ensures the emulator is killed afterwards.
 
-In order to write this tool, it took a fair bit of research and testing over the past few days!
+In order to write this tool, it's fair to say it has taken a fair bit of research and testing!
 
 So - [Install the NuGet package](https://www.nuget.org/packages/Xamarin.TestyDroid/)
 
