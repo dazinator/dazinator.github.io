@@ -134,7 +134,7 @@ namespace Xamarin.TestyDroid.TestTests
 
 ```
 
-Next, (adjust the Namespace appropriately) - the Instrumentation Attribute above the class has a "Name" property. THIS IS VERY IMPORTANT. Make sure it matches:
+Imortant note, (adjust the Namespace appropriately) - the Instrumentation Attribute above the class has a "Name" property. THIS IS VERY IMPORTANT. Make sure it matches:
 
 The lower case namespace of TestInstrumentation class + the Class Name of the TestInstrumentation class
 
