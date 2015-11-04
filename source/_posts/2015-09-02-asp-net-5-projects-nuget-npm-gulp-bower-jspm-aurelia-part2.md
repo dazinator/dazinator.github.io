@@ -2,9 +2,10 @@
 layout: post
 comments: true
 categories: ""
-published: true
+published: false
 title: "ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia-Part2"
 ---
+
 
 ## Part 2 - Adding an Aurelia App to our MVC Application
 
@@ -55,11 +56,3 @@ Isn't it annoying though that whenever we make a change to our javascript file, 
 Well with Browser-Sync that is a thing of the past.
 
 TODO: Explain how to set up browser-sync, gulp task etc, and sepcify port number in gulp task options, and proxy.. Then change project website settings to launch default url of the proxy when we start the project. Then all we have to do is serve which starts browser sync, and gets gulp watching for changes, then with gulp serve running we can run the website and debug in VS as normal whever we need to.
-
-
-
-
-
-
-
-
