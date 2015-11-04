@@ -233,9 +233,187 @@ For the time being, you will notice there isn't much test detail in the report -
 
 ## Step 5 - Running On Team City
 
-is test and then dumps information about tests that fail, along with number of tests that pass, fail, are skipped etc, into the 
+Once you check these changes in, you should have Team City set up to fetch your latest changes and build your solution. I won't go into the detail of that here as there is plenty of information online about how to get running with Team City.
+
+However, the important step is that you will need to add a couple of build steps to your Team City build.
+
+1. An MSBUILD step to build your Tests project (csproj file) such that it outputs the APK
+2. A command line step that calls out to Xamarin.TestyDroid.exe with the necessary arguments, such that TestyDroid will laucnh the emulator, run your tests, report the results, and terminate the emulator.
+
+The first step is easy, but the important thing to remember is to set the target to SignAndroidPackage
+
+![tc commandlineparams testydroid.PNG]({{site.baseurl}}/source/assets/posts/tc commandlineparams testydroid.PNG)
+
+That will now take care of producing the APK in the output directory for your project during your team city build.
+
+The second step to create is the one that actually runs the tests using TestyDroid!
+The follwing screenshot shows setting up a Command line step to do this:
+![tc testydroid commandlinestep.PNG]({{site.baseurl}}/source/assets/posts/tc testydroid commandlinestep.PNG)
+
+## Step 6 - Admire your tests in Team City.. with a catch.
+Now you can run a build - and if all is well - you should see your tests results added to a tests tab in Team City.
+
+But wait.. there is a catch. Only the "Failed" tests show, and the rest of the tests are just made up names "Test 1" passed, "Test 2" passed etc.
+
+This goes back to the point earlier that Xamarin TestSuiteInstrumentation only provides test details for tests that fail. Therefore TestyDroid simply makes tests up to report to team city in order to satisfy the summary aggregate information that "X tests passes", "X tests skipped" etc. This is the summary information you saw in the log output from earlier - i.e this:
+
+```
+INSTRUMENTATION_RESULT: passed=1
+
+INSTRUMENTATION_RESULT: skipped=1
+
+INSTRUMENTATION_RESULT: inconclusive=1
+
+INSTRUMENTATION_RESULT: failed=1
+
+INSTRUMENTATION_CODE: 0
+```
+
+So how can we improve this situation?
+
+Well TestyDroid needs to get more granular information. We can do by making some modifications to our `TestInstrumentation` class from earlier.
+
+Go back to your tests project and modify your `TestInstrumentation` class to look like the following:
+
+```csharp
+ [Instrumentation(Name = "xamarin.testydroid.testtests.TestInstrumentation")]
+    public class TestInstrumentation : TestSuiteInstrumentation
+    {
+
+        public TestInstrumentation(IntPtr handle, JniHandleOwnership transfer) : base(handle, transfer)
+        {
+        }
+
+        protected override void AddTests()
+        {
+            AddTest(Assembly.GetExecutingAssembly());
+        }
+
+        public override void Finish(Result resultCode, Bundle results)
+        {
+            if (results == null)
+            {
+                throw new InvalidOperationException("could not get results.");
+            }
+            // There is an internal class "AndroidRunner" with a public static method that returns it's instance.
+            // Get this using reflection to get at test results.
+            try
+            {
+                IDictionary<string, NUnit.Framework.Internal.TestResult> testResults = EnsureTestResults();
+                AddResultsToBundle(testResults, results);
+                // results.PutBoolean("##TestyDroidResultFormat", true);
+            }
+            catch (Exception e)
+            {
+                Log.Error("error getting results", e.ToString());
+                throw;
+            }
 
 
+            base.Finish(resultCode, results);
+        }
+
+        private void AddResultsToBundle(IDictionary<string, TestResult> testResults, Bundle results)
+        {
+
+            var testResultsDoc = new XmlDocument();
+            var testResultsElement = testResultsDoc.CreateElement("TestResults");
+            testResultsDoc.AppendChild(testResultsElement);
+
+            // now output desired format in bundle.
+            foreach (var testResult in testResults.Values)
+            {
+                if (!testResult.HasChildren)
+                {
+                    var testElement = testResultsDoc.CreateElement("TestResult");
+                    testResultsElement.AppendChild(testElement);
+
+                    var nameAtt = testResultsDoc.CreateAttribute("Name");
+                    nameAtt.Value = testResult.FullName;
+                    testElement.Attributes.Append(nameAtt);
+
+                    var statusAtt = testResultsDoc.CreateAttribute("Status");
+                    statusAtt.Value = testResult.ResultState.Status.ToString();
+                    testElement.Attributes.Append(statusAtt);
+
+                    var durationAtt = testResultsDoc.CreateAttribute("Duration");
+                    durationAtt.Value = testResult.Duration.ToString();
+                    testElement.Attributes.Append(durationAtt);
+
+                    var messageAtt = testResultsDoc.CreateAttribute("Message");
+                    messageAtt.Value = testResult.Message;
+                    testElement.Attributes.Append(messageAtt);
+
+                    var labelAtt = testResultsDoc.CreateAttribute("Label");
+                    labelAtt.Value = testResult.ResultState.Label;
+                    testElement.Attributes.Append(labelAtt);
+
+                    testElement.InnerText = testResult.StackTrace;                   
+
+                }
+            }
+
+            var reportContents = testResultsDoc.OuterXml;
+            results.PutString("##TestyDroidTestsReport", reportContents);           
+
+        }
+
+        private IDictionary<string, TestResult> EnsureTestResults()
+        {
+            var aType = typeof(TestSuiteInstrumentation);
+            if (aType == null)
+            {
+                throw new InvalidOperationException("could not get aType.");
+            }
+            var assembly = aType.Assembly;
+            if (assembly == null)
+            {
+                throw new InvalidOperationException("could not get assembly of atype.");
+            }
+
+            var androidRunnerType = assembly.GetType("Xamarin.Android.NUnitLite.AndroidRunner");
+            if (androidRunnerType == null)
+            {
+                throw new InvalidOperationException("could not get Runner type.");
+            }
+
+            var prop = androidRunnerType.GetProperty("Runner", BindingFlags.Public | BindingFlags.Static);
+            if (prop == null)
+            {
+                throw new InvalidOperationException("could not get Runner property.");
+            }
+
+            var objRunner = prop.GetValue(null, null);
+            if (objRunner == null)
+            {
+                throw new InvalidOperationException("could not get Runner instance.");
+            }
+
+            var resultsProperty = objRunner.GetType().GetProperty("Results", BindingFlags.Public | BindingFlags.Static);
+            if (resultsProperty == null)
+            {
+                throw new InvalidOperationException("could not get Results property from Runner instance.");
+            }
+
+            var testResults = (IDictionary<string, TestResult>)resultsProperty.GetValue(objRunner);
+            return testResults;
+
+
+        }
+    }
+
+```
+
+
+What we are doing here, is using Reflection to get at the Xamarin `AndroidRunner` and then interating over the tests to build a more detailed report.
+
+We then dump that report in the `Bundle` which like I said earlier, shows up in the STDOUT of the command used to execute the Instrument on the Android device (`adb shell am instrument`)
+
+TestyDroid has some code that checks for the presence of this additional report, and if it finds it, it parses its report data from this instead. All of this means, when you next run your Team City build - all of your tests show up correctly!
+
+
+## Any Questions?
+I have been someone limited by time so this was fairly rushed together! If there is anything you would like me to elaborate on, please leave a comment below.
 
 
 
