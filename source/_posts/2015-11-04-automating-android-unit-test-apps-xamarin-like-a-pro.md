@@ -6,10 +6,11 @@ published: true
 title: Automating Android Unit Test Apps (Xamarin) Like A Pro
 ---
 
+
 ## First Off..
 This article is for those of you out there who use Xamarin to write Android applications. Moreoever, it's for those of you who also like to run automated tests. Even more specifically, it's for those of you who want to run your automated tests actually on an Android device..
 
-I spent a couple of days figuring out how to get my Xamarin "Unit Tests" to run on an actual Android device, automatically, during a CI build (Team City) with the test results reported back into Team City.
+I spent a couple of days figuring out how to get my Xamarin "Unit Tests" to autoamically run on an Android device during a CI build (Team City) with the test results reported nicely.
 
 Here is the process I wanted:
 
@@ -27,7 +28,7 @@ Here is the process I wanted:
 It all begins with adding the unit tests project itself.
 Xamarin have provided a project type in Visual Studio called a "Unit Test App". Add one of those projects to your Solution and define some tests. 
 
-![New Android Unit Test Project.PNG]({{site.baseurl}}/source/assets/posts/New Android Unit Test Project.PNG)
+![New Android Unit Test Project.PNG]({{site.baseurl}}/assets/posts/New Android Unit Test Project.PNG)
 
 Here are some tests:
 
@@ -74,16 +75,15 @@ Here are some tests:
 
 ## Shortcomings of Running these tests
 
-Naturally, you may be thinking how do you now run these tests? Well by default you have to manually run. Starting the tests project in VS should deploy the APK to your Android device, and launch the app, which then shows a UI, and you must click buttons on said UI to run the various tests that you want to run MANUALLY.
-
+Naturally, you may be thinking how do you now run these tests? Well by default you have to manually run them. This is an app. Starting the tests project in VSis like starting any other Android application - it should deploy the APK to your Android device, and launch the app, which then shows a UI, and you must click various buttons on said UI to run the various tests that you want to run MANUALLY.
 
 ## An enormous pain in the ass..
 
-This ofcourse, is a rediculous way forward and we need to get these automated ASAP.
+This ofcourse, is a rediculous way forward and we need to get these automated ASAP!
 
 ## The short answer
 
-The short answer, is that we need to take a few steps to get these tests automated.
+The short answer, is that we need to take a few steps to get these tests automated.. Read on..
 
 ## Step 1 - The NuGet Package
 
@@ -107,7 +107,7 @@ Android has the concept of "Instruments"
 
 Instruments are special classes, that can be launched via an intent, and can run tests.
 
-So, in order to "start" the tests running on the Android device (after the APK) has been installed, we need to create this "Instrument" class in our tests project, and ensure it gets "Registered" when our app is installed. This way we can later run all of our tests by simply "launching" this instrument. 
+So, in order to "start" the tests running on the Android device (after the APK) has been installed, we need to create this "Instrument" class in our tests project, and ensure it gets "Registered" when our app is installed. This way we can later run all of our tests by simply "launching" this instrument from the command line. 
 
 You don't need to worry about this "Launching" or anything though. TestyDroid handles all that for you. All you need to do is create the Instrument.
 
@@ -134,9 +134,9 @@ namespace Xamarin.TestyDroid.TestTests
 
 ```
 
-Imortant note, (adjust the Namespace appropriately) - the Instrumentation Attribute above the class has a "Name" property. THIS IS VERY IMPORTANT. Make sure it matches:
+Imortant to note (adjust the Namespace appropriately) - the Instrumentation Attribute above the class has a "Name" property. THIS IS VERY IMPORTANT. Make sure it matches the following:
 
-The lower case namespace of TestInstrumentation class + the Class Name of the TestInstrumentation class
+The lower case namespace of the TestInstrumentation class + the Class Name of the TestInstrumentation class (Case sensitive)
 
 So if you changed the namespace of this class to MyCoolApp.Tests
 And you changed the Class Name of this class to MyCoolTestInstrumentation
@@ -225,9 +225,9 @@ Emulator killed.
 
 so what just happened?
 
-The TestyDroid exe, started an emulator instance. Used ADB to monitor when it had finished booting. Then it installed the APK containing your tests onto the device. It then used the `adb shell am instrument` command to launch your Instrumentation class discussed earlier. This runs all of your tests.
+The TestyDroid exe, started an emulator instance. Used ADB to monitor when it had finished booting. Then it installed the APK containing your tests onto the device. It then used the `adb shell am instrument` command to launch your Instrumentation class discussed earlier. It then analyses the STDOUT to formulate the test results. 
 
-During test execution, the Xamarin `TestSuiteInstrumentation` puts some general information into a `Bundle`. This `Bundle` is returned when the Instrumentation finishes, and is ultimately written to STDOUT when you execute `adb shell am instrument` command. The `INSTRUMENTATION_RESULT` messages you see in the log are basically entries from the `Bundle`. 
+During test execution, the Xamarin `TestSuiteInstrumentation` class puts some general information about number of tests passing, failing etc into a `Bundle`. This `Bundle` is returned when the Instrumentation finishes executing, and it's contents are ultimately written to the STDOUT of the `adb shell am instrument` process. The `INSTRUMENTATION_RESULT` messages you see in the log are basically entries from this `Bundle`. 
 
 For the time being, you will notice there isn't much test detail in the report - just the number of tests that passed etc - it doesn't display each individual test. I will come back to this later - as this is a limitation we can overcome.
 
@@ -242,13 +242,13 @@ However, the important step is that you will need to add a couple of build steps
 
 The first step is easy, but the important thing to remember is to set the target to SignAndroidPackage
 
-![tc commandlineparams testydroid.PNG]({{site.baseurl}}/source/assets/posts/tc commandlineparams testydroid.PNG)
+![tc commandlineparams testydroid.PNG]({{site.baseurl}}/assets/posts/tc commandlineparams testydroid.PNG)
 
 That will now take care of producing the APK in the output directory for your project during your team city build.
 
 The second step to create is the one that actually runs the tests using TestyDroid!
 The follwing screenshot shows setting up a Command line step to do this:
-![tc testydroid commandlinestep.PNG]({{site.baseurl}}/source/assets/posts/tc testydroid commandlinestep.PNG)
+![tc testydroid commandlinestep.PNG]({{site.baseurl}}/assets/posts/tc testydroid commandlinestep.PNG)
 
 ## Step 6 - Admire your tests in Team City.. with a catch.
 Now you can run a build - and if all is well - you should see your tests results added to a tests tab in Team City.
@@ -414,9 +414,3 @@ TestyDroid has some code that checks for the presence of this additional report,
 
 ## Any Questions?
 I have been someone limited by time so this was fairly rushed together! If there is anything you would like me to elaborate on, please leave a comment below.
-
-
-
-
-
-
