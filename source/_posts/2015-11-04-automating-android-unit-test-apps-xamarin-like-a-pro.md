@@ -109,7 +109,7 @@ Instruments are special classes, that can be launched via an intent, and can run
 
 So, in order to "start" the tests running on the Android device (after the APK) has been installed, we need to create this "Instrument" class in our tests project, and ensure it gets "Registered" when our app is installed. This way we can later run all of our tests by simply "launching" this instrument. 
 
-You don't need to worry about this "Launching" or anything though. TestyDroid handled that for you. All you need to do is the following:
+You don't need to worry about this "Launching" or anything though. TestyDroid handles all that for you. All you need to do is create the Instrument.
 
 Add the following class to your Tests project:
 
