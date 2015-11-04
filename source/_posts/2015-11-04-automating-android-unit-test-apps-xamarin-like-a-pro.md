@@ -173,16 +173,22 @@ So the package name for my tests app is `Xamarin.TestyDroid.TestTests`
 
 Now we need some more general paramaters about where things are on our environment:
 
-1. The path to `Adb.exe`
-2. The path to `Emulator.exe`
+1. The path to `Adb.exe` (this is in your android-sdk\platform-tools directory)
+2. The path to `Emulator.exe` (this is in your android-sdk\tools directory)
 3. The path to your Tests.APK file (I will give you a clue - it will probably be in your bin/release/ folder :)
-4. The name of the AVD that you would like to be launched in the emulator and used to run the tests on
+4. The name of the AVD that you would like to be launched in the emulator and used to run the tests on.
 
 Once you have these things, you are ready to try out running the tests automatically, from your local machine.
 
 ## Step 4 - Running things locally.
 
-Armed with the information in the previous step, simply Run `Xamarin.TestyDroid.exe` with the arguments it needs. You can look here for a breakdown of all the arguments: https://github.com/dazinator/Xamarin.TestyDroid - or just execute it with the `--help` argument to see the help screen.
+Armed with the information in the previous step:
+
+1. Open up a command prompt.
+2. CD to the tools directory of the Xamarin.TestyDroid nuget package you added to your solution earlier. It should be something like "..path to you solution/packages/Xamarin.TestyDroid.0.1.10/tools/"
+
+Run `Xamarin.TestyDroid.exe` with the arguments it needs. 
+You can look here for a breakdown of all the arguments: https://github.com/dazinator/Xamarin.TestyDroid - or just execute it with the `--help` argument to see the help screen.
 
 Here is an example:
 
@@ -190,10 +196,44 @@ Here is an example:
 Xamarin.TestyDroid.exe -e "C:\Program Files (x86)\Android\android-sdk\tools\emulator.exe" -d "C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe" -f "src\MyTests\bin\Release\MyTests.apk-Signed.apk" -i "AVD_GalaxyNexus_ToolsForApacheCordova" -n "MyTests" -c "mytests.TestInstrumentation" -w 120
 ```
 
+Substitute the argument values accordingly.
+
 You should see output similar to the following:
 
+```
+Starting emulator: D:\android-sdk\tools\emulator.exe -avd Xamarin_Android_API_15 -port 5554 -no-boot-anim -prop emu.uuid=013b8394-db8d-4224-a36f-889ce164f74e
 
+Waiting until: 04/11/2015 19:21:29 for device to complete boot up..
 
+INSTRUMENTATION_RESULT: passed=1
+
+INSTRUMENTATION_RESULT: skipped=1
+
+INSTRUMENTATION_RESULT: inconclusive=1
+
+INSTRUMENTATION_RESULT: failed=1
+
+INSTRUMENTATION_CODE: 0
+
+Killing device: emulator-5554
+Sending kill command.
+OK: killing emulator, bye bye
+
+Emulator killed.
+
+```
+
+so what just happened?
+
+The TestyDroid exe, started an emulator instance. Used ADB to monitor when it had finished booting. Then it installed the APK containing your tests onto the device. It then used the `adb shell am instrument` command to launch your Instrumentation class discussed earlier. This runs all of your tests.
+
+During test execution, the Xamarin `TestSuiteInstrumentation` puts some general information into a `Bundle`. This `Bundle` is returned when the Instrumentation finishes, and is ultimately written to STDOUT when you execute `adb shell am instrument` command. The `INSTRUMENTATION_RESULT` messages you see in the log are basically entries from the `Bundle`. 
+
+For the time being, you will notice there isn't much test detail in the report - just the number of tests that passed etc - it doesn't display each individual test. I will come back to this later - as this is a limitation we can overcome.
+
+## Step 5 - Running On Team City
+
+is test and then dumps information about tests that fail, along with number of tests that pass, fail, are skipped etc, into the 
 
 
 
