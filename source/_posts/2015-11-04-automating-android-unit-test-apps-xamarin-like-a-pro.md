@@ -15,12 +15,12 @@ Here is the process I wanted:
 
 1. Check some code in
 2. CI Build Begins
-3.  Produces the APK file containing my tests.
+3. Produces the APK file containing my tests.
 4. Starts up an Emulator and boots an AVD
 5. Installs the tests APK onto the Android Device (Emulated)
 6. Kicks of the tests
 7. Reports back the test results.
-4. The tests all nicely appear in Team City.
+8. The tests all nicely appear in Team City.
 
 
 ## Unit Test App (Android) - and it's shortcomings.
