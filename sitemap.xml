@@ -1,55 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://darrelltunnell.net/blog/2015/11/05/automating-android-unit-test-apps-xamarin-like-a-pro/</loc>
+    <lastmod>2015-11-05T19:52:00+00:00</lastmod>
+  </url>
+  <url>
     <loc>http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc/</loc>
     <lastmod>2015-08-16T00:00:00+01:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/2015/06/13/dotnetnuke-streamlining-module-development/</loc>
     <lastmod>2015-06-13T00:00:00+01:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/2015/04/29/automating-dotnetnuke-deployments-with-octopus-deploy/</loc>
     <lastmod>2015-04-29T00:00:00+01:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-executemultiplerequest-get-you/</loc>
     <lastmod>2015-02-26T00:00:00+00:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install/</loc>
     <lastmod>2015-01-18T00:00:00+00:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/</loc>
     <lastmod>2014-12-22T00:00:00+00:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins/</loc>
     <lastmod>2014-12-14T17:50:00+00:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/2014/11/16/a-proclamation/</loc>
     <lastmod>2014-11-16T16:20:59+00:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/archives/</loc>
-    <lastmod>2015-08-16T20:30:23+01:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
   </url>
   <url>
     <loc>http://darrelltunnell.net/</loc>
-    <lastmod>2015-08-16T20:30:23+01:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/dynamics/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/crm-unit/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/testing/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/crm/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/asp-dot-net/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/nuget/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/asp-dot-net-nuget/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/asp-dot-net-nuget-asp-dot-net-nuget/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/dotnetnuke-octopus-deployment/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/dotnetnuke-dnnpackager/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/aurelia/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/gulp/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/xamarin-android-teamcity-tests-automate-ci-build/</loc>
   </url>
 </urlset>
