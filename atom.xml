@@ -1,0 +1,1730 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Darrell Tunnell's Blog]]></title>
+  <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
+  <link href="http://darrelltunnell.net/"/>
+  <updated>2015-11-05T20:45:59+00:00</updated>
+  <id>http://darrelltunnell.net/</id>
+  <author>
+    <name><![CDATA[Darrell Tunnell]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Automating Android Unit Test Apps (Xamarin) Like a Pro]]></title>
+    <link href="http://darrelltunnell.net/blog/2015/11/05/automating-android-unit-test-apps-xamarin-like-a-pro/"/>
+    <updated>2015-11-05T19:52:00+00:00</updated>
+    <id>http://darrelltunnell.net/blog/2015/11/05/automating-android-unit-test-apps-xamarin-like-a-pro</id>
+    <content type="html"><![CDATA[<h2>First Off..</h2>
+
+<p>This article is for those of you out there who use Xamarin to write Android applications and want to automate the process of running your tests on an Android device. I&rsquo;ll show you how you can set this up with relative ease.</p>
+
+<p>Here is the process we want:</p>
+
+<!-- more -->
+
+
+<ol>
+<li>CI Build Begins</li>
+<li>Produces the APK file containing my tests.</li>
+<li>Starts up an Emulator and boots an AVD</li>
+<li>Installs the tests APK onto the Android Device (Emulated)</li>
+<li>Kicks of the tests</li>
+<li>Reports back the test results.</li>
+<li>If using Team City the test all appear nicely in the UI - otherwise the results are in STDOUT.</li>
+</ol>
+
+
+<h2>Unit Test App (Android) - and it&rsquo;s shortcomings.</h2>
+
+<p>It all begins with adding the unit tests project itself.
+Xamarin have provided a project type in Visual Studio called a &ldquo;Unit Test App&rdquo;. Add one of those projects to your Solution and define some tests.</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/New%20Android%20Unit%20Test%20Project.PNG" alt="New Android Unit Test Project.PNG" /></p>
+
+<p>Here are some tests:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">  [TestFixture]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">TestsSample</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">        [SetUp]</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Setup</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="na">        [TearDown]</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Tear</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">        [Test]</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Pass</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;test1&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">Assert</span><span class="p">.</span><span class="n">True</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">        [Test]</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Fail</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">Assert</span><span class="p">.</span><span class="n">False</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">        [Test]</span>
+</span><span class='line'><span class="na">        [Ignore(&quot;another time&quot;)]</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Ignore</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">Assert</span><span class="p">.</span><span class="n">True</span><span class="p">(</span><span class="k">false</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">        [Test]</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Inconclusive</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">Assert</span><span class="p">.</span><span class="n">Inconclusive</span><span class="p">(</span><span class="s">&quot;Inconclusive&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Shortcomings of Running these tests</h2>
+
+<p>Naturally, you may be thinking how do you now run these tests? Well by default you have to manually run them. This is an app. Starting the tests project in VSis like starting any other Android application - it should deploy the APK to your Android device, and launch the app, which then shows a UI, and you must click various buttons on said UI to run the various tests that you want to run MANUALLY.</p>
+
+<h2>An enormous pain in the ass..</h2>
+
+<p>This ofcourse, is a rediculous way forward and we need to get these automated ASAP!</p>
+
+<h2>The short answer</h2>
+
+<p>The short answer, is that we need to take a few steps to get these tests automated.. Read on..</p>
+
+<h2>Step 1 - The NuGet Package</h2>
+
+<p>I created a NuGet package called <a href="https://www.nuget.org/packages/Xamarin.TestyDroid/">TestyDroid</a>.</p>
+
+<p>In order to write this tool, it&rsquo;s fair to say it has taken a fair bit of research and testing!</p>
+
+<p>So - <a href="https://www.nuget.org/packages/Xamarin.TestyDroid/">Install the NuGet package to your tests project</a></p>
+
+<p>It contains two things. Firstly, it contains a command line executable in it&rsquo;s tools folder, called TestyDroid.exe. This little command line will handle spinning up an emulator, installing your tests apk, and running all of your tests and reporting the results, and lastly terminating the emulator once done.</p>
+
+<p>Secondly, it contains an Android library that is added to your Android tests project as a reference. This library includes an improved base class that you will derive form instead of the default Xamrin one. We will cover this in the next step.</p>
+
+<h2>Step 2</h2>
+
+<p>After that is installed, we need to address how these tests get &ldquo;launched&rdquo; in the first place.</p>
+
+<p>Android has the concept of &ldquo;Instrumentation&rdquo;</p>
+
+<p><code>Instrumentation</code> are basically special types, that can be launched via an intent, and can run tests.</p>
+
+<p>So, in order to &ldquo;start&rdquo; the tests running on the Android device (after the APK) has been installed, we need to create this &ldquo;Instrumentation&rdquo; class in our tests project.</p>
+
+<p>Add the following class to your Tests project:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">namespace</span> <span class="nn">Xamarin.TestyDroid.TestTests</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">    [Instrumentation(Name = &quot;xamarin.testydroid.testtests.TestInstrumentation&quot;)]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">TestInstrumentation</span> <span class="p">:</span> <span class="n">TestyDroid</span><span class="p">.</span><span class="n">Android</span><span class="p">.</span><span class="n">TestyDroidTestSuiteInstrumentation</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="nf">TestInstrumentation</span><span class="p">(</span><span class="n">IntPtr</span> <span class="n">handle</span><span class="p">,</span> <span class="n">JniHandleOwnership</span> <span class="n">transfer</span><span class="p">)</span> <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">transfer</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">AddTests</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">AddTest</span><span class="p">(</span><span class="n">Assembly</span><span class="p">.</span><span class="n">GetExecutingAssembly</span><span class="p">());</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Imortant to note (adjust the Namespace appropriately) - the Instrumentation Attribute above the class has a &ldquo;Name&rdquo; property. THIS IS VERY IMPORTANT. Make sure it matches yoru namespace + class name, but with the namespace in lower case.</p>
+
+<p>So if you changed the namespace of this class to MyCoolApp.Tests
+And you changed the Class Name of this class to MyCoolTestInstrumentation
+Then the Attribute above the MyCoolTestInstrumentation class should look like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na"> [Instrumentation(Name = &quot;mycoolapp.tests.MyCoolTestInstrumentation&quot;)]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">MyCoolTestInstrumentation</span> <span class="p">:</span> <span class="n">TestyDroid</span><span class="p">.</span><span class="n">Android</span><span class="p">.</span><span class="n">TestyDroidTestSuiteInstrumentation</span>
+</span><span class='line'>    <span class="p">{</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Step 3 - Jot things down</h2>
+
+<p>We now need to make a note of a few variables that we will need in order to call <code>TestyDroid.exe</code> to run our tests.</p>
+
+<p>The first thing we need is the &ldquo;class path&rdquo; of your tests Instrumentation. This is &ldquo;Name&rdquo; value of the [Instrumentation] attribute in the previous step. For example:</p>
+
+<p><code>xamarin.testydroid.testtests.TestInstrumentation</code></p>
+
+<p>The next thing we need is the Package name of your tests package. This you can grab from the <code>AndroidManifest.xml</code> file.</p>
+
+<p>Here is mine:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;manifest</span> <span class="na">xmlns:android=</span><span class="s">&quot;http://schemas.android.com/apk/res/android&quot;</span> <span class="na">package=</span><span class="s">&quot;Xamarin.TestyDroid.TestTests&quot;</span> <span class="na">android:versionCode=</span><span class="s">&quot;1&quot;</span> <span class="na">android:versionName=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;uses-sdk</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;application</span> <span class="na">android:label=</span><span class="s">&quot;Xamarin.TestyDroid.TestTests&quot;</span> <span class="na">android:icon=</span><span class="s">&quot;@drawable/Icon&quot;</span><span class="nt">&gt;&lt;/application&gt;</span>
+</span><span class='line'><span class="nt">&lt;/manifest&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So the package name for my tests app is <code>Xamarin.TestyDroid.TestTests</code></p>
+
+<p>You will also need to know some more general paramaters about where things are on our environment:</p>
+
+<ol>
+<li>The path to <code>Adb.exe</code> (this is in your android-sdk\platform-tools directory)</li>
+<li>The path to <code>Emulator.exe</code> (this is in your android-sdk\tools directory)</li>
+<li>The path to your Tests APK file (I will give you a clue - it will probably be in your bin/release/ folder of your tests project!)</li>
+<li>The name of the AVD that you would like to be launched in the emulator and used to run the tests on.</li>
+</ol>
+
+
+<p>Once you have these things, you are ready to give TestyDroid.exe a whirl!</p>
+
+<h2>Step 4 - Running things locally.</h2>
+
+<p>Armed with the information in the previous step:</p>
+
+<ol>
+<li>Open up a command prompt.</li>
+<li>CD to the tools directory of the Xamarin.TestyDroid nuget package you added to your  earlier. It should be something like &ldquo;..path to you solution/packages/Xamarin.TestyDroid.x.x.x/tools/&rdquo;</li>
+<li>Run <code>Xamarin.TestyDroid.exe</code> with the arguments it needs! Look here for a breakdown of all the arguments: <a href="https://github.com/dazinator/Xamarin.TestyDroid">https://github.com/dazinator/Xamarin.TestyDroid</a> - or just execute it with the <code>--help</code> argument to see the help screen.</li>
+</ol>
+
+
+<p>Here is an example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>Xamarin.TestyDroid.exe -e &quot;C:\Program Files (x86)\Android\android-sdk\tools\emulator.exe&quot; -d &quot;C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe&quot; -f &quot;src\MyTests\bin\Release\MyTests.apk-Signed.apk&quot; -i &quot;AVD_GalaxyNexus_ToolsForApacheCordova&quot; -n &quot;MyTests&quot; -c &quot;mytests.TestInstrumentation&quot; -w 120
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Substitute the argument values accordingly.</p>
+
+<p>You should see output similar to the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>Starting emulator: D:\android-sdk\tools\emulator.exe -avd Xamarin_Android_API_15 -port 5554 -no-boot-anim -prop emu.uuid=013b8394-db8d-4224-a36f-889ce164f74e
+</span><span class='line'>
+</span><span class='line'>Waiting until: 04/11/2015 19:21:29 for device to complete boot up..
+</span><span class='line'>
+</span><span class='line'>INSTRUMENTATION_RESULT: passed=1
+</span><span class='line'>
+</span><span class='line'>INSTRUMENTATION_RESULT: skipped=1
+</span><span class='line'>
+</span><span class='line'>INSTRUMENTATION_RESULT: inconclusive=1
+</span><span class='line'>
+</span><span class='line'>INSTRUMENTATION_RESULT: failed=1
+</span><span class='line'>
+</span><span class='line'>INSTRUMENTATION_CODE: 0
+</span><span class='line'>
+</span><span class='line'>Killing device: emulator-5554
+</span><span class='line'>Sending kill command.
+</span><span class='line'>OK: killing emulator, bye bye
+</span><span class='line'>
+</span><span class='line'>Emulator killed.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Step 5 - Running On Team City</h2>
+
+<p>Once you have verified you can automate the tests locally, the next step is to set up your build system to run them during your build!</p>
+
+<p>TestyDroid additionally supports reporting Test results in a TeamCity format so that they show up as test results in the TeamCity ui - if that&rsquo;s your build system.</p>
+
+<p>To configure TeamCity it&rsquo;s a case of:</p>
+
+<ol>
+<li>An MSBUILD step to build your Tests project (csproj file) such that it outputs the APK (remember to use the target <code>SignAndroidPackage</code> to have the APK produced)</li>
+<li>A command line step that calls out to Xamarin.TestyDroid.exe with the necessary arguments.</li>
+</ol>
+
+
+<p>The first step is easy, but the important thing to remember is to set the target to SignAndroidPackage</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/tc%20commandlineparams%20testydroid.PNG" alt="tc commandlineparams testydroid.PNG" /></p>
+
+<p>That will now take care of producing the APK in the output directory for your project during your team city build.</p>
+
+<p>The second step to create is the one that actually runs the tests using TestyDroid!
+The follwing screenshot shows setting up a Command line step to do this:
+<img src="http://darrelltunnell.net/assets/posts/tc%20testydroid%20commandlinestep.PNG" alt="tc testydroid commandlinestep.PNG" /></p>
+
+<h2>Step 6 - Admire your tests in Team City.</h2>
+
+<p>Now you can run a build - and if all is well - you should see your tests results added to a tests tab in Team City.</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/tc%20Tests%20Tab.PNG" alt="tc Tests Tab.PNG" /></p>
+
+<h2>Any Questions?</h2>
+
+<p>I have been someone limited by time so this was fairly rushed together! If there is anything you would like me to elaborate on, please leave a comment below.</p>
+
+<p>Also you can read more information about TestyDroid on Github: <a href="https://github.com/dazinator/Xamarin.TestyDroid/wiki/Getting-Started">https://github.com/dazinator/Xamarin.TestyDroid/wiki/Getting-Started</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia]]></title>
+    <link href="http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc/"/>
+    <updated>2015-08-16T00:00:00+01:00</updated>
+    <id>http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc</id>
+    <content type="html"><![CDATA[<p><strong>This post is part 1 of a series.</strong></p>
+
+<h2>ASP (A Sea of Packages).NET 5</h2>
+
+<p>When you create a new ASP.NET 5 project, you will see all sorts of new-ness. I am going to guide you, the uninitiated ASP.NET 5 web developer, through creating your first ASP.NET 5 MVC application, but we won&rsquo;t stop there. In the next post of this series, we will then enhance the project with a number of features:</p>
+
+<ol>
+<li>Bundling and Minification.</li>
+<li>Auto browser refresh (as you make changes to files during development)</li>
+</ol>
+
+
+<p>In addition, I will touch upon important tooling that you need to be aware of:</p>
+
+<ol>
+<li>NPM</li>
+<li>Bower and why we are going to replace it with Jspm</li>
+<li>Gulp - and why is it useful</li>
+</ol>
+
+
+<p>To be able to do all of this, we will be creating an ASP.NET MVC 5 project, and then we will be using <a href="http://aurelia.io/">Aurelia</a> to run an Aurelia application on Home page (Index.cshtml)</p>
+
+<!-- more -->
+
+
+<h2>New Project</h2>
+
+<p>The first step on our quest is simply to create a new ASP.NET application. I am sure you know the drill:</p>
+
+<ol>
+<li>In VS 2015, File &ndash;> New Project</li>
+<li>&ldquo;ASP.NET Web Application&rdquo;
+<img src="http://darrelltunnell.net/assets/posts/new%20aspnet%20project.PNG" alt="new aspnet project.PNG" /></li>
+<li>&ldquo;Web Application&rdquo;
+<img src="http://darrelltunnell.net/assets/posts/new%20aspnet%20project%202.PNG" alt="new aspnet project 2.PNG" /></li>
+</ol>
+
+
+<h2>Project Structure</h2>
+
+<p>At this point, with the project created, let&rsquo;s stop and appreciate some noteworthy files in our new project.</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/asp%20net%20project%20sol%20explorer.PNG" alt="asp net project sol explorer.PNG" /></p>
+
+<ul>
+<li><code>project.json</code> - this is the new form of the project file. It replaces for example the older <code>.csproj</code> and <code>.vbproj</code> files.</li>
+<li><code>package.json</code> - this file is managed by <a href="https://docs.npmjs.com/">NPM</a>. It records the dependencies that your application has on NPM packages. More on NPM later.</li>
+<li><code>bower.json</code> - this file is managed by <a href="http://bower.io/">Bower</a>. It records the dependencies that your application has on Bower packages. More on Bower later.</li>
+<li><code>gulpfile.js</code> - this file contains <code>tasks</code> that can be executed by <a href="http://gulpjs.com/">Gulp</a> as part of your development workflow, for example, whenever the project is built, cleaned etc. More on this later.</li>
+<li><code>Startup.cs</code> this is the entry point for your application. For the purposes of this article, the default code is fine and we won&rsquo;t be amending anything in this file. It contains bootstrapping code such as setting up and registering services such as authentication.</li>
+</ul>
+
+
+<h3>NPM - it&rsquo;s an important citizen</h3>
+
+<p><a href="https://docs.npmjs.com/">NPM</a> is now a first class citizen of an ASP.NET 5 project. This is why you have a <code>package.json</code> file in your project.</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/packages%20json%20file.PNG" alt="packages json file.PNG" /></p>
+
+<p>NPM is a package manager - the Node Package Manager to be precise. Think <code>NuGet</code> but for NodeJs packages. You could be forgiven for thinking it stands for &ldquo;Not another Package Manager&rdquo; - it doesn&rsquo;t, I checked.</p>
+
+<p>If you aren&rsquo;t yet familiar with NPM, stop here and do yourself a favour - go <a href="https://docs.npmjs.com/">get familiar</a>, you will be seeing a lot of it in your ASP.NET 5 projects in the days to come!</p>
+
+<h3>Hold on, another Package Manager? But we allready have NuGet?</h3>
+
+<p>NuGet is for .NET libraries like log4net silly. Npm has a vast array of packages not available through NuGet. Why wouldn&rsquo;t you want to tap into those also?</p>
+
+<h3>Bower</h3>
+
+<p>Here is where things get a tiny bit confusing. Bower is a package, that is also another package manager. I am tempted to move on.. but I&rsquo;ll explain.</p>
+
+<p>Bower is a NodeJs program, and is therefore distributed as a NodeJs package, via <code>NPM</code>. However it&rsquo;s purpose in life is to be a package manager, but specifically for client (website) dependencies such as javascript or css. Think Jquery. If you want to add Jquery, or Bootstrap, or any other client side library to your project, then Bower would be the package manager to use to achieve that. Not NPM (<a href="https://www.npmjs.com/package/jquery">although you could</a>), and not NuGet (<a href="https://www.nuget.org/packages/jQuery/">although you could</a>). The ASP.NET team thinks <code>Bower</code> is the package manager to use as Bower specialises for client dependencies - so the ASP.NET 5 project is set up by default to use Bower and you may allready see some Bower packages downloaded into your <code>bower_components</code> folder within your project. The <code>bower.json</code> file keeps track of your bower dependencies.</p>
+
+<p>However, in this walkthrough, we shall be scrapping <code>Bower</code> and using a different package manager for our JQueries and our Bootstraps. One called <a href="http://jspm.io/">Jspm</a>. Jspm is recomended for it&rsquo;s additional capabilities, mainly that it provides not just package management features (at dev time) but package loading features, that your application uses at runtime.</p>
+
+<h3>Gulp</h3>
+
+<p><a href="http://gulpjs.com/">Gulp</a> is what all the cool kids are using to automate their development workflows.</p>
+
+<p>Gulp basically lets you define <code>tasks</code> in a javascript file (gulpfile.js) that can then be run at an appropirate point. VS 2015 has a <code>Task Runner Explorer</code> window in which you can pick which Gulp tasks (the ones defined in your gulpfile.js) that you would like to run and when. For example, you can have your gulp task executed whenever the project is built, or cleaned etc. You can also execute your gulp task via the command line (see the Gulp docs)</p>
+
+<p>We are going to write some Gulp tasks in gulpfile.js, and have them executed as part of the our project&rsquo;s build process. These tasks are going to automatically handle bundling and minification of our javascript files for us.</p>
+
+<p>Our web application is going to reference the &ldquo;bundle&rdquo; of javascript that gulp outputs, rather than the individual javascript files that we download using jspm. Which means our application is going to be nice and optimised as the browser will have to do less roundtrips with the server (network requests) to load the required javascript.</p>
+
+<h3>But won&rsquo;t bundling and minification lead to a poor debugging experience?</h3>
+
+<p>Not if sourcemaps are enabled. I will show you how to enable this. This will mean the browser will be requesting and running the optimised bundle of javascript - but you the developer, will be stepping through and reading the original source code in your browser&rsquo;s dev tools, thanks to the magical power of source maps.</p>
+
+<p>However, I will also show you what to do if you just don&rsquo;t want to bundle / minify your javascript during development (not all browsers will support source maps yet). If bundling and minification is something you only want to do at the time of a release build - which is pretty sensible - then I&rsquo;ll cover that too.</p>
+
+<h2>Stay tuned</h2>
+
+<p>In the next post, we will begin modifying our ASP.NET 5 project to do the things I have discussed:</p>
+
+<ol>
+<li>Replace Bower with JSPM</li>
+<li>Bring in Aurelia</li>
+<li>Get an Aurelia application working on the Index.cshtml page</li>
+<li>Enable bundling and minification via a Gulp task</li>
+<li>Enable automatic browser refresh</li>
+<li>Disable bundling when our application is running in development (to maintain an easy debugging experience should your browser not support source maps)</li>
+</ol>
+
+
+<p>If there is anything else you would like me to cover in this series, drop me a comment below!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[DotNetNuke - Streamlining Module Development Workflow]]></title>
+    <link href="http://darrelltunnell.net/blog/2015/06/13/dotnetnuke-streamlining-module-development/"/>
+    <updated>2015-06-13T00:00:00+01:00</updated>
+    <id>http://darrelltunnell.net/blog/2015/06/13/dotnetnuke-streamlining-module-development</id>
+    <content type="html"><![CDATA[<h2>Module Debugging - Two Approaches</h2>
+
+<p>When developing DotNetNuke modules people take many different approaches but they boil down to two alternatives in terms of workflow:</p>
+
+<ol>
+<li><p>Placing / checking out your source code directly into the \DesktopModules folder of a DotNetNuke website, and having your module dll&rsquo;s output to directly into the DotNetNuke website&rsquo;s \bin folder.</p></li>
+<li><p>Checking out and working on your code wherever you like, but having to deploy your module (content and assemblies) to a local DNN website when you are ready to run it.</p></li>
+</ol>
+
+
+<p>Both approaches require that you &ldquo;attach to process&rdquo; from within Visual Studio in order to debug your module.</p>
+
+<!-- more -->
+
+
+<h3>I hate approach #1</h3>
+
+<p>I have all sorts of issues with approach #1. Yes it’s technically possible, but it’s also nasty in my view (not very clean) - I have elaborated on that elsewhere so won’t do so again here in depth, aside to say that I believe #2 is the &ldquo;cleanest&rdquo; approach and that many forms of debugging use #2 as the approach, not #1. For example, xamarin devs, when they debug an android app, you will see that xamarin actually deploys their project to the device / emulator, and then attaches the debugger to the remote process that&rsquo;s running on the device / emulator. The result is that they click &ldquo;Play&rdquo; in VS, and a shortwhile later they are attached and stepping through their code.. It may not be obvious that a deployment took place - but it did. Lastly. i&rsquo;ll point out that #1 creates a coupling between how you structure your source code, and where it needs to be when it&rsquo;s actually deployed.</p>
+
+<h3>But approach #2 is lacking</h3>
+
+<p>So deciding to take approach #2, having to manually copy / deploy your module content  to the DotNetNuke website each time you want to test your module, is just not an efficient use of your time!</p>
+
+<p>What&rsquo;s needed is some nice visual studio integration so that when you are ready to &ldquo;Run / Debug&rdquo; your module, you click one button and bam! chrome opens up, displaying your module, with the debugger attached so you can step through code.</p>
+
+<h3>Can anything be done?</h3>
+
+<p>I have allready made strides to address the inefficiences of #2 so that it&rsquo;s now a lot more streamlined: <a href="https://github.com/dazinator/DnnPackager">https://github.com/dazinator/DnnPackager</a> - it&rsquo;s a NuGet package that you add to any VS project, and it will produce the Dnn module installation zip for you when you build the project. It then also extends the package manager console window in VS with an additional command you can run, that will deploy the module project to a local DNN website. So this is the workflow I currently use for module debugging:</p>
+
+<ol>
+<li>Make a change to the code</li>
+<li>Hit “up” arrow and then hit “enter” in package manager console (this runs the previous command which is the DnnPackager one I spoke of, that builds and deploys my module project to my local dnn website)</li>
+<li>Refresh my browser page, and attach Visual Studio (ctrl + alt + p) to the w3w process.</li>
+</ol>
+
+
+<p>This is a bit more streamlined! This makes approach #2 workable in my opinion.</p>
+
+<h3>Room for Improvements!</h3>
+
+<ol>
+<li>What if I don’t have a DNN website already installed - for example I am new to Dnn development and just want to get up and running as quickly as possible.</li>
+<li>What if I am curious to know if my module runs in DNN 6.5.1 and I only have DNN7 installed?</li>
+<li>What if this is the first time I am testing this particular module - I have to make sure I go to DotNetNuke website, Create a page and add my module to that page right?</li>
+</ol>
+
+
+<p>These things are all tedious. Most developers (new to DNN) expect to be able to click Debug and immediately be debugging their code - they don’t expect to have to jump through these additional hurdles / barriers.</p>
+
+<p>This is why DotNetNuke development can be a bit of a culture shock for many developers.</p>
+
+<h3>Next Feature!</h3>
+
+<p>So the next feature I am thinking of adding to DnnPackager is one that addresses those concerns mentioned above. I’d be really greatful if anyone with such a curiousity wouldn&rsquo;t mind reading it and offering their feedback on this proposed awesome feature <a href="https://github.com/dazinator/DnnPackager/issues/14">https://github.com/dazinator/DnnPackager/issues/14</a> - just so I can get a feel for whether there is much demand for such a capability.</p>
+
+<h3>Feedback?</h3>
+
+<p>Do you disagree?
+Would this new feature <a href="https://github.com/dazinator/DnnPackager/issues/14">https://github.com/dazinator/DnnPackager/issues/14</a> help you?</p>
+
+<p>Darrell Tunnell
+<a href="http://darrelltunnell.net">http://darrelltunnell.net</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Automating DotNetNuke Deployments With Octopus Deploy]]></title>
+    <link href="http://darrelltunnell.net/blog/2015/04/29/automating-dotnetnuke-deployments-with-octopus-deploy/"/>
+    <updated>2015-04-29T00:00:00+01:00</updated>
+    <id>http://darrelltunnell.net/blog/2015/04/29/automating-dotnetnuke-deployments-with-octopus-deploy</id>
+    <content type="html"><![CDATA[<h2>Automating DotNetNuke Deployments using Octopus Deploy</h2>
+
+<p>Because I am an awesome dude, i&rsquo;ll share with you how I automate dotnetnuke delivery / deployments. This works. It takes some effort to get this set up though, but it will be well worth it in the end.</p>
+
+<p>First i&rsquo;ll explain the process for automating the deployment of the DotNetNuke website itself. Then I&rsquo;ll explain how you can automate the deployment of modules / extensions on a continous basis.</p>
+
+<h2>Preparation work</h2>
+
+<ol>
+<li>Set up a brand new DotNetNuke website, and go through the install wizard until you are greeted with an empty default dotnetnuke website.</li>
+<li>Stop the website. Create a NuGet package containing the website folder.</li>
+<li>Put that on your internal NuGet feed.</li>
+<li>Go to the dotnetnuke database, and generate the create scripts (with data).</li>
+<li>Create a new console application that uses <a href="http://dbup.github.io/">dbup</a> to run the above sql scripts when it is executed (as described <a href="http://dbup.github.io/">here</a>). Remember to replace things like server name etc in the sql scripts with appropriate $variablename$. Dbup can substitute $variablename$ in the sql scripts with their actual values (which you can pass through from Octopus) before it executes them.</li>
+<li>Add <a href="http://docs.octopusdeploy.com/display/OD/Using+OctoPack">OctoPack</a> to your Console Application so that it is packaged up into a NuGet package. Put this NuGet package on your internal NuGet feed.</li>
+</ol>
+
+
+<p>You should now be in this position:</p>
+
+<ol>
+<li>You have a NuGet package on your feed containing the DotNetNuke website content</li>
+<li>You have a NuGet package on your feed containing your wonderful console application (DbUp) which will run the database scripts.</li>
+</ol>
+
+
+<p>Next Step - to Octopus!</p>
+
+<ol>
+<li><p>Create a project in Octopus to deploy a &ldquo;DotNetNuke&rdquo; website. For the deployment process you will need the NuGet packages prepared previously. The deployment process should:</p></li>
+<li><p>Create a website in IIS using the website NuGet package.</p></li>
+<li>Create the database by executing the executable within the Database NuGet package.</li>
+</ol>
+
+
+<p>There are lot&rsquo;s of things to remember when deploying dotnetnuke. I won&rsquo;t go into detail but things like:</p>
+
+<ul>
+<li>Granting full permission to the app pool identity that the website runs under to the website folder.</li>
+<li>Updating the portalalias table with appropriate access url.</li>
+</ul>
+
+
+<p>&hellip; and other things. The Dnn install process has been covered elsewhere so I won&rsquo;t go into any further detail here.</p>
+
+<h2>Congratulations (partly)</h2>
+
+<p>You should now be in a postion where you can roll out a DotNetNuke website via Octopus.. BUT WHAT ABOUT THE MODULES I&rsquo;M DEVELOPING!! - I hear you exclaim.</p>
+
+<h2>Automating Module Deployments</h2>
+
+<ol>
+<li><p>When you build your module projects (via build server etc) you want them packaged as DotNetNuke install packages, inside a NuGet deployment package, which is then published to your NuGet feed. You can use <a href="https://github.com/dazinator/DnnPackager">DnnPackager</a> for this (which is something I created).</p></li>
+<li><p>You&rsquo;d need something that can copy a set of zip files to the &ldquo;Install/Module&rdquo; folder of a DotNetNuke website, and then monitor that folder, whilst calling the DotNetNuke url to install packages (www.dotnetnuke.com/install/install.aspx?mode=installresources). I wrote a quick console application to do this. It repeats calls to that URL all the time the number of zips in the install folder decrements (dotnetnuke deletes them after they are installed). If after x calls, there are the same number of zips left in the directory, it assumes they cannot be installed and reports a failure (return code).
+You should package this tool up into a NuGet package and, you guessed it, stick it on your internal feed.</p></li>
+</ol>
+
+
+<p>3.Create a project in Octopus for &ldquo;Module&rdquo; deployment. You want the deployment process to:</p>
+
+<ul>
+<li>Dowload the NuGet package containing your module zips.</li>
+<li>Download the NuGet package containing your module deployment utility (that console app i spoke of)</li>
+<li>Invoke your deployment tool exe, passing in arguments for where the module zip files were placed, what the website url is, and potentially the path to the Install/Modules folder on disk (although my own tool interrogated IIS based on the website URL to find the website directory)</li>
+</ul>
+
+
+<p> ## Full Congratulations</p>
+
+<p> You will now find that you can create a release of your module project in Octopus and deploy all your lates modules to any DotNetNuke website at the push of a button.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[How Far Does the XRM SDK's ExecuteMultipleRequest Get You?]]></title>
+    <link href="http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-executemultiplerequest-get-you/"/>
+    <updated>2015-02-26T00:00:00+00:00</updated>
+    <id>http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-executemultiplerequest-get-you</id>
+    <content type="html"><![CDATA[<h2>ExecuteMultipleRequest - Let&rsquo;s take it to the max</h2>
+
+<p>In this post, I will explore what kinds of things can be achieved using the SDK&rsquo;s ExecuteMultipleRequest, by starting of with a simple SQL command, and implementing a semantically equivalent ExecuteMultipleRequest, and then slowly introducing some additional complexity - so that, we can see some areas where the SDK starts to fall short!</p>
+
+<!-- more -->
+
+
+<h2>Starting Simple</h2>
+
+<p>Consider this SQL:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Well you hardly need a ExecuteMultipleRequest for this, but if you really wanted to you could create one no problem. I am going to assume you are already familiar with the code to create a ExecuteMultipleRequest - if not it&rsquo;s described <a href="https://msdn.microsoft.com/en-gb/library/jj863631.aspx">here.</a></p>
+
+<p>This equates to the following:</p>
+
+<p>Either:-</p>
+
+<ol>
+  <li>A single CreateRequestMessage.</li>
+  <li>An ExecuteMultipleRequest containing a single CreateRequestMessage.</li>
+</ol>
+
+
+<p>I hope you are with me so far..</p>
+
+<h2>Take It Up A Notch</h2>
+
+<p>Let&rsquo;s now imagine that when a contact is INSERTED, an <code>accountnumber</code> is generated on the server, and that we want to grab this value using a single roundtrip with the server.</p>
+
+<p>Here&rsquo;s it is in T-SQL:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">OUTPUT</span> <span class="n">inserted</span><span class="p">.</span><span class="n">accountnumber</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This equates to the following using the SDK:-</p>
+
+<p>SORRRY DAVE. YOU CAN&rsquo;T DO THAT.</p>
+
+<p>The problem being, is that to do this in one roundtrip with the CRM server means building an ExecuteMultipleRequest that contains:-</p>
+
+<ol>
+  <li>A CreateRequestMessage (to insert / create the contact)</li>
+  <li>A RetrieveRequestMessage (to retrieve the accountnumber of the inserted contact)</li>
+</ol>
+
+
+<p>However in order to construct the appropriate RetrieveRequestMessage we need to know the ID of what the inserted contact will be in advance. If you look at the SQL query - we are not specifying an ID in advance - therefore we cannot perform the equivalent to this query.</p>
+
+<h2>A bit further..</h2>
+
+<p>With the previous example in mind, consider the following SQL</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">contactid</span><span class="p">,</span> <span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">OUTPUT</span> <span class="n">inserted</span><span class="p">.</span><span class="n">accountnumber</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">,</span> <span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you are quick, you&rsquo;ve already cottoned on that this one is possible, and it equates to:-</p>
+
+<p>An ExecuteMultipleRequest (ContinueOnError = false) containing:-</p>
+
+<ol>
+  <li>A CreateRequestMessage (to insert / create the contact) 
+  </li>
+  <li>A RetrieveRequestMessage - to retrieve the &#8220;accountnumber&#8221; of the created entity)</li>
+</ol>
+
+
+<h2>Let&rsquo;s start to push the boat out a little.</h2>
+
+<p>Here is a batch of T-SQL commands:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">UPDATE</span> <span class="n">contact</span> <span class="k">SET</span> <span class="n">lastname</span> <span class="o">=</span> <span class="s1">&#39;Johnson&#39;</span> <span class="k">WHERE</span> <span class="n">contactid</span> <span class="o">=</span> <span class="s1">&#39;3a4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">contact</span> <span class="k">WHERE</span> <span class="n">contactid</span> <span class="o">=</span> <span class="s1">&#39;4b4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, we know that SQL Server would execute that SQL, by executing each sql command within that batch in sequence, and if there were any errors it will not continue to process the rest of the commands in the same batch. It would also not execute that batch within a transaction, so it would not roll back should errors occur half way through etc.</p>
+
+<p>This equates to:</p>
+
+<p>An ExecuteMultipleRequest (ContinueOnError = false) - containing the following messages:</p>
+
+<ol>
+  <li>A CreateRequestMessage (to insert / create the contact) 
+  </li>
+  <li>An UpdateRequestMessage(to update the contact)</li>
+  <li>A DeleteRequestMessage</li>
+</ol>
+
+
+<p>It seems like this is a good fit between the SQL and an ExecuteMultipleRequest.</p>
+
+<h2>The boat is now heading towards the open ocean</h2>
+
+<p>Let&rsquo;s add a bit of complexity to the previous T-SQL - consider this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">contactid</span><span class="p">,</span> <span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">OUTPUT</span> <span class="n">inserted</span><span class="p">.</span><span class="n">accountnumber</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">,</span> <span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">UPDATE</span> <span class="n">contact</span> <span class="k">SET</span> <span class="n">lastname</span> <span class="o">=</span> <span class="s1">&#39;Johnson&#39;</span> <span class="k">WHERE</span> <span class="n">contactid</span> <span class="o">=</span> <span class="s1">&#39;3a4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">contact</span> <span class="k">WHERE</span> <span class="n">contactid</span> <span class="o">=</span> <span class="s1">&#39;4b4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The first command in that batch of SQL commands is this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">contactid</span><span class="p">,</span> <span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">OUTPUT</span> <span class="n">inserted</span><span class="p">.</span><span class="n">accountnumber</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;2f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">,</span> <span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And we know that this actually equates to 2 seperate RequestMessages, a CreateRequest and a RetrieveRequest. We then also need to do an Update and a then a Delete. So this equates to:</p>
+
+<p>An ExecuteMultipleRequest (ContinueOnError = false)</p>
+
+<p>Containing:</p>
+
+<ol>
+  <li>A CreateRequestMessage (to insert / create the contact) 
+  </li>
+  <li>A RetrieveRequestMessage - to retrieve the &#8220;accountnumber&#8221; of the created entity.</li>
+  <li>An UpdateRequestMessage</li>
+  <li>A DeleteRequestMessage</li>
+</ol>
+
+
+<p>Ok good so far!</p>
+
+<h2>Should look at Boat Breakdown cover</h2>
+
+<p>Now consider this one:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">OUTPUT</span> <span class="n">inserted</span><span class="p">.</span><span class="n">accountnumber</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">GO</span>
+</span><span class='line'><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">contact</span> <span class="k">WHERE</span> <span class="n">contactid</span> <span class="o">=</span> <span class="s1">&#39;6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What this says is:</p>
+
+<ol>
+<li>We want to Insert a Contact, output its account number.</li>
+<li>Then in a second &ldquo;batch&rdquo; of sql statements - we want to Delete a contact. The second batch needs to execute regardless of any problem or outcome from the first batch - (The GO keyword is used as a batch seperator in T-SQL)</li>
+</ol>
+
+
+<p>What this translates into is:</p>
+
+<ol>
+<li>A CreateRequest that allways needs to be executed.</li>
+<li>A RetreiveRequest (to retrieve the &ldquo;accountnumber&rdquo;) which should only be executed if the preceeding CreateRequest succeeds.</li>
+<li>A DeleteRequest that allways needs to be executed.</li>
+</ol>
+
+
+<p>Can we construct the equivalent ExecuteMultipleRequest to do that?</p>
+
+<p>Well.. the answer is.. we can semantically construct an appropriate ExecuteMultipleRequest, but it won&rsquo;t be supported by CRM - because you are not allowed to nest ExecuteMultipleRequest - if you do the CRM server will throw an error when you send it such a request.</p>
+
+<p>Here is what that looks like though (if only it was supported by the server!)</p>
+
+<ol>
+<li>An ExecuteMultipleRequest (ContinueOnError = true) Containing:
+
+<ol>
+<li>An ExecuteMultipleRequest (ContinueOnError = false) Containing:
+
+<ol>
+<li>A CreateRequest to create the contact</li>
+<li>A RetrieveRequestMessage - to retrieve the &ldquo;accountnumber&rdquo; of created entity</li>
+</ol>
+</li>
+<li>A DeleteRequestMessage</li>
+</ol>
+</li>
+</ol>
+
+
+<p>As I say, constructing such a Request is possible, but the CRM server won&rsquo;t process it due to current runtime limitations that are imposed about not allowing nested ExecuteMultipleRequests.</p>
+
+<p>So - unfortunately we have hit a CRM limitation here.</p>
+
+<p>But what you could do, is, on the client side, split that SQL statement on the <code>GO</code> keyword, to get each <code>batch</code> of T-SQL commands. Then for each batch, construct and send an appropriate ExecuteMultipleRequest for the statements in that batch.</p>
+
+<h2>What have we learned so far</h2>
+
+<p>The ExecuteMultipleRequest provides the ability to send a single &ldquo;batch&rdquo; of commands to the server. Thinking from a SQL perspective, this is akin to sending all the statements upto a &ldquo;GO&rdquo; keyword (batch seperator). To get the same behaviour as SQL though, you should set <code>ContinueOnError</code> to false - so that processing halts if any request in the batch errors.</p>
+
+<p>The ExecuteMultipleRequest is not a good fit for sending multiple individual <code>batches</code> of operations to the CRM server, as there is no way to group the Requests within a ExecuteMultipleRequest into their batches. For this reason it&rsquo;s probably best to think of ExecuteMultipleRequest as a single SQL batch and to always use <code>ContinueOnError</code> = false if you want to mirror the behaviour of SQL as closely as possible.</p>
+
+<h2>A weird scenario - can send multiple batches in one go - as long as each batch contains 1 RequestMessage only.</h2>
+
+<p>Consider the following T-SQL:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">contact</span> <span class="p">(</span><span class="n">firstname</span><span class="p">,</span> <span class="n">lastname</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">&#39;albert&#39;</span><span class="p">,</span> <span class="s1">&#39;einstein&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">GO</span>
+</span><span class='line'><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">contact</span> <span class="k">WHERE</span> <span class="n">contactid</span> <span class="o">=</span> <span class="s1">&#39;6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">GO</span>
+</span><span class='line'><span class="k">UPDATE</span> <span class="n">contact</span> <span class="k">SET</span> <span class="n">firstname</span> <span class="o">=</span> <span class="s1">&#39;bob&#39;</span> <span class="k">WHERE</span> <span class="n">lastname</span> <span class="o">=</span> <span class="s1">&#39;Hoskins&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">GO</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this scenario - each batch of commands contains only a single command. What this means is that you can construct an ExecuteMultipleRequest with &lsquo;ContinueOnError&rsquo; set to true, and there will be no danger that a particular command in a batch will error, and that the rest of the commands in that batch will execute regardless - because there is only a single command in each batch!</p>
+
+<p>For an example of the danger I am referring to here, consider this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">contact</span> <span class="k">WHERE</span> <span class="n">contactid</span> <span class="o">=</span> <span class="s1">&#39;6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">account</span> <span class="k">WHERE</span> <span class="n">primarycontactid</span> <span class="o">=</span> <span class="s1">&#39;6f4941ec-2f6f-4c7f-8adc-c6f4fb002d42&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">GO</span>
+</span><span class='line'><span class="k">UPDATE</span> <span class="n">contact</span> <span class="k">SET</span> <span class="n">firstname</span> <span class="o">=</span> <span class="s1">&#39;bob&#39;</span> <span class="k">WHERE</span> <span class="n">lastname</span> <span class="o">=</span> <span class="s1">&#39;Hoskins&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">GO</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The first batch above, contains 2 operations. The second batch contains 1.</p>
+
+<p>Now imagine, that for the above - we constructed an ExecuteMultipleRequest, and set &lsquo;ContinueOnError&rsquo; to true (to enable the server to process both batches regardless of whether the first batch fails.)
+Well in that scenario, because the first batch actually contains 2 operations, the &lsquo;ContinueOnError&rsquo; = true would actually apply to each operation within that batch as well. So you could hit a scenario where the first Delete in that first batch errored, but then CRM continued on regardless to execute the second DELETE etc. This is not what the semantics of the above SQL query conveys - i.e the equivalent CRM beahviour for the above SQL query would be for it to stop processing a particular batch as soon as it hits an error. The only way this can be satisfied at present is if each batch only contains a single RequestMessage.</p>
+
+<h2>Conclusion</h2>
+
+<p>If you would like to send a batch of commands to the CRM server in one go, the good news is you can. The bad news is, it&rsquo;s not perfect, there are limitations, and hopefully I have shown you just about how far you can stretch things.</p>
+
+<p>If you need to send multiple batches of commands to the CRM server in one go, the good news is you can if each batch contains only a single request message (i.e Create, Retreive, Delete, Update etc) - the bad news is, if thats not the case, then you will need to send each batch as an individual ExecuteMultipleRequest, and implement your own &ldquo;ContinueOnError&rdquo; behaviour clientside such that should one ExecuteMultipleRequest fail to be processed it doesn&rsquo;t halt subsequent batches (ExecuteMultipleRequests) from being processed.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ASP.NET 5 (vNext) Projects - Your NuGet Package May Fail to Install Correctly]]></title>
+    <link href="http://darrelltunnell.net/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install/"/>
+    <updated>2015-01-18T00:00:00+00:00</updated>
+    <id>http://darrelltunnell.net/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install</id>
+    <content type="html"><![CDATA[<h3>Don&rsquo;t assume NuGet Packages that you have authored will continue to work with ASP.NET 5 (vNext) projects.</h3>
+
+<p>Over the past year or so, I have authored <a href="https://www.nuget.org/packages?q=darrell.tunnell">a number of NuGet packages</a> - because, well&hellip; I am just an all around great guy.</p>
+
+<p>Recently, <a href="http://stackoverflow.com/questions/27762659/error-while-adding-nuget-package-to-asp-net-vnext-project#comment44383264_27762659">I was contacted by someone</a> who was trying to use one of my NuGet packages with an ASP.NET vNext project (Preview release). Not something I have tried before - and this is where things get a little interesting.</p>
+
+<!-- more -->
+
+
+<h3>When NuGet packages are installed into an ASP.NET vNext project - powershell scripts included in the package, are not run.</h3>
+
+<p>As most NuGet package authors will already know, it&rsquo;s a <a href="http://docs.nuget.org/docs/creating-packages/creating-and-publishing-a-package#Automatically_Running_PowerShell_Scripts_During_Package_Installation_and_Removal">standard feature of NuGet</a> that you can include powershell scripts within your NuGet package, that will then be executed when your package is installed (or uninstalled) into a visual studio project / solution.</p>
+
+<p>Many NuGet packages out there currently rely on this feature - else they will not work.</p>
+
+<p>Well, the issue with my NuGet package failing to install into an ASP.NET vNext project  was eventually posted on the asp.net forums, and <a href="http://forums.asp.net/members/davidfowl.aspx">David Fowler</a> (who&rsquo;s on the ASP.NET team) - kindly responded with some insight into the matter. He seems to suggest that <a href="http://forums.asp.net/t/2027698.aspx?Error+while+adding+NuGet+package+to+ASP+NET+vNext+project">ASP.NET v5 does not support running the packages powershell scripts when you install a NuGet package into an ASP.NET v5 project.</a></p>
+
+<p>I wanted to confirm that with him a second time - because <strong>that&rsquo;s a huge problem for some of my NuGet packages</strong>, but as you will see from that thread, I am still awaiting a secondary confirmation of this - although his first answer seems pretty clear cut.</p>
+
+<h3>Surely this is documented somewhere - or perhaps ASP.NET 5 offers an alternative mechanism for running tasks on installation / uninstallation of a NuGet package?</h3>
+
+<p>I have tried to look for more information. At the moment all I have to go on is David Fowlers response. Perhaps this is because there is still work in progress in this area, who knows. All I can suggest is that if your NuGet package currently requires custom tasks to be performed and you are using an <code>init</code>, <code>install</code> or <code>uninstall</code> ps1 script - then be prepared for the fact that it may not work with ASP.NET 5 projects - and also be prepared for the fact that there may not be any workaround either. I seriously hope this is false speculation on my part - but if this does turn out the be true after ASP.NET 5 is released, I&rsquo;ll be left with a slightly bitter taste in my mouth.</p>
+
+<h3>So where from here?</h3>
+
+<p>I am generally really excited about ASP.NET 5. I love what the team are doing. However I beleive that the ASP.NET team really should put some guidance out there to the NuGet community, so that NuGet package authors can gain an understanding of how their packages might have to change to work in the context of ASP.NET 5 projects.</p>
+
+<p>At a minimum, if ASP.NET 5 will indeed no longer support the running of these powershell scripts, then it should atleast warn you that the package contains such scripts and that they will not be executed - which means the package may not beahve as desired.</p>
+
+<p>My hope is that David Fowler or someone from the ASP.NET team will offer a clarification, insight, or workaround for this issue that makes it a non issue. Fingers crossed.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[CRM / Plugin Generated Values - and Reducing Roundtrips!]]></title>
+    <link href="http://darrelltunnell.net/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/"/>
+    <updated>2014-12-22T00:00:00+00:00</updated>
+    <id>http://darrelltunnell.net/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips</id>
+    <content type="html"><![CDATA[<h2>Setting the Scene</h2>
+
+<p>Imagine we have an application that uses the CRM SDK. It needs to:</p>
+
+<ol>
+<li>Create a new <code>account</code> entity in crm.</li>
+<li>Get some value that was just generated as a result of a synchronous plugin that fires on the create. For example, suppose there is a plugin that generates an account reference number.</li>
+</ol>
+
+
+<h2>The &ldquo;I don&rsquo;t care about network latency method!&rdquo;</h2>
+
+<p>The &lsquo;I don&rsquo;t care about network latency&rsquo; way of dealing with this is to just do 2 seperate Requests (roundtrips) with the CRM server.</p>
+
+<ol>
+<li>Create the new <code>account</code> which returns you the ID.</li>
+<li>Retrieve the <code>account</code> using that ID, along with the values that you need.</li>
+</ol>
+
+
+<p>This approach is sub optimal where network latency is a concern, as it incurs the penalty of making two roundtrips accross the network with the server, where 1 is possible.</p>
+
+<p>Let&rsquo;s now have a look at the &ldquo;I&rsquo;m running on a 56k modem method&rdquo; of doing the same thing!</p>
+
+<!-- more -->
+
+
+<h2>The &ldquo;I&rsquo;m running on a 56k modem method&rdquo; - this weeks pro tip!</h2>
+
+<p>For quite some time now - as of <code>CRM 2011 Update Rollup 12 - (SDK 5.0.13)</code> you can utilise the <a href="http://msdn.microsoft.com/en-gb/library/jj863604.aspx">Execute Multiple</a> request to do this kind of thing in one roundtrip with the CRM server.</p>
+
+<p>Here is an example of creating an account, and retrieiving it in a single round trip:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>                <span class="c1">// Create an ExecuteMultipleRequest object.</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">multipleRequests</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ExecuteMultipleRequest</span><span class="p">()</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="c1">// Assign settings that define execution behavior: continue on error, return responses. </span>
+</span><span class='line'>                    <span class="n">Settings</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ExecuteMultipleSettings</span><span class="p">()</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="n">ContinueOnError</span> <span class="p">=</span> <span class="k">false</span><span class="p">,</span>
+</span><span class='line'>                        <span class="n">ReturnResponses</span> <span class="p">=</span> <span class="k">true</span>
+</span><span class='line'>                    <span class="p">},</span>
+</span><span class='line'>                    <span class="c1">// Create an empty organization request collection.</span>
+</span><span class='line'>                    <span class="n">Requests</span> <span class="p">=</span> <span class="k">new</span> <span class="n">OrganizationRequestCollection</span><span class="p">()</span>
+</span><span class='line'>                <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">entity</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Entity</span><span class="p">(</span><span class="s">&quot;account&quot;</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">entity</span><span class="p">.</span><span class="n">Id</span> <span class="p">=</span> <span class="n">Guid</span><span class="p">.</span><span class="n">NewGuid</span><span class="p">();</span>
+</span><span class='line'>                <span class="n">entity</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="s">&quot;experimental test&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="n">CreateRequest</span> <span class="n">createRequest</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CreateRequest</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="n">Target</span> <span class="p">=</span> <span class="n">entity</span>
+</span><span class='line'>                <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="n">RetrieveRequest</span> <span class="n">retrieveRequest</span> <span class="p">=</span> <span class="k">new</span> <span class="n">RetrieveRequest</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="n">Target</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EntityReference</span><span class="p">(</span><span class="n">entity</span><span class="p">.</span><span class="n">LogicalName</span><span class="p">,</span> <span class="n">entity</span><span class="p">.</span><span class="n">Id</span><span class="p">),</span>
+</span><span class='line'>                    <span class="n">ColumnSet</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ColumnSet</span><span class="p">(</span><span class="s">&quot;createdon&quot;</span><span class="p">)</span> <span class="c1">// list the fields that you want here</span>
+</span><span class='line'>                <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="n">multipleRequests</span><span class="p">.</span><span class="n">Requests</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">createRequest</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">multipleRequests</span><span class="p">.</span><span class="n">Requests</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">retrieveRequest</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c1">// Execute all the requests in the request collection using a single web method call.</span>
+</span><span class='line'>                <span class="n">ExecuteMultipleResponse</span> <span class="n">responseWithResults</span> <span class="p">=</span> <span class="p">(</span><span class="n">ExecuteMultipleResponse</span><span class="p">)</span><span class="n">orgService</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">multipleRequests</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">createResponseItem</span> <span class="p">=</span> <span class="n">responseWithResults</span><span class="p">.</span><span class="n">Responses</span><span class="p">[</span><span class="m">0</span><span class="p">];</span>
+</span><span class='line'>                <span class="n">CreateResponse</span> <span class="n">createResponse</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">createResponseItem</span><span class="p">.</span><span class="n">Response</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="n">createResponse</span> <span class="p">=</span> <span class="p">(</span><span class="n">CreateResponse</span><span class="p">)</span><span class="n">createResponseItem</span><span class="p">.</span><span class="n">Response</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">retrieveResponseItem</span> <span class="p">=</span> <span class="n">responseWithResults</span><span class="p">.</span><span class="n">Responses</span><span class="p">[</span><span class="m">1</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="n">RetrieveResponse</span> <span class="n">retrieveResponse</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">retrieveResponseItem</span><span class="p">.</span><span class="n">Response</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="n">retrieveResponse</span> <span class="p">=</span> <span class="p">(</span><span class="n">RetrieveResponse</span><span class="p">)</span><span class="n">retrieveResponseItem</span><span class="p">.</span><span class="n">Response</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="n">Console</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">retrieveResponse</span><span class="p">.</span><span class="n">Entity</span><span class="p">[</span><span class="s">&quot;createdon&quot;</span><span class="p">]);</span> <span class="c1">// yup - we got the value we needed!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>What happened?</h2>
+
+<p>Both the CreateRequest, and the RetrieveRequest (for the created entity) are batched up into a single Request and shipped off to the CRM server for processing.</p>
+
+<p>CRM processed them in that order, collated the responses together, and returned them in a single batch.</p>
+
+<h2>Caveats</h2>
+
+<p>One caveat of this approach is that, if you intend to grab the generated values for an entity that is being created, then you need to know in advance what the ID will be.</p>
+
+<p>This means you have to specify the ID of the entity when you create it yourself - you can&rsquo;t let CRM auto create the new ID.</p>
+
+<p>For updates / deletes this is a non issue, as the ID is allready known.</p>
+
+<h2>Last thoughts - SQL Optimisation</h2>
+
+<p>I speculate that specifying your own ID&rsquo;s <em>might be a bad thing</em> if you don&rsquo;t use Sequential Guid&rsquo;s.</p>
+
+<p>When CRM generates Id&rsquo;s for you, it generates them sequentially, and I beleive there may be SQL performance benefits to this in terms of index optimisation etc. So if using Guid.NewGuid() to create your new Id&rsquo;s you may want to check with a SQL guru first to understand any impact of using random Guid&rsquo;s as Id&rsquo;s on performance of the CRM tables! That said - Microsoft do support this, so it can&rsquo;t be too bad..</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Unit Testing Dynamics CRM Plugins]]></title>
+    <link href="http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins/"/>
+    <updated>2014-12-14T17:50:00+00:00</updated>
+    <id>http://darrelltunnell.net/blog/2014/12/14/unit-testing-crm-plugins</id>
+    <content type="html"><![CDATA[<h2>There is no <del>Spoon</del> CRM</h2>
+
+<p>The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a unit test with the least possible effort. Reduced Effort == Reduced Person Hours == Reduced Cost.</p>
+
+<p>Remember, this is Unit Testing, not Integration testing - so at test time - there is no CRM!</p>
+
+<!-- more -->
+
+
+<h2>A plugin - and it&rsquo;s requirements</h2>
+
+<p>Firstly, let&rsquo;s look at a plugin that we will call the <code>ReclaimCreditPlugin</code>. Here are the requirements:</p>
+
+<blockquote><ol>
+<li>It must run only within a transaction with the database.</li>
+<li>When a Contact entity is Updated, if the contact has a parent account, and that parent account is &ldquo;on hold&rdquo; then set the &ldquo;taketheirshoes&rdquo; flag on the contact record to true.</li>
+</ol>
+</blockquote>
+
+<h2>Developer Jon Doe</h2>
+
+<p>Jon Doe immediately gets to work on writing the plugin for those requirements. He produces the following plugin:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>  <span class="k">public</span> <span class="k">class</span> <span class="nc">ReclaimCreditPlugin</span> <span class="p">:</span> <span class="n">IPlugin</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Execute</span><span class="p">(</span><span class="n">IServiceProvider</span> <span class="n">serviceProvider</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">executionContext</span> <span class="p">=</span> <span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">)</span><span class="n">serviceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 1. We must run only within a transaction</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(!</span><span class="n">executionContext</span><span class="p">.</span><span class="n">IsInTransaction</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">throw</span> <span class="k">new</span> <span class="nf">InvalidPluginExecutionException</span><span class="p">(</span><span class="s">&quot;The plugin detected that it was not running within a database transaction. The plugin requires a database transaction.&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 2. Get the contact, check its parent account.</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">executionContext</span><span class="p">.</span><span class="n">InputParameters</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="s">&quot;Target&quot;</span><span class="p">)</span> <span class="p">&amp;&amp;</span> <span class="n">executionContext</span><span class="p">.</span><span class="n">InputParameters</span><span class="p">[</span><span class="s">&quot;Target&quot;</span><span class="p">]</span> <span class="k">is</span> <span class="n">Entity</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="c1">// Obtain the target entity from the input parameters.</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">contactEntity</span> <span class="p">=</span> <span class="p">(</span><span class="n">Entity</span><span class="p">)</span><span class="n">executionContext</span><span class="p">.</span><span class="n">InputParameters</span><span class="p">[</span><span class="s">&quot;Target&quot;</span><span class="p">];</span>
+</span><span class='line'>                <span class="c1">// Get the parent account id.</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">parentAccountId</span> <span class="p">=</span> <span class="p">(</span><span class="n">EntityReference</span><span class="p">)</span><span class="n">contactEntity</span><span class="p">[</span><span class="s">&quot;parentaccountid&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c1">// Get the parent account entity.</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">orgServiceFactory</span> <span class="p">=</span> <span class="p">(</span><span class="n">IOrganizationServiceFactory</span><span class="p">)</span><span class="n">serviceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IOrganizationServiceFactory</span><span class="p">));</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">orgService</span> <span class="p">=</span> <span class="n">orgServiceFactory</span><span class="p">.</span><span class="n">CreateOrganizationService</span><span class="p">(</span><span class="n">executionContext</span><span class="p">.</span><span class="n">UserId</span><span class="p">);</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">parentAccountEntity</span> <span class="p">=</span> <span class="n">orgService</span><span class="p">.</span><span class="n">Retrieve</span><span class="p">(</span><span class="s">&quot;account&quot;</span><span class="p">,</span> <span class="n">parentAccountId</span><span class="p">.</span><span class="n">Id</span><span class="p">,</span> <span class="k">new</span> <span class="n">ColumnSet</span><span class="p">(</span><span class="s">&quot;creditonhold&quot;</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">accountOnHold</span> <span class="p">=</span> <span class="p">(</span><span class="kt">bool</span><span class="p">)</span><span class="n">parentAccountEntity</span><span class="p">[</span><span class="s">&quot;creditonhold&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">accountOnHold</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="n">contactEntity</span><span class="p">[</span><span class="s">&quot;taketheirshoes&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>                    <span class="kt">var</span> <span class="n">tracingService</span> <span class="p">=</span> <span class="p">(</span><span class="n">ITracingService</span><span class="p">)</span><span class="n">serviceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">ITracingService</span><span class="p">));</span>
+</span><span class='line'>                    <span class="n">tracingService</span><span class="p">.</span><span class="n">Trace</span><span class="p">(</span><span class="s">&quot;Have indicated that we should take the shoes from contact: {0}&quot;</span><span class="p">,</span> <span class="n">contactEntity</span><span class="p">.</span><span class="n">Id</span><span class="p">.</span><span class="n">ToString</span><span class="p">());</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Good Job?</h3>
+
+<p>Take a moment to peer review the above code. Would you vindicate Jon Doe&rsquo;s effort? It seems it has all the required logic in all the required places. It appears he has covered the list of requirements. Although Jon doesn&rsquo;t check to make sure the current entity being updated is definately a contact entity.. But within the confines of this blog post we will assume that there is no possible danger that the plugin could ever be registered against the wrong entity.</p>
+
+<p>So.. does it actually work?</p>
+
+<h2>Does it work?</h2>
+
+<p>Assuming you want to start haemorrhaging people&rsquo;s time accross the organisation, one way to find out if this code works is to immediately go through the process of deploying it to a QA environment, getting someone to test it manually, and then repeating that cycle of Dev &ndash;> Deployment &ndash;> QA as often as necessary, until the tester gives the thumbs up.</p>
+
+<p>If you want to go that route, feel free to skip the rest of this article. Otherwise read on, where sanity awaits!</p>
+
+<h2>Show me a Unit Test Already!</h2>
+
+<p>Bad news for you. I could.. but I won&rsquo;t.</p>
+
+<h2>Why won&rsquo;t you show me a unit test?</h2>
+
+<p>In short, because I value my time. Just look at that code again for crying out loud! It&rsquo;s littered with dependencies on things that are only provided at runtime by Dynamics CRM - things like:</p>
+
+<ol>
+<li>IServiceProvider</li>
+<li>IPluginExecutionContext</li>
+<li>IOrganizationServiceFactory</li>
+<li>IOrganizationService</li>
+<li>ITracingService</li>
+</ol>
+
+
+<p><strong>WHAT THE HELL ARE ANY OF THESE THINGS TO DO WITH THE ACTUAL REQUIREMENTS THAT I <em>NEED</em> TO TEST???</strong></p>
+
+<p>Listen.. I read those requirements for this plugin. I read them atleast one thousand times. And I wrote them in fact. Here they are again:</p>
+
+<blockquote><ol>
+<li>It must run only within a transaction with the database.</li>
+<li>When a Contact entity is Updated, if the contact has a parent account, and that parent account is &ldquo;on hold&rdquo; then set the &ldquo;taketheirshoes&rdquo; flag on the contact record to true.</li>
+</ol>
+</blockquote>
+
+<p>So with that in mind, can you please show me the requirement dictating: <code>When a contact is updated, it is of upmost importance to us as a business that it looks at the</code>IPluginExecutionContext<code>and grabs the</code>IOrganizationServiceFactory.`</p>
+
+<p>Or please show me where the requirements state: <code>When a contact is updated, the plugin absolutely must interact with the</code>IServiceProvider` because otherwise you know.. Our business just won&rsquo;t function anymore.</p>
+
+<p>No my friends. The requirements do not say <em>any of that</em>. I am in the business of testing against the requirements.</p>
+
+<h3>Why is that a problem?</h3>
+
+<p>The problem is not obvious at first glance. It is definately technically possible to mock / fake all of those services at unit test time. You can use something like RhinoMocks or another Mocking library to mock out <code>IServiceProvider</code> for the purposes of your test. You would then have to mock out all the calls to <code>IServiceProvider</code> that are made, so that it returns your other &lsquo;mocked&rsquo; services like a mock &lsquo;IPluginExecutionContext&rsquo; etc etc - and down the rabbit hole you go.</p>
+
+<p>The problem, is about <em>effort</em>. This approach, although technically possible, requires significant <em>effort</em>. You would have to mock a tonne of runtime services and interactions. We have to ask ourselves, is all that effort really necessary? Sometimes it may be, but most of the time, it isn&rsquo;t. In this instance it definately isn&rsquo;t and I will explain why.</p>
+
+<h2>Let&rsquo;s use the requirements to write the plugin, in pseudo code.</h2>
+
+<p>With those requirements - forget everything you know about Dynamics Crm and write your ideal pseudo code that would implement those requirements. This is the actual logic we care about testing.</p>
+
+<p>PSEUDO CODE:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">if</span> <span class="p">(!</span><span class="n">IsRunningInTransaction</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">Throw</span> <span class="s">&quot;Plugin requires a transaction.&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">If</span> <span class="p">(</span><span class="n">IsUpdateOf</span><span class="p">(</span><span class="s">&quot;contact&quot;</span><span class="p">))</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">var</span> <span class="n">contact</span> <span class="p">=</span> <span class="n">GetTargetEntity</span><span class="p">();</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">account</span> <span class="p">=</span> <span class="n">GetAccountForContact</span><span class="p">(</span><span class="n">contact</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">var</span> <span class="n">isOnHold</span> <span class="p">=</span> <span class="p">(</span><span class="kt">bool</span><span class="p">)</span><span class="n">account</span><span class="p">[</span><span class="s">&quot;creditonhold&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="n">isOnHold</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">contact</span><span class="p">[</span><span class="s">&quot;taketheirshoes&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Look at that Pseudo Code -  Do you see <em>any</em> runtime services?</h2>
+
+<p>Notice how it contains only the logic we really care about testing - the logic as described by the requirements. It doesn&rsquo;t contain needless fluff. No <code>IServiceProvider</code>, No <code>IPluginExecutionContext</code>. It looks very simple, very basic. If we could actually write a CRM plugin like this, it would be about 1.5 million times easier to test. Well we can.</p>
+
+<h2>Isolating out dependencies is the key to unit testing.</h2>
+
+<p>Yes it&rsquo;s true folks you heard it here first. The less dependencies you utilise directly in your methods, the easier they are to unit test.</p>
+
+<p>With this principle in mind, let&rsquo;s revisit our plugin and refactor it to remove some dependencies.</p>
+
+<h2>New and Improved Plugin</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'> <span class="k">public</span> <span class="k">class</span> <span class="nc">ReclaimCreditPlugin2</span> <span class="p">:</span> <span class="n">IPlugin</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">private</span> <span class="n">IServiceProvider</span> <span class="n">_ServiceProvider</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Execute</span><span class="p">(</span><span class="n">IServiceProvider</span> <span class="n">serviceProvider</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">_ServiceProvider</span> <span class="p">=</span> <span class="n">serviceProvider</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">Execute</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">/// &lt;summary&gt;</span>
+</span><span class='line'>        <span class="c1">/// This is the method containing the business logic that we want to be able to assert at unit test time.</span>
+</span><span class='line'>        <span class="c1">/// &lt;/summary&gt;</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Execute</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// 1. We must run only within a transaction</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">IsInTransaction</span><span class="p">())</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">throw</span> <span class="k">new</span> <span class="nf">InvalidPluginExecutionException</span><span class="p">(</span><span class="s">&quot;The plugin detected that it was not running within a database transaction. The plugin requires a database transaction.&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 2. Get the contact</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">contact</span> <span class="p">=</span> <span class="n">GetTargetEntity</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 3. Get the Parent Account for the contact.</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">parentAccount</span> <span class="p">=</span> <span class="n">GetAccountEntity</span><span class="p">(</span><span class="n">contact</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">parentAccount</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 4. If credit on hold, set taketheirshoes.</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">accountOnHold</span> <span class="p">=</span> <span class="p">(</span><span class="kt">bool</span><span class="p">)</span><span class="n">parentAccount</span><span class="p">[</span><span class="s">&quot;creditonhold&quot;</span><span class="p">];</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">accountOnHold</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">contact</span><span class="p">[</span><span class="s">&quot;taketheirshoes&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">/// &lt;summary&gt;</span>
+</span><span class='line'>        <span class="c1">/// Returns the parent account entity for the contact.</span>
+</span><span class='line'>        <span class="c1">/// &lt;/summary&gt;</span>
+</span><span class='line'>        <span class="c1">/// &lt;param name=&quot;contact&quot;&gt;&lt;/param&gt;</span>
+</span><span class='line'>        <span class="c1">/// &lt;returns&gt;&lt;/returns&gt;</span>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">virtual</span> <span class="n">Entity</span> <span class="nf">GetAccountEntity</span><span class="p">(</span><span class="n">Entity</span> <span class="n">contact</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// Get the p[arent account id.</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">parentAccountId</span> <span class="p">=</span> <span class="p">(</span><span class="n">EntityReference</span><span class="p">)</span><span class="n">contact</span><span class="p">[</span><span class="s">&quot;parentaccountid&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// Get an instance of the IOrganisationService.</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">orgServiceFactory</span> <span class="p">=</span> <span class="p">(</span><span class="n">IOrganizationServiceFactory</span><span class="p">)</span><span class="n">_ServiceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IOrganizationServiceFactory</span><span class="p">));</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">executionContext</span> <span class="p">=</span> <span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">)</span><span class="n">_ServiceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">));</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">orgService</span> <span class="p">=</span> <span class="n">orgServiceFactory</span><span class="p">.</span><span class="n">CreateOrganizationService</span><span class="p">(</span><span class="n">executionContext</span><span class="p">.</span><span class="n">UserId</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// Get the account entity, with only the column / attribute that we need.</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">parentAccountEntity</span> <span class="p">=</span> <span class="n">orgService</span><span class="p">.</span><span class="n">Retrieve</span><span class="p">(</span><span class="s">&quot;account&quot;</span><span class="p">,</span> <span class="n">parentAccountId</span><span class="p">.</span><span class="n">Id</span><span class="p">,</span> <span class="k">new</span> <span class="n">ColumnSet</span><span class="p">(</span><span class="s">&quot;creditonhold&quot;</span><span class="p">));</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">parentAccountEntity</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">/// &lt;summary&gt;</span>
+</span><span class='line'>        <span class="c1">/// Returns the current &quot;Target&quot; entity that the plugin is executing against.</span>
+</span><span class='line'>        <span class="c1">/// &lt;/summary&gt;</span>
+</span><span class='line'>        <span class="c1">/// &lt;returns&gt;&lt;/returns&gt;</span>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">virtual</span> <span class="n">Entity</span> <span class="nf">GetTargetEntity</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">)</span><span class="n">_ServiceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">));</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">InputParameters</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="s">&quot;Target&quot;</span><span class="p">)</span> <span class="p">&amp;&amp;</span> <span class="n">context</span><span class="p">.</span><span class="n">InputParameters</span><span class="p">[</span><span class="s">&quot;Target&quot;</span><span class="p">]</span> <span class="k">is</span> <span class="n">Entity</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">contactEntity</span> <span class="p">=</span> <span class="p">(</span><span class="n">Entity</span><span class="p">)</span><span class="n">context</span><span class="p">.</span><span class="n">InputParameters</span><span class="p">[</span><span class="s">&quot;Target&quot;</span><span class="p">];</span>
+</span><span class='line'>                <span class="k">return</span> <span class="n">contactEntity</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">/// &lt;summary&gt;</span>
+</span><span class='line'>        <span class="c1">/// Returns whether the plugin is currently enrolled within a database transaction.</span>
+</span><span class='line'>        <span class="c1">/// &lt;/summary&gt;</span>
+</span><span class='line'>        <span class="c1">/// &lt;returns&gt;&lt;/returns&gt;</span>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">IsInTransaction</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">)</span><span class="n">_ServiceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">));</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">context</span><span class="p">.</span><span class="n">IsInTransaction</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>What just happened?</h2>
+
+<p>I applied a technique called the <a href="http://taswar.zeytinsoft.com/2009/03/08/extract-and-override-refactoring-technique/">Extract and Override</a> technique, to remove the concrete references to all of those CRM runtime only services from within the Execute method, and instead they are now referenced within virtual methods which can be overriden at unit test time.</p>
+
+<p>For example rather than having the following code directly within the execute method:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>  <span class="kt">var</span> <span class="n">executionContext</span> <span class="p">=</span> <span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">)</span><span class="n">serviceProvider</span><span class="p">.</span><span class="n">GetService</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IPluginExecutionContext</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// 1. We must run only within a transaction</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(!</span><span class="n">executionContext</span><span class="p">.</span><span class="n">IsInTransaction</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It has been replaced by a call to virtual method:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>           <span class="k">if</span> <span class="p">(</span><span class="n">IsInTransaction</span><span class="p">())</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Because the interactions with the various CRM runtime Services now occur within Virtual methods, we no longer need to mock them up at unit test time. Say goodbye to having to mockup <code>IPluginExecutionContext</code>, <code>IServiceProvider</code> or <em>any</em> of the Crm runtime services. All we need to do now is just override the various virtual methods that our Execute() method calls, and return appropriate values at test time.</p>
+
+<h2>Ok so - Now will you show me a Unit Test??</h2>
+
+<p>Certainly Sir / Madame. Now that I can write one within a few minutes as opposed to a few hours, your wish is my command:-</p>
+
+<p>For the purpose of our unit tests all we do, is create a class that derives from our original plugin class, but overrides the various virtual methods to provide different values at test time.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'> <span class="k">public</span> <span class="k">class</span> <span class="nc">UnitTestableReclaimCreditPlugin</span> <span class="p">:</span> <span class="n">ReclaimCreditPlugin2</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="nf">UnitTestableReclaimCreditPlugin</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">AccountIsOnHold</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">IsRunningInTransaction</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">ContactEntity</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Entity</span><span class="p">(</span><span class="s">&quot;contact&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">override</span> <span class="n">Entity</span> <span class="nf">GetTargetEntity</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">ContactEntity</span><span class="p">[</span><span class="s">&quot;parentaccountid&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EntityReference</span><span class="p">(</span><span class="s">&quot;account&quot;</span><span class="p">,</span> <span class="n">Guid</span><span class="p">.</span><span class="n">NewGuid</span><span class="p">());</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">ContactEntity</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">override</span> <span class="n">Entity</span> <span class="nf">GetAccountEntity</span><span class="p">(</span><span class="n">Entity</span> <span class="n">contact</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">accountEntity</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Entity</span><span class="p">(</span><span class="s">&quot;account&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">accountEntity</span><span class="p">[</span><span class="s">&quot;creditonhold&quot;</span><span class="p">]</span> <span class="p">=</span> <span class="n">AccountIsOnHold</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">accountEntity</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">IsInTransaction</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">IsRunningInTransaction</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="kt">bool</span> <span class="n">AccountIsOnHold</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="kt">bool</span> <span class="n">IsRunningInTransaction</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="n">Entity</span> <span class="n">ContactEntity</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>And here are the Unit Tests</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na"> [TestFixture]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">ReclaimCreditPluginUnitTests</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">public</span> <span class="nf">ReclaimCreditPluginUnitTests</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">        [ExpectedException(typeof(InvalidPluginExecutionException),</span>
+</span><span class='line'><span class="na">            ExpectedMessage = &quot;The plugin detected that it was not running within a database transaction&quot;,</span>
+</span><span class='line'><span class="na">            MatchType = MessageMatch.Contains)]</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Should_Only_Run_Within_Transaction</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// arrange</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">sut</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UnitTestableReclaimCreditPlugin</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">IsRunningInTransaction</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// act </span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">Execute</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Should_Take_Shoes_When_Credit_On_Hold</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// arrange</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">sut</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UnitTestableReclaimCreditPlugin</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">IsRunningInTransaction</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">AccountIsOnHold</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// act </span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">Execute</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">//assert</span>
+</span><span class='line'>            <span class="n">Assert</span><span class="p">.</span><span class="n">That</span><span class="p">(</span><span class="n">sut</span><span class="p">.</span><span class="n">ContactEntity</span><span class="p">[</span><span class="s">&quot;taketheirshoes&quot;</span><span class="p">],</span> <span class="n">Is</span><span class="p">.</span><span class="n">EqualTo</span><span class="p">(</span><span class="k">true</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Should_Not_Take_Shoes_When_Credit_Not_On_Hold</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// arrange</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">sut</span> <span class="p">=</span> <span class="k">new</span> <span class="n">UnitTestableReclaimCreditPlugin</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">IsRunningInTransaction</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">AccountIsOnHold</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// act </span>
+</span><span class='line'>            <span class="n">sut</span><span class="p">.</span><span class="n">Execute</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">//assert</span>
+</span><span class='line'>            <span class="n">Assert</span><span class="p">.</span><span class="n">That</span><span class="p">(</span><span class="n">sut</span><span class="p">.</span><span class="n">ContactEntity</span><span class="p">[</span><span class="s">&quot;taketheirshoes&quot;</span><span class="p">],</span> <span class="n">Is</span><span class="p">.</span><span class="n">Not</span><span class="p">.</span><span class="n">EqualTo</span><span class="p">(</span><span class="k">true</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Wrapping Up</h2>
+
+<p>I hope I have demonstrated a simple plugin, with a simple set of unit tests. More importantly, I hope I have demonstrated that although it may be technically possible to write a unit test for an exising plugin,  by mocking up every CRM runtime service and interaction that the plugin makes,just because such a thing is possible, doesn&rsquo;t mean you should just do it. First the work has to be justified. To justify just what is necessary, examine the requirements, examine the plugin code, and be absolutely clear on what it is you want to cover in your unit tests. With that in mind, refactor the plugin code to eliminate fluff (extraneoues concrete references to dependencies that are surplus to the requirements that you want to test). Use techniques like the <code>Extract and Override</code> technique to allow you to substitute these dependencies easily at test time. When you do this, you may be surprised at how much simpler it becomes to write unit tests. I would aslo reccommend reading a book on unit testing, I found <a href="http://artofunittesting.com/">The Art of Unit Testing</a> very educational on this topic.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A Proclamation]]></title>
+    <link href="http://darrelltunnell.net/blog/2014/11/16/a-proclamation/"/>
+    <updated>2014-11-16T16:20:59+00:00</updated>
+    <id>http://darrelltunnell.net/blog/2014/11/16/a-proclamation</id>
+    <content type="html"><![CDATA[<p>On this day the 16th November 2014, let it be known that Darrell&rsquo;s blog was rendered forth unto the internet.</p>
+
+<p>Let the knowledge and manner of its creation also be recorded, lest it be lost from mortal ken. Thus humanity, need not be stricken in ignorance and awe, and need not refer to my blogging website as &ldquo;Witchcraft&rdquo; or &ldquo;Devilry&rdquo;.</p>
+
+<h2>The Mechanism of Creation</h2>
+
+<ol>
+<li>Inspiration taken from JakeGinnivan&rsquo;s blog which is powered by OctoPress: <a href="http://jake.ginnivan.net/">http://jake.ginnivan.net/</a></li>
+<li>Purchased a domain name: darrelltunnell.net</li>
+<li>Followed this OctoPress documentation: <a href="http://octopress.org/docs/setup/">http://octopress.org/docs/setup/</a></li>
+<li>Hosted on <a href="https://github.com/">https://github.com/</a></li>
+</ol>
+
+
+<h2>A revelation</h2>
+
+<p>And so it came to pass that Darrell Tunnell&rsquo;s blog was incredibly useful to others. Darrell&rsquo;s blog is currently read by 3.1 million people. Web browser requests for Darrell&rsquo;s blog constitute approximately 85.2% of all browser requests made, worldwide. NetFlix was eventually absorbed into Darrell&rsquo;s Blog at the end of 2014, through internet osmosis.</p>
+]]></content>
+  </entry>
+  
+</feed>

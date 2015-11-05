@@ -1,0 +1,605 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Automating Android Unit Test Apps (Xamarin) Like a Pro - Darrell Tunnell&#8217;s Blog</title>
+  <meta name="author" content="Darrell Tunnell">
+
+  
+  <meta name="description" content="First Off.. This article is for those of you out there who use Xamarin to write Android applications and want to automate the process of running your &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://darrelltunnell.net/blog/2015/11/05/automating-android-unit-test-apps-xamarin-like-a-pro">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Darrell Tunnell's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-49278315-3']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Darrell Tunnell&#8217;s Blog</a></h1>
+  
+    <h2>Radiating Awesomeness, One Blog Post at a Time.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:darrelltunnell.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Automating Android Unit Test Apps (Xamarin) Like a Pro</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-05T19:52:00+00:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:52 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>First Off..</h2>
+
+<p>This article is for those of you out there who use Xamarin to write Android applications and want to automate the process of running your tests on an Android device. I&rsquo;ll show you how you can set this up with relative ease.</p>
+
+<p>Here is the process we want:</p>
+
+<!-- more -->
+
+
+<ol>
+<li>CI Build Begins</li>
+<li>Produces the APK file containing my tests.</li>
+<li>Starts up an Emulator and boots an AVD</li>
+<li>Installs the tests APK onto the Android Device (Emulated)</li>
+<li>Kicks of the tests</li>
+<li>Reports back the test results.</li>
+<li>If using Team City the test all appear nicely in the UI - otherwise the results are in STDOUT.</li>
+</ol>
+
+
+<h2>Unit Test App (Android) - and it&rsquo;s shortcomings.</h2>
+
+<p>It all begins with adding the unit tests project itself.
+Xamarin have provided a project type in Visual Studio called a &ldquo;Unit Test App&rdquo;. Add one of those projects to your Solution and define some tests.</p>
+
+<p><img src="/assets/posts/New%20Android%20Unit%20Test%20Project.PNG" alt="New Android Unit Test Project.PNG" /></p>
+
+<p>Here are some tests:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">  [TestFixture]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">TestsSample</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">        [SetUp]</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Setup</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="na">        [TearDown]</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Tear</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">        [Test]</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Pass</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;test1&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">Assert</span><span class="p">.</span><span class="n">True</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">        [Test]</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Fail</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">Assert</span><span class="p">.</span><span class="n">False</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">        [Test]</span>
+</span><span class='line'><span class="na">        [Ignore(&quot;another time&quot;)]</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Ignore</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">Assert</span><span class="p">.</span><span class="n">True</span><span class="p">(</span><span class="k">false</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">        [Test]</span>
+</span><span class='line'>        <span class="k">public</span> <span class="k">void</span> <span class="nf">Inconclusive</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">Assert</span><span class="p">.</span><span class="n">Inconclusive</span><span class="p">(</span><span class="s">&quot;Inconclusive&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Shortcomings of Running these tests</h2>
+
+<p>Naturally, you may be thinking how do you now run these tests? Well by default you have to manually run them. This is an app. Starting the tests project in VSis like starting any other Android application - it should deploy the APK to your Android device, and launch the app, which then shows a UI, and you must click various buttons on said UI to run the various tests that you want to run MANUALLY.</p>
+
+<h2>An enormous pain in the ass..</h2>
+
+<p>This ofcourse, is a rediculous way forward and we need to get these automated ASAP!</p>
+
+<h2>The short answer</h2>
+
+<p>The short answer, is that we need to take a few steps to get these tests automated.. Read on..</p>
+
+<h2>Step 1 - The NuGet Package</h2>
+
+<p>I created a NuGet package called <a href="https://www.nuget.org/packages/Xamarin.TestyDroid/">TestyDroid</a>.</p>
+
+<p>In order to write this tool, it&rsquo;s fair to say it has taken a fair bit of research and testing!</p>
+
+<p>So - <a href="https://www.nuget.org/packages/Xamarin.TestyDroid/">Install the NuGet package to your tests project</a></p>
+
+<p>It contains two things. Firstly, it contains a command line executable in it&rsquo;s tools folder, called TestyDroid.exe. This little command line will handle spinning up an emulator, installing your tests apk, and running all of your tests and reporting the results, and lastly terminating the emulator once done.</p>
+
+<p>Secondly, it contains an Android library that is added to your Android tests project as a reference. This library includes an improved base class that you will derive form instead of the default Xamrin one. We will cover this in the next step.</p>
+
+<h2>Step 2</h2>
+
+<p>After that is installed, we need to address how these tests get &ldquo;launched&rdquo; in the first place.</p>
+
+<p>Android has the concept of &ldquo;Instrumentation&rdquo;</p>
+
+<p><code>Instrumentation</code> are basically special types, that can be launched via an intent, and can run tests.</p>
+
+<p>So, in order to &ldquo;start&rdquo; the tests running on the Android device (after the APK) has been installed, we need to create this &ldquo;Instrumentation&rdquo; class in our tests project.</p>
+
+<p>Add the following class to your Tests project:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">namespace</span> <span class="nn">Xamarin.TestyDroid.TestTests</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">    [Instrumentation(Name = &quot;xamarin.testydroid.testtests.TestInstrumentation&quot;)]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">TestInstrumentation</span> <span class="p">:</span> <span class="n">TestyDroid</span><span class="p">.</span><span class="n">Android</span><span class="p">.</span><span class="n">TestyDroidTestSuiteInstrumentation</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="nf">TestInstrumentation</span><span class="p">(</span><span class="n">IntPtr</span> <span class="n">handle</span><span class="p">,</span> <span class="n">JniHandleOwnership</span> <span class="n">transfer</span><span class="p">)</span> <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">transfer</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">AddTests</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">AddTest</span><span class="p">(</span><span class="n">Assembly</span><span class="p">.</span><span class="n">GetExecutingAssembly</span><span class="p">());</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Imortant to note (adjust the Namespace appropriately) - the Instrumentation Attribute above the class has a &ldquo;Name&rdquo; property. THIS IS VERY IMPORTANT. Make sure it matches yoru namespace + class name, but with the namespace in lower case.</p>
+
+<p>So if you changed the namespace of this class to MyCoolApp.Tests
+And you changed the Class Name of this class to MyCoolTestInstrumentation
+Then the Attribute above the MyCoolTestInstrumentation class should look like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na"> [Instrumentation(Name = &quot;mycoolapp.tests.MyCoolTestInstrumentation&quot;)]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">MyCoolTestInstrumentation</span> <span class="p">:</span> <span class="n">TestyDroid</span><span class="p">.</span><span class="n">Android</span><span class="p">.</span><span class="n">TestyDroidTestSuiteInstrumentation</span>
+</span><span class='line'>    <span class="p">{</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Step 3 - Jot things down</h2>
+
+<p>We now need to make a note of a few variables that we will need in order to call <code>TestyDroid.exe</code> to run our tests.</p>
+
+<p>The first thing we need is the &ldquo;class path&rdquo; of your tests Instrumentation. This is &ldquo;Name&rdquo; value of the [Instrumentation] attribute in the previous step. For example:</p>
+
+<p><code>xamarin.testydroid.testtests.TestInstrumentation</code></p>
+
+<p>The next thing we need is the Package name of your tests package. This you can grab from the <code>AndroidManifest.xml</code> file.</p>
+
+<p>Here is mine:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;manifest</span> <span class="na">xmlns:android=</span><span class="s">&quot;http://schemas.android.com/apk/res/android&quot;</span> <span class="na">package=</span><span class="s">&quot;Xamarin.TestyDroid.TestTests&quot;</span> <span class="na">android:versionCode=</span><span class="s">&quot;1&quot;</span> <span class="na">android:versionName=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;uses-sdk</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;application</span> <span class="na">android:label=</span><span class="s">&quot;Xamarin.TestyDroid.TestTests&quot;</span> <span class="na">android:icon=</span><span class="s">&quot;@drawable/Icon&quot;</span><span class="nt">&gt;&lt;/application&gt;</span>
+</span><span class='line'><span class="nt">&lt;/manifest&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So the package name for my tests app is <code>Xamarin.TestyDroid.TestTests</code></p>
+
+<p>You will also need to know some more general paramaters about where things are on our environment:</p>
+
+<ol>
+<li>The path to <code>Adb.exe</code> (this is in your android-sdk\platform-tools directory)</li>
+<li>The path to <code>Emulator.exe</code> (this is in your android-sdk\tools directory)</li>
+<li>The path to your Tests APK file (I will give you a clue - it will probably be in your bin/release/ folder of your tests project!)</li>
+<li>The name of the AVD that you would like to be launched in the emulator and used to run the tests on.</li>
+</ol>
+
+
+<p>Once you have these things, you are ready to give TestyDroid.exe a whirl!</p>
+
+<h2>Step 4 - Running things locally.</h2>
+
+<p>Armed with the information in the previous step:</p>
+
+<ol>
+<li>Open up a command prompt.</li>
+<li>CD to the tools directory of the Xamarin.TestyDroid nuget package you added to your  earlier. It should be something like &ldquo;..path to you solution/packages/Xamarin.TestyDroid.x.x.x/tools/&rdquo;</li>
+<li>Run <code>Xamarin.TestyDroid.exe</code> with the arguments it needs! Look here for a breakdown of all the arguments: <a href="https://github.com/dazinator/Xamarin.TestyDroid">https://github.com/dazinator/Xamarin.TestyDroid</a> - or just execute it with the <code>--help</code> argument to see the help screen.</li>
+</ol>
+
+
+<p>Here is an example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>Xamarin.TestyDroid.exe -e &quot;C:\Program Files (x86)\Android\android-sdk\tools\emulator.exe&quot; -d &quot;C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe&quot; -f &quot;src\MyTests\bin\Release\MyTests.apk-Signed.apk&quot; -i &quot;AVD_GalaxyNexus_ToolsForApacheCordova&quot; -n &quot;MyTests&quot; -c &quot;mytests.TestInstrumentation&quot; -w 120
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Substitute the argument values accordingly.</p>
+
+<p>You should see output similar to the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>Starting emulator: D:\android-sdk\tools\emulator.exe -avd Xamarin_Android_API_15 -port 5554 -no-boot-anim -prop emu.uuid=013b8394-db8d-4224-a36f-889ce164f74e
+</span><span class='line'>
+</span><span class='line'>Waiting until: 04/11/2015 19:21:29 for device to complete boot up..
+</span><span class='line'>
+</span><span class='line'>INSTRUMENTATION_RESULT: passed=1
+</span><span class='line'>
+</span><span class='line'>INSTRUMENTATION_RESULT: skipped=1
+</span><span class='line'>
+</span><span class='line'>INSTRUMENTATION_RESULT: inconclusive=1
+</span><span class='line'>
+</span><span class='line'>INSTRUMENTATION_RESULT: failed=1
+</span><span class='line'>
+</span><span class='line'>INSTRUMENTATION_CODE: 0
+</span><span class='line'>
+</span><span class='line'>Killing device: emulator-5554
+</span><span class='line'>Sending kill command.
+</span><span class='line'>OK: killing emulator, bye bye
+</span><span class='line'>
+</span><span class='line'>Emulator killed.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Step 5 - Running On Team City</h2>
+
+<p>Once you have verified you can automate the tests locally, the next step is to set up your build system to run them during your build!</p>
+
+<p>TestyDroid additionally supports reporting Test results in a TeamCity format so that they show up as test results in the TeamCity ui - if that&rsquo;s your build system.</p>
+
+<p>To configure TeamCity it&rsquo;s a case of:</p>
+
+<ol>
+<li>An MSBUILD step to build your Tests project (csproj file) such that it outputs the APK (remember to use the target <code>SignAndroidPackage</code> to have the APK produced)</li>
+<li>A command line step that calls out to Xamarin.TestyDroid.exe with the necessary arguments.</li>
+</ol>
+
+
+<p>The first step is easy, but the important thing to remember is to set the target to SignAndroidPackage</p>
+
+<p><img src="/assets/posts/tc%20commandlineparams%20testydroid.PNG" alt="tc commandlineparams testydroid.PNG" /></p>
+
+<p>That will now take care of producing the APK in the output directory for your project during your team city build.</p>
+
+<p>The second step to create is the one that actually runs the tests using TestyDroid!
+The follwing screenshot shows setting up a Command line step to do this:
+<img src="/assets/posts/tc%20testydroid%20commandlinestep.PNG" alt="tc testydroid commandlinestep.PNG" /></p>
+
+<h2>Step 6 - Admire your tests in Team City.</h2>
+
+<p>Now you can run a build - and if all is well - you should see your tests results added to a tests tab in Team City.</p>
+
+<p><img src="/assets/posts/tc%20Tests%20Tab.PNG" alt="tc Tests Tab.PNG" /></p>
+
+<h2>Any Questions?</h2>
+
+<p>I have been someone limited by time so this was fairly rushed together! If there is anything you would like me to elaborate on, please leave a comment below.</p>
+
+<p>Also you can read more information about TestyDroid on Github: <a href="https://github.com/dazinator/Xamarin.TestyDroid/wiki/Getting-Started">https://github.com/dazinator/Xamarin.TestyDroid/wiki/Getting-Started</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Darrell Tunnell</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-11-05T19:52:00+00:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:52 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/xamarin-android-teamcity-tests-automate-ci-build/'>xamarin,android,teamcity,tests,automate,ci,build</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://darrelltunnell.net/blog/2015/11/05/automating-android-unit-test-apps-xamarin-like-a-pro/" data-via="dazinate" data-counturl="http://darrelltunnell.net/blog/2015/11/05/automating-android-unit-test-apps-xamarin-like-a-pro/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/08/16/aurelia-and-asp-net-5-mvc/" title="Previous Post: ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia">&laquo; ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/11/05/automating-android-unit-test-apps-xamarin-like-a-pro/">Automating Android Unit Test Apps (Xamarin) Like a Pro</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/16/aurelia-and-asp-net-5-mvc/">ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/13/dotnetnuke-streamlining-module-development/">DotNetNuke - Streamlining Module Development Workflow</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/04/29/automating-dotnetnuke-deployments-with-octopus-deploy/">Automating DotNetNuke Deployments With Octopus Deploy</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/26/how-far-does-the-xrm-sdk-s-executemultiplerequest-get-you/">How Far Does the XRM SDK&#8217;s ExecuteMultipleRequest Get You?</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/dazinator">@dazinator</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'dazinator',
+            count: 10,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/darrelltunnell?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Darrell Tunnell -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'darrelltunnellsblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://darrelltunnell.net/blog/2015/11/05/automating-android-unit-test-apps-xamarin-like-a-pro/';
+        var disqus_url = 'http://darrelltunnell.net/blog/2015/11/05/automating-android-unit-test-apps-xamarin-like-a-pro/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
