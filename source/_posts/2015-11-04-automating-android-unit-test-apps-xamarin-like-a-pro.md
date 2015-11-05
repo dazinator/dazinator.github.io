@@ -1,10 +1,11 @@
 ---
 layout: post
 comments: true
-categories: ""
+categories: "Xamarin,Android,TeamCity,Tests,Automate,CI,Build"
 published: true
 title: Automating Android Unit Test Apps (Xamarin) Like A Pro
 ---
+
 
 
 
