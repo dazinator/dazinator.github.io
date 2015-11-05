@@ -4,26 +4,23 @@ comments: true
 categories: "Xamarin,Android,TeamCity,Tests,Automate,CI,Build"
 published: true
 title: Automating Android Unit Test Apps (Xamarin) Like A Pro
+date: "2015-11-05 19:52:00 +0000"
 ---
 
-
-
-
 ## First Off..
-This article is for those of you out there who use Xamarin to write Android applications. Moreoever, it's for those of you who also like to run automated tests. Even more specifically, it's for those of you who want to run your automated tests actually on an Android device..
+This article is for those of you out there who use Xamarin to write Android applications and want to automate the process of running your tests on an Android device. I'll show you how you can set this up with relative ease.
 
-I spent a couple of days figuring out how to get my Xamarin "Unit Tests" to autoamically run on an Android device during a CI build (Team City) with the test results reported nicely.
+Here is the process we want:
 
-Here is the process I wanted:
+<!-- more -->
 
-1. Check some code in
-2. CI Build Begins
-3. Produces the APK file containing my tests.
-4. Starts up an Emulator and boots an AVD
-5. Installs the tests APK onto the Android Device (Emulated)
-6. Kicks of the tests
-7. Reports back the test results.
-8. The tests all nicely appear in Team City.
+1. CI Build Begins
+2. Produces the APK file containing my tests.
+3. Starts up an Emulator and boots an AVD
+4. Installs the tests APK onto the Android Device (Emulated)
+5. Kicks of the tests
+6. Reports back the test results.
+7. If using Team City the test all appear nicely in the UI - otherwise the results are in STDOUT.
 
 
 ## Unit Test App (Android) - and it's shortcomings.
