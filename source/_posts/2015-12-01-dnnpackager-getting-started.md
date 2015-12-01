@@ -10,24 +10,22 @@ title: "DnnPackager - Getting Started"
 
 In this post, I am going to show you how to get up and running with your DotNetNuke module / extension development, using DnnPackager.
 
-
 ## Tools of the Trade
 I am using VS2015 Community Edition, but this should would equally well with previous versions.
 
 ## Installing DotNetNuke Locally
-You will need a local instance of DotNetNuke website installed so that you have somewhere to deploy / run and debug your modules. There are plenty of tutorials out there that cover how to install a Dnn website so i am not going to cover this here. Once you have a working Dnn Website installed under your local IIS - please read on!
+You will need a local instance of DotNetNuke website installed so that you have somewhere to deploy / run and debug your modules. There are plenty of tutorials out there that cover how to install a Dnn website so I am not going to cover this here. If you think this would be useful, leave a comment below and I might consider it! Once you have a working Dnn Website installed under your local IIS - please read on!
 
 ## Create a Project
-
-Open Visual Studio, and Create a New "ASP.NET Empty Web Application" project. Make sure you select ".NET 4" or ".NET 4.5" from the drop down at the top.
+Open Visual Studio, and Create a New "ASP.NET Empty Web Application" project. Make sure you select ".NET 4" from the drop down at the top.
 
 ![New Project]({{site.baseurl}}/source/assets/posts/NewAspNetProject.PNG)
 
-Note: Create your project wherever you like - it does not need to be created in a particular directory like other approaches I have seen.
+Note: Create your project wherever you like - where you put your source code - that's your business!
 
 ## Tweak Web Project
 
-The reason we choose to create a web project in the previous step, is just so that we have appropriate context menu options in visual studio for things like adding javascript and ascx files etc. This is generally handy for Dnn module development. However our project can not actually run as a "standalone website" though - as we are developing a Dnn module - which can only be run within the context of the Dnn website that is hosting it. This approach will work equally well if you create other types of projects - for example you could create a new "Library" project instead, but then you wouldn't have those familiar menu options so you would have to add things like javascript files to your project by hand.
+The reason we choose to create a web project in the previous step, is just so that we have appropriate context menu options in visual studio for things like adding javascript and ascx files etc. This is generally handy for Dnn module development. However our project can not actually run as a "standalone website" though - as we are developing a Dnn module - which can only be run within the context of the Dnn website that is hosting it. The approach described in this blog should work equally well if you create other types of projects - for example you could create a new "Library" project instead, but then you wouldn't have those familiar menu options avaialble, so you would have to add things like javascript files to your project by hand.
 
 Select the project in Solution Explorer window, then in the properties window, change "Always Start When Debugging" to false.
 
@@ -50,15 +48,13 @@ This will add some new items to your project, and to your solution. I will cover
 ![ProjectAfterAddingDnnPackager.PNG]({{site.baseurl}}/source/assets/posts/ProjectAfterAddingDnnPackager.PNG)
 
 ## Build
-
 We haven't written any Dnn Module code yet, but go ahead and build your project.
 DnnPackager will step in during the build process, and create a Dnn installation zip for your module. If you open up your solution directory in Windows Explorer you should notice that there is an InstallPackages\ folder, and inside that - a zip file. This is the zip file that can be installed into a Dnn Website and will be used later to deploy your module.
 
 ## Dnn Sdk Assemblies
-
 In order to proceed with Dnn development, we will actually need to add references to the Dnn assemblies. Depending on the version of DotNetNuke you want your extension to be compatible with will often determine what version of the Dnn assemblies you will need to reference.
 
-For the sake of this blog post I am going to assume that you are going to target the latest version of Dnn at the time of writing which is Dnn 7.
+For the sake of this blog post I am going to assume that you are going to target the latest version of Dnn (at the time of writing this is Dnn 7)
 
 Using the Package Manager Console again:
 
@@ -66,15 +62,14 @@ Using the Package Manager Console again:
 Install-Package DotNetNuke.Core
 ```
 
-This should add a reference to the DotNetNuke assembly to your projects references:
+This should add a reference to the DotNetNuke assembly to your project's references:
 
 ![ReferencesAfterAddingDnnCore.PNG]({{site.baseurl}}/source/assets/posts/ReferencesAfterAddingDnnCore.PNG)
 
-## Let's Create a Module!
+## Let's Develop a Module!
+Now we have got most of the setup out of the way, it's time to get cracking on our module!
 
-Now we have got most of the setup out of the way, it's time to get cracking on a module!
-
-First add a new User Control to the project. This is going to be our UI for our super cool DNN module.
+First add a new User Control to the project. This is going to be the default UI for our super cool DNN module.
 
 ![AddUserControl.PNG]({{site.baseurl}}/source/assets/posts/AddUserControl.PNG)
 
@@ -112,7 +107,193 @@ namespace MySuperModule
 
 ## Making an awesome module
 
-Further development of this super awesome module is beyond the scope of this post, so I am just going to make it display something really simple for the time being. There are [plenty of other resources](http://www.dnnsoftware.com/community-blog/cid/141749/dotnetnuke-module-development-101-5--hello-world-3-using-visual-studio-to-create-a-module) out there for learning about Dnn module development. For now let's simple make it display a hello world!
+Further development of this super awesome module is beyond the scope of this post, so I am just going to make it display something really simple for the time being. There are [plenty of other resources](http://www.dnnsoftware.com/community-blog/cid/141749/dotnetnuke-module-development-101-5--hello-world-3-using-visual-studio-to-create-a-module) out there for learning about Dnn module development. For now let's  make it display some text.
+
+Add the following h1 content to your markup for the user control:
+
+```html
+
+<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="Default.ascx.cs" Inherits="MySuperModule.Default" %>
+
+<h1>I came, I read a blog, I conquered!</h1>
+
+```
+
+## Module Manifest
+Now that we have this incredible... work of art, naturally we want to run it and test it out. In order to do this though, we first need to make sure our module is going to identify itself with DotNetNuke correctly. This means it should have a manifest.
+
+One of the files that was automatically added to your project when you added the DnnPackager NuGet package was: manifest.dnn
+
+Open up manifest.dnn and replace the values in square brackets with appropriate values. You only need to do this once.
+
+For example, you will see something that looks like this:
+
+```xml
+<dotnetnuke type="Package" version="6.0">
+  <packages>    
+    <package name="[YourPackageName]" type="Module" version="0.0.0">
+      <friendlyName>[FriendlyPackageName]</friendlyName>
+      <description></description>
+      <owner>
+        <name>[OwnerName]</name>
+        <organization>[OrganizationName]</organization>
+        <url>http://www.someurl.com</url>
+        <email><![CDATA[<a href="mailto:support@someorg.com">support@someorg.com</a>]]></email>
+      </owner>
+      <license src="License.lic">
+      </license>
+      <releaseNotes src="ReleaseNotes.txt">
+      </releaseNotes>
+      <dependencies>      
+      </dependencies>
+      <components>
+        <component type="Module">
+          <desktopModule>
+            <moduleName>[YourModuleName]</moduleName>
+            <foldername>[FolderName]</foldername>
+            <businessControllerClass />
+            <supportedFeatures />
+            <moduleDefinitions>
+              <moduleDefinition>
+                <friendlyName>[Friendly Module Name]</friendlyName>
+                <defaultCacheTime>60</defaultCacheTime>
+                <moduleControls>
+                  <moduleControl>
+                    <controlKey>
+                    </controlKey>
+                    <controlSrc>DesktopModules/[FolderName]/[YourPathToDefaultView].ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle>[Default title when added to page]</controlTitle>
+                    <controlType>View</controlType>
+                    <helpUrl>
+                    </helpUrl>
+                  </moduleControl>
+                  <moduleControl>
+                    <controlKey>settings</controlKey>
+                    <controlSrc>DesktopModules/[FolderName]/[YourPathToSettings].ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle>[Default settings title]</controlTitle>
+                    <controlType>View</controlType>
+                    <helpUrl>
+                    </helpUrl>
+                  </moduleControl>
+                </moduleControls>
+                <permissions>
+                </permissions>
+              </moduleDefinition>
+            </moduleDefinitions>
+          </desktopModule>
+        </component>
+        <component type="Assembly">
+          <assemblies>
+            <assembly>
+              <path>bin</path>
+              <name>[YourAssembly.dll]</name>
+            </assembly>
+          </assemblies>
+        </component>
+        <component type="ResourceFile">
+          <resourceFiles>
+            <basePath>DesktopModules/[FolderName]</basePath>
+            <resourceFile>
+              <name>Resources.zip</name>
+            </resourceFile>
+          </resourceFiles>
+        </component>
+      </components>
+    </package>   
+  </packages>
+</dotnetnuke>
+
+```
+
+Fill it in so it looks more like this:
+
+```xml
+<dotnetnuke type="Package" version="6.0">
+  <packages>    
+    <package name="MySuperModule" type="Module" version="0.0.1">
+      <friendlyName>MySuperModule</friendlyName>
+      <description>Makes the internet work</description>
+      <owner>
+        <name>Darrell Tunnell</name>
+        <organization>Dazinator</organization>
+        <url>http://darrelltunnell.net</url>
+        <email><![CDATA[<a href="mailto:support@someorg.com">support@someorg.com</a>]]></email>
+      </owner>
+      <license src="License.lic">
+      </license>
+      <releaseNotes src="ReleaseNotes.txt">
+      </releaseNotes>
+      <dependencies>      
+      </dependencies>
+      <components>
+        <component type="Module">
+          <desktopModule>
+            <moduleName>MySuperModule</moduleName>
+            <foldername>MySuperModule</foldername>
+            <businessControllerClass />
+            <supportedFeatures />
+            <moduleDefinitions>
+              <moduleDefinition>
+                <friendlyName>MySuperModule</friendlyName>
+                <defaultCacheTime>-1</defaultCacheTime>
+                <moduleControls>
+                  <moduleControl>
+                    <controlKey>
+                    </controlKey>
+                    <controlSrc>DesktopModules/MySuperModule/Default.ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle>Hello</controlTitle>
+                    <controlType>View</controlType>
+                    <helpUrl>
+                    </helpUrl>
+                  </moduleControl>                 
+                </moduleControls>
+                <permissions>
+                </permissions>
+              </moduleDefinition>
+            </moduleDefinitions>
+          </desktopModule>
+        </component>
+        <component type="Assembly">
+          <assemblies>
+            <assembly>
+              <path>bin</path>
+              <name>MySuperModule.dll</name>
+            </assembly>
+          </assemblies>
+        </component>
+        <component type="ResourceFile">
+          <resourceFiles>
+            <basePath>DesktopModules/MySuperModule</basePath>
+            <resourceFile>
+              <name>Resources.zip</name>
+            </resourceFile>
+          </resourceFiles>
+        </component>
+      </components>
+    </package>   
+  </packages>
+</dotnetnuke>
+
+```
+
+Note: I removed the entry for the "settings" for our module as we don't have a settings screen in this example. I also changed the default cache time to -1, which disables caching.. just because I have a feeling this module is going to one day become a lot more dynamic and I don't want outdated content causing confusion :-)
+
+Important: I also set the version number to 0.0.1. Version numbers are important in that Dnn will not let you install an older version of a module over the top of a newer version. The version number in the manifest would have to be equal to, or greater than the currently installed version for it to install over the top.
+
+## Ready to roll
+
+Sense that tension in the air? The excitement is building.. The entire blog post has been leading to this one, perfect, moment.
+
+We are now going to deploy our module to our local Dnn website, and debug it.
+
+## 
+
+
+
+
 
 
 
