@@ -379,6 +379,14 @@ Now refresh your page, and BAM! Breakpoint is hit!
 
 ![breakpointhit.PNG]({{site.baseurl}}/assets/posts/breakpointhit.PNG)
 
+## What about if I just want my Zip file
+
+If you just want your installation zip for osme reason, perhaps you want to upload it to the Dnn store etc, just build your project as normal and then in your solution directory check the "InstallPackages" folder. That's where your zip can be found.
+
+## Issues?
+
+DnnPackager is open source on GitHub. Feel free to [raise an issue](https://github.com/dazinator/DnnPackager)
+
 ## In Summary
 
 DnnPackager is an automation tool that I built to help streamline the Dnn module develop workflow. Feel free to drop me a comment - does this tool help? Or have I missed my mark? Where could it be better? I'd love to hear suggestions.
