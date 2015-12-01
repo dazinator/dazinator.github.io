@@ -298,8 +298,9 @@ We are now going to deploy our module to our local Dnn website, and debug it.
 ## Automating Deployment
 
 In VS, go to the "Package Manager Console" window, and make sure your project is selected from the projects dropdown.
-1. Type: `Install-Module [name of your website in IIS]` and hit enter.
-2. Watch as your module project is built, packaged up as a zip, and then the zip is deployed to your local Dnn website!
+
+    1. Type: `Install-Module [name of your website in IIS]` and hit enter.
+    2. Watch as your module project is built, packaged up as a zip, and then the zip is deployed to your local Dnn website!
 
 For example, on my IIS, the name of my Dnn website is "DotNetNuke"
 
