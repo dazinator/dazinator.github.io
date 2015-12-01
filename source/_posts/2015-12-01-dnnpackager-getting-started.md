@@ -6,9 +6,8 @@ published: true
 title: "DnnPackager - Getting Started"
 ---
 
-
-## Dnn Packager
-In this post, I am going to show you how to get up and running with your DotNetNuke module / extension development, using DnnPackager.
+## Dnn Packager - Super Smooth Module Development
+In this post, I am going to show you how to get up and running with DnnPackager for your DotNetNuke module / extension development.
 
 ## Tools of the Trade
 I am using VS2015 Community Edition, but this should would equally well with previous versions.
