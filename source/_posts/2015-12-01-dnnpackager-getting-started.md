@@ -38,7 +38,9 @@ This will help later as it will prevent Visual Studio from needlessly trying to 
 Open the Package Manager Console (Tools --> NuGet Package Manager) and (With your project selected in the "Default Project" dropdown, type into it the following command and hit enter to install the DnnPackager NuGet package:
 
 ```
+
 Install-Package DnnPackager
+
 ```
 
 ![NuGetConsoleAddDnnPackagerNuGet.PNG]({{site.baseurl}}/assets/posts/NuGetConsoleAddDnnPackagerNuGet.PNG)
@@ -55,7 +57,9 @@ For the sake of this blog post I am going to assume that you are going to target
 Using the Package Manager Console again:
 
 ```
+
 Install-Package DotNetNuke.Core
+
 ```
 
 This should add a reference to the DotNetNuke assembly to your project's references:
@@ -74,6 +78,7 @@ We then need to change our new User Control to make it inherit from `PortalModul
 So change this:
 
 ``` csharp
+
 namespace MySuperModule
 {
     public partial class Default : System.Web.UI.UserControl
@@ -84,11 +89,13 @@ namespace MySuperModule
         }
     }
 }
+
 ```
 
 To this:
 
 ``` csharp
+
 namespace MySuperModule
 {
     public partial class Default : PortalModuleBase
@@ -99,6 +106,7 @@ namespace MySuperModule
         }
     }
 }
+
 ```
 
 ## Making an awesome module
@@ -125,6 +133,7 @@ Open up manifest.dnn and replace the values in square brackets with appropriate 
 For example, you will see something that looks like this:
 
 ``` xml
+
 <dotnetnuke type="Package" version="6.0">
   <packages>    
     <package name="[YourPackageName]" type="Module" version="0.0.0">
@@ -206,6 +215,7 @@ For example, you will see something that looks like this:
 Fill it in so it looks more like this:
 
 ``` xml
+
 <dotnetnuke type="Package" version="6.0">
   <packages>    
     <package name="MySuperModule" type="Module" version="0.0.1">
@@ -272,6 +282,7 @@ Fill it in so it looks more like this:
     </package>   
   </packages>
 </dotnetnuke>
+
 ```
 
 Note: I removed the entry for the "settings" for our module as we don't have a settings screen in this example. I also changed the default cache time to -1, which disables caching.. just because I have a feeling this module is going to one day become a lot more dynamic and I don't want outdated content causing confusion :-)
@@ -321,8 +332,10 @@ You should see:
 Let's make some changes. Add some more content:
 
 ``` html
+
 <h1>I came, I read a blog, I conquered!</h1>
 <p>Everyday I'm shuffling!</p>
+
 ```
 
 Add some code in your code behind, and set a breakpoint on it:
@@ -332,7 +345,9 @@ Add some code in your code behind, and set a breakpoint on it:
 Now deploy this very simply by placing your cursor in the Package Manager Console window, and hitting "up" arrow on your keyboard. This will bring up the last command:
 
 ```
+
 Install-Module DotNetNuke
+
 ```
 
 hit enter.
