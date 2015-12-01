@@ -7,7 +7,6 @@ title: "DnnPackager - Getting Started"
 ---
 
 
-
 ## Dnn Packager
 In this post, I am going to show you how to get up and running with your DotNetNuke module / extension development, using DnnPackager.
 
@@ -74,7 +73,7 @@ We then need to change our new User Control to make it inherit from `PortalModul
 
 So change this:
 
-```csharp
+``` csharp
 namespace MySuperModule
 {
     public partial class Default : System.Web.UI.UserControl
@@ -89,7 +88,7 @@ namespace MySuperModule
 
 To this:
 
-```
+``` csharp
 namespace MySuperModule
 {
     public partial class Default : PortalModuleBase
@@ -108,7 +107,7 @@ Further development of this super awesome module is beyond the scope of this pos
 
 Add the following h1 content to your markup for the user control:
 
-```html
+``` html
 
 <%@ Control Language="C#" AutoEventWireup="true" CodeBehind="Default.ascx.cs" Inherits="MySuperModule.Default" %>
 
@@ -125,7 +124,7 @@ Open up manifest.dnn and replace the values in square brackets with appropriate 
 
 For example, you will see something that looks like this:
 
-```xml
+``` xml
 <dotnetnuke type="Package" version="6.0">
   <packages>    
     <package name="[YourPackageName]" type="Module" version="0.0.0">
@@ -206,7 +205,7 @@ For example, you will see something that looks like this:
 
 Fill it in so it looks more like this:
 
-```xml
+``` xml
 <dotnetnuke type="Package" version="6.0">
   <packages>    
     <package name="MySuperModule" type="Module" version="0.0.1">
@@ -321,7 +320,7 @@ You should see:
 
 Let's make some changes. Add some more content:
 
-```html
+``` html
 <h1>I came, I read a blog, I conquered!</h1>
 <p>Everyday I'm shuffling!</p>
 ```
