@@ -273,7 +273,6 @@ Fill it in so it looks more like this:
     </package>   
   </packages>
 </dotnetnuke>
-
 ```
 
 Note: I removed the entry for the "settings" for our module as we don't have a settings screen in this example. I also changed the default cache time to -1, which disables caching.. just because I have a feeling this module is going to one day become a lot more dynamic and I don't want outdated content causing confusion :-)
