@@ -365,10 +365,10 @@ That's because it's being executed within the process running your DotNetNuke we
 
 There are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:
 
-Hit ctrl + alt + p
-Tick show all processes (if it's not allready)
-Select any process in the list, then hit "w" on your keyboard - this should scroll you to the "w3wp.exe" process.
-Click "attach".
+1. Hit ctrl + alt + p
+2. Tick show all processes (if it's not allready)
+3. Select any process in the list, then hit "w" on your keyboard - this should scroll you to the "w3wp.exe" process.
+4. Click "attach".
 
 ![attachtoprocess.PNG]({{site.baseurl}}/assets/posts/attachtoprocess.PNG)
 
