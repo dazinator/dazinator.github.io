@@ -6,8 +6,8 @@ published: true
 title: "DnnPackager - Getting Started"
 ---
 
-## Dnn Packager
 
+## Dnn Packager
 In this post, I am going to show you how to get up and running with your DotNetNuke module / extension development, using DnnPackager.
 
 ## Tools of the Trade
@@ -364,26 +364,3 @@ Now refresh your page, and BAM! Breakpoint is hit!
 ## In Summary
 
 DnnPackager is an automation tool that I built to help streamline the Dnn module develop workflow. Feel free to drop me a comment - does this tool help? Or have I missed my mark? Where could it be better? I'd love to hear suggestions.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
