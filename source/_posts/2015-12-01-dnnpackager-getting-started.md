@@ -47,10 +47,6 @@ This will add some new items to your project, and to your solution. I will cover
 
 ![ProjectAfterAddingDnnPackager.PNG]({{site.baseurl}}/source/assets/posts/ProjectAfterAddingDnnPackager.PNG)
 
-## Build
-We haven't written any Dnn Module code yet, but go ahead and build your project.
-DnnPackager will step in during the build process, and create a Dnn installation zip for your module. If you open up your solution directory in Windows Explorer you should notice that there is an InstallPackages\ folder, and inside that - a zip file. This is the zip file that can be installed into a Dnn Website and will be used later to deploy your module.
-
 ## Dnn Sdk Assemblies
 In order to proceed with Dnn development, we will actually need to add references to the Dnn assemblies. Depending on the version of DotNetNuke you want your extension to be compatible with will often determine what version of the Dnn assemblies you will need to reference.
 
@@ -289,7 +285,90 @@ Sense that tension in the air? The excitement is building.. The entire blog post
 
 We are now going to deploy our module to our local Dnn website, and debug it.
 
-## 
+## Automating Deployment
+
+In VS, go to the "Package Manager Console" window, and make sure your project is selected from the projects dropdown.
+1. Type: `Install-Module [name of your website in IIS]` and hit enter.
+2. Watch as your module project is built, packaged up as a zip, and then the zip is deployed to your local Dnn website!
+
+For example, on my IIS, the name of my Dnn website is "DotNetNuke"
+
+![IISDnnWebsite.PNG]({{site.baseurl}}/source/assets/posts/IISDnnWebsite.PNG)
+
+So I type into the Package Manager Console `Install-Module DotNetNuke` and hit enter.
+
+After that completes, you can Login to your DotNetNuke website as host, and go to the Host-->Extensions page, and you should see that your module is now listed as an installed extension! Pretty cool!
+
+![hostextensionsmodules.PNG]({{site.baseurl}}/source/assets/posts/hostextensionsmodules.PNG)
+
+## Setting up a Page to Host it
+
+Although our module has been installed onto our site, it won't display anywhere - because we need to tell DotNetNuke where it should be displayed!
+
+This is a quick one time task, of simply creating a page in DotNetNuke to display our module.
+
+1. Login as Host
+2. Pages --> Add New Page
+3. Fill out page details and create it.
+4. Modules --> Add New Module
+5. Add your new module on to the page.
+
+You should see:
+
+![AddedModule.PNG]({{site.baseurl}}/source/assets/posts/AddedModule.PNG)
+
+## Debugging it & Testing Changes
+
+Let's make some changes. Add some more content:
+
+```html
+<h1>I came, I read a blog, I conquered!</h1>
+<p>Everyday I'm shuffling!</p>
+```
+
+Add some code in your code behind, and set a breakpoint on it:
+
+![codebehindbreakpoint.PNG]({{site.baseurl}}/source/assets/posts/codebehindbreakpoint.PNG)
+
+Now deploy this very simply by placing your cursor in the Package Manager Console window, and hitting "up" arrow on your keyboard. This will bring up the last command:
+
+```
+Install-Module DotNetNuke
+```
+
+hit enter.
+
+Once that completes, refresh the page displaying your module:
+
+![redeployedmodulewithchanges.PNG]({{site.baseurl}}/source/assets/posts/redeployedmodulewithchanges.PNG)
+
+Simples!
+
+## But wait - my breakpoint wasn't hit!
+
+That's because it's being executed within the process running your DotNetNuke website. So all you need to do is "attach to process".
+
+There are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:
+
+Hit ctrl + alt + p
+Tick show all processes (if it's not allready)
+Select any process in the list, then hit "w" on your keyboard - this should scroll you to the "w3wp.exe" process.
+Click "attach".
+
+![attachtoprocess.PNG]({{site.baseurl}}/source/assets/posts/attachtoprocess.PNG)
+
+Now refresh your page, and BAM! Breakpoint is hit!
+
+![breakpointhit.PNG]({{site.baseurl}}/source/assets/posts/breakpointhit.PNG)
+
+## In Summary
+
+DnnPackager is an automation tool that I built to help streamline the Dnn module develop workflow. Feel free to drop me a comment - does this tool help? Or have I missed my mark? Where could it be better? I'd love to hear suggestions.
+
+
+
+
+
 
 
 
