@@ -4,7 +4,7 @@
   <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2015-11-05T20:45:59+00:00</updated>
+  <updated>2015-12-01T18:30:26+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -12,6 +12,560 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[DnnPackager - Getting Started]]></title>
+    <link href="http://darrelltunnell.net/blog/2015/12/01/dnnpackager-getting-started/"/>
+    <updated>2015-12-01T00:00:00+00:00</updated>
+    <id>http://darrelltunnell.net/blog/2015/12/01/dnnpackager-getting-started</id>
+    <content type="html"><![CDATA[<h2>Dnn Packager - Super Smooth Module Development</h2>
+
+<p>In this post, I am going to show you how to get up and running with DnnPackager for your DotNetNuke module / extension development.</p>
+
+<h2>Tools of the Trade</h2>
+
+<p>I am using VS2015 Community Edition, but this should would equally well with previous versions.</p>
+
+<!-- more -->
+
+
+<h2>Installing DotNetNuke Locally</h2>
+
+<p>You will need a local instance of DotNetNuke website installed so that you have somewhere to deploy / run and debug your modules. There are plenty of tutorials out there that cover how to install a Dnn website so I am not going to cover this here. If you think this would be useful, leave a comment below and I might consider it! Once you have a working Dnn Website installed under your local IIS - please read on!</p>
+
+<h2>Create a Project</h2>
+
+<p>Open Visual Studio, and Create a New &ldquo;ASP.NET Empty Web Application&rdquo; project. Make sure you select &ldquo;.NET 4&rdquo; from the drop down at the top.</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/NewAspNetProject.PNG" alt="New Project" /></p>
+
+<p>Note: Create your project wherever you like - where you put your source code - that&rsquo;s your business!</p>
+
+<h2>Tweak Web Project</h2>
+
+<p>The reason we choose to create a web project in the previous step, is just so that we have appropriate context menu options in visual studio for things like adding javascript and ascx files etc. This is generally handy for Dnn module development. However our project can not actually run as a &ldquo;standalone website&rdquo; though - as we are developing a Dnn module - which can only be run within the context of the Dnn website that is hosting it. The approach described in this blog should work equally well if you create other types of projects - for example you could create a new &ldquo;Library&rdquo; project instead, but then you wouldn&rsquo;t have those familiar menu options avaialble, so you would have to add things like javascript files to your project by hand.</p>
+
+<p>Select the project in Solution Explorer window, then in the properties window, change &ldquo;Always Start When Debugging&rdquo; to false.</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/alwaysstartwhendebuggingfalse.PNG" alt="alwaysstartwhendebuggingfalse.PNG" /></p>
+
+<p>This will help later as it will prevent Visual Studio from needlessly trying to host your module project as its own website whenever you try and debug your module - which will be running in your local Dnn website instead.</p>
+
+<h2>Add DnnPackager NuGet Package</h2>
+
+<p>Open the Package Manager Console (Tools &ndash;> NuGet Package Manager) and (With your project selected in the &ldquo;Default Project&rdquo; dropdown, type into it the following command and hit enter to install the DnnPackager NuGet package:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>Install-Package DnnPackager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://darrelltunnell.net/assets/posts/NuGetConsoleAddDnnPackagerNuGet.PNG" alt="NuGetConsoleAddDnnPackagerNuGet.PNG" /></p>
+
+<p>This will add some new items to your project, and to your solution. I will cover what these are for later.</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/ProjectAfterAddingDnnPackager.PNG" alt="ProjectAfterAddingDnnPackager.PNG" /></p>
+
+<h2>Dnn Sdk Assemblies</h2>
+
+<p>In order to proceed with Dnn development, we will actually need to add references to the Dnn assemblies. Depending on the version of DotNetNuke you want your extension to be compatible with will often determine what version of the Dnn assemblies you will need to reference.</p>
+
+<p>For the sake of this blog post I am going to assume that you are going to target the latest version of Dnn (at the time of writing this is Dnn 7)</p>
+
+<p>Using the Package Manager Console again:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>Install-Package DotNetNuke.Core
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This should add a reference to the DotNetNuke assembly to your project&rsquo;s references:</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/ReferencesAfterAddingDnnCore.PNG" alt="ReferencesAfterAddingDnnCore.PNG" /></p>
+
+<h2>Let&rsquo;s Develop a Module!</h2>
+
+<p>Now we have got most of the setup out of the way, it&rsquo;s time to get cracking on our module!</p>
+
+<p>First add a new User Control to the project. This is going to be the default UI for our super cool DNN module.</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/AddUserControl.PNG" alt="AddUserControl.PNG" /></p>
+
+<p>We then need to change our new User Control to make it inherit from <code>PortalModuleBase</code> rather than <code>System.Web.UI.UserControl</code></p>
+
+<p>So change this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">namespace</span> <span class="nn">MySuperModule</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">partial</span> <span class="k">class</span> <span class="nc">Default</span> <span class="p">:</span> <span class="n">System</span><span class="p">.</span><span class="n">Web</span><span class="p">.</span><span class="n">UI</span><span class="p">.</span><span class="n">UserControl</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">void</span> <span class="nf">Page_Load</span><span class="p">(</span><span class="kt">object</span> <span class="n">sender</span><span class="p">,</span> <span class="n">EventArgs</span> <span class="n">e</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">namespace</span> <span class="nn">MySuperModule</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">partial</span> <span class="k">class</span> <span class="nc">Default</span> <span class="p">:</span> <span class="n">PortalModuleBase</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">void</span> <span class="nf">Page_Load</span><span class="p">(</span><span class="kt">object</span> <span class="n">sender</span><span class="p">,</span> <span class="n">EventArgs</span> <span class="n">e</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Making an awesome module</h2>
+
+<p>Further development of this super awesome module is beyond the scope of this post, so I am just going to make it display something really simple for the time being. There are <a href="http://www.dnnsoftware.com/community-blog/cid/141749/dotnetnuke-module-development-101-5--hello-world-3-using-visual-studio-to-create-a-module">plenty of other resources</a> out there for learning about Dnn module development. For now let&rsquo;s  make it display some text.</p>
+
+<p>Add the following h1 content to your markup for the user control:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="err">&lt;</span>%@ Control Language=&quot;C#&quot; AutoEventWireup=&quot;true&quot; CodeBehind=&quot;Default.ascx.cs&quot; Inherits=&quot;MySuperModule.Default&quot; %&gt;
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;h1&gt;</span>I came, I read a blog, I conquered!<span class="nt">&lt;/h1&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Module Manifest</h2>
+
+<p>Now that we have this incredible&hellip; work of art, naturally we want to run it and test it out. In order to do this though, we first need to make sure our module is going to identify itself with DotNetNuke correctly. This means it should have a manifest.</p>
+
+<p>One of the files that was automatically added to your project when you added the DnnPackager NuGet package was: manifest.dnn</p>
+
+<p>Open up manifest.dnn and replace the values in square brackets with appropriate values. You only need to do this once.</p>
+
+<p>For example, you will see something that looks like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;dotnetnuke</span> <span class="na">type=</span><span class="s">&quot;Package&quot;</span> <span class="na">version=</span><span class="s">&quot;6.0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;packages&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;package</span> <span class="na">name=</span><span class="s">&quot;[YourPackageName]&quot;</span> <span class="na">type=</span><span class="s">&quot;Module&quot;</span> <span class="na">version=</span><span class="s">&quot;0.0.0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;friendlyName&gt;</span>[FriendlyPackageName]<span class="nt">&lt;/friendlyName&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;description&gt;&lt;/description&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;owner&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;name&gt;</span>[OwnerName]<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;organization&gt;</span>[OrganizationName]<span class="nt">&lt;/organization&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;url&gt;</span>http://www.someurl.com<span class="nt">&lt;/url&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;email&gt;</span><span class="cp">&lt;![CDATA[&lt;a href=&quot;mailto:support@someorg.com&quot;&gt;support@someorg.com&lt;/a&gt;]]&gt;</span><span class="nt">&lt;/email&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/owner&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;license</span> <span class="na">src=</span><span class="s">&quot;License.lic&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/license&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;releaseNotes</span> <span class="na">src=</span><span class="s">&quot;ReleaseNotes.txt&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/releaseNotes&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependencies&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;components&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;component</span> <span class="na">type=</span><span class="s">&quot;Module&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;desktopModule&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;moduleName&gt;</span>[YourModuleName]<span class="nt">&lt;/moduleName&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;foldername&gt;</span>[FolderName]<span class="nt">&lt;/foldername&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;businessControllerClass</span> <span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;supportedFeatures</span> <span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;moduleDefinitions&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;moduleDefinition&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;friendlyName&gt;</span>[Friendly Module Name]<span class="nt">&lt;/friendlyName&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;defaultCacheTime&gt;</span>60<span class="nt">&lt;/defaultCacheTime&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;moduleControls&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;moduleControl&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;controlKey&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/controlKey&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;controlSrc&gt;</span>DesktopModules/[FolderName]/[YourPathToDefaultView].ascx<span class="nt">&lt;/controlSrc&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;supportsPartialRendering&gt;</span>False<span class="nt">&lt;/supportsPartialRendering&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;controlTitle&gt;</span>[Default title when added to page]<span class="nt">&lt;/controlTitle&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;controlType&gt;</span>View<span class="nt">&lt;/controlType&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;helpUrl&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/helpUrl&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;/moduleControl&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;moduleControl&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;controlKey&gt;</span>settings<span class="nt">&lt;/controlKey&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;controlSrc&gt;</span>DesktopModules/[FolderName]/[YourPathToSettings].ascx<span class="nt">&lt;/controlSrc&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;supportsPartialRendering&gt;</span>False<span class="nt">&lt;/supportsPartialRendering&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;controlTitle&gt;</span>[Default settings title]<span class="nt">&lt;/controlTitle&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;controlType&gt;</span>View<span class="nt">&lt;/controlType&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;helpUrl&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/helpUrl&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;/moduleControl&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/moduleControls&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;permissions&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/permissions&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;/moduleDefinition&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/moduleDefinitions&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/desktopModule&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/component&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;component</span> <span class="na">type=</span><span class="s">&quot;Assembly&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;assemblies&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;assembly&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;path&gt;</span>bin<span class="nt">&lt;/path&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;name&gt;</span>[YourAssembly.dll]<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/assembly&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/assemblies&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/component&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;component</span> <span class="na">type=</span><span class="s">&quot;ResourceFile&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;resourceFiles&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;basePath&gt;</span>DesktopModules/[FolderName]<span class="nt">&lt;/basePath&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;resourceFile&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;name&gt;</span>Resources.zip<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/resourceFile&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/resourceFiles&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/component&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/components&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/package&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/packages&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dotnetnuke&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Fill it in so it looks more like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;dotnetnuke</span> <span class="na">type=</span><span class="s">&quot;Package&quot;</span> <span class="na">version=</span><span class="s">&quot;6.0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;packages&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;package</span> <span class="na">name=</span><span class="s">&quot;MySuperModule&quot;</span> <span class="na">type=</span><span class="s">&quot;Module&quot;</span> <span class="na">version=</span><span class="s">&quot;0.0.1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;friendlyName&gt;</span>MySuperModule<span class="nt">&lt;/friendlyName&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;description&gt;</span>Makes the internet work<span class="nt">&lt;/description&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;owner&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;name&gt;</span>Darrell Tunnell<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;organization&gt;</span>Dazinator<span class="nt">&lt;/organization&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;url&gt;</span>http://darrelltunnell.net<span class="nt">&lt;/url&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;email&gt;</span><span class="cp">&lt;![CDATA[&lt;a href=&quot;mailto:support@someorg.com&quot;&gt;support@someorg.com&lt;/a&gt;]]&gt;</span><span class="nt">&lt;/email&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/owner&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;license</span> <span class="na">src=</span><span class="s">&quot;License.lic&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/license&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;releaseNotes</span> <span class="na">src=</span><span class="s">&quot;ReleaseNotes.txt&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/releaseNotes&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;dependencies&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/dependencies&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;components&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;component</span> <span class="na">type=</span><span class="s">&quot;Module&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;desktopModule&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;moduleName&gt;</span>MySuperModule<span class="nt">&lt;/moduleName&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;foldername&gt;</span>MySuperModule<span class="nt">&lt;/foldername&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;businessControllerClass</span> <span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;supportedFeatures</span> <span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;moduleDefinitions&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;moduleDefinition&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;friendlyName&gt;</span>MySuperModule<span class="nt">&lt;/friendlyName&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;defaultCacheTime&gt;</span>-1<span class="nt">&lt;/defaultCacheTime&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;moduleControls&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;moduleControl&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;controlKey&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/controlKey&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;controlSrc&gt;</span>DesktopModules/MySuperModule/Default.ascx<span class="nt">&lt;/controlSrc&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;supportsPartialRendering&gt;</span>False<span class="nt">&lt;/supportsPartialRendering&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;controlTitle&gt;</span>Hello<span class="nt">&lt;/controlTitle&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;controlType&gt;</span>View<span class="nt">&lt;/controlType&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;helpUrl&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/helpUrl&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;/moduleControl&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/moduleControls&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;permissions&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/permissions&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;/moduleDefinition&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/moduleDefinitions&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/desktopModule&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/component&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;component</span> <span class="na">type=</span><span class="s">&quot;Assembly&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;assemblies&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;assembly&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;path&gt;</span>bin<span class="nt">&lt;/path&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;name&gt;</span>MySuperModule.dll<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/assembly&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/assemblies&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/component&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;component</span> <span class="na">type=</span><span class="s">&quot;ResourceFile&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;resourceFiles&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;basePath&gt;</span>DesktopModules/MySuperModule<span class="nt">&lt;/basePath&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;resourceFile&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;name&gt;</span>Resources.zip<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/resourceFile&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/resourceFiles&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/component&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/components&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/package&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/packages&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dotnetnuke&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note: I removed the entry for the &ldquo;settings&rdquo; for our module as we don&rsquo;t have a settings screen in this example. I also changed the default cache time to -1, which disables caching.. just because I have a feeling this module is going to one day become a lot more dynamic and I don&rsquo;t want outdated content causing confusion :-)</p>
+
+<p>Important: I also set the version number to 0.0.1. Version numbers are important in that Dnn will not let you install an older version of a module over the top of a newer version. The version number in the manifest would have to be equal to, or greater than the currently installed version for it to install over the top.</p>
+
+<h2>Ready to roll</h2>
+
+<p>Sense that tension in the air? The excitement is building.. The entire blog post has been leading to this one, perfect, moment.</p>
+
+<p>We are now going to deploy our module to our local Dnn website, and debug it.</p>
+
+<h2>Automating Deployment</h2>
+
+<p>In VS, go to the &ldquo;Package Manager Console&rdquo; window, and make sure your project is selected from the projects dropdown.</p>
+
+<ol>
+<li>Type: <code>Install-Module [name of your website in IIS]</code> and hit enter.</li>
+<li>Watch as your module project is built, packaged up as a zip, and then the zip is deployed to your local Dnn website!</li>
+</ol>
+
+
+<p>For example, on my IIS, the name of my Dnn website is &ldquo;DotNetNuke&rdquo;</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/IISDnnWebsite.PNG" alt="IISDnnWebsite.PNG" /></p>
+
+<p>So I type into the Package Manager Console <code>Install-Module DotNetNuke</code> and hit enter.</p>
+
+<p>After that completes, you can Login to your DotNetNuke website as host, and go to the Host&ndash;>Extensions page, and you should see that your module is now listed as an installed extension! Pretty cool!</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/hostextensionsmodules.PNG" alt="hostextensionsmodules.PNG" /></p>
+
+<h2>Setting up a Page to Host it</h2>
+
+<p>Although our module has been installed onto our site, it won&rsquo;t display anywhere - because we need to tell DotNetNuke where it should be displayed!</p>
+
+<p>This is a quick one time task, of simply creating a page in DotNetNuke to display our module.</p>
+
+<ol>
+<li>Login as Host</li>
+<li>Pages &ndash;> Add New Page</li>
+<li>Fill out page details and create it.</li>
+<li>Modules &ndash;> Add New Module</li>
+<li>Add your new module on to the page.</li>
+</ol>
+
+
+<p>You should see:</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/AddedModule.PNG" alt="AddedModule.PNG" /></p>
+
+<h2>Debugging it &amp; Testing Changes</h2>
+
+<p>Let&rsquo;s make some changes. Add some more content:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;h1&gt;</span>I came, I read a blog, I conquered!<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>Everyday I&#39;m shuffling!<span class="nt">&lt;/p&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Add some code in your code behind, and set a breakpoint on it:</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/codebehindbreakpoint.PNG" alt="codebehindbreakpoint.PNG" /></p>
+
+<p>Now deploy this very simply by placing your cursor in the Package Manager Console window, and hitting &ldquo;up&rdquo; arrow on your keyboard. This will bring up the last command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>Install-Module DotNetNuke
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>hit enter.</p>
+
+<p>Once that completes, refresh the page displaying your module:</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/redeployedmodulewithchanges.PNG" alt="redeployedmodulewithchanges.PNG" /></p>
+
+<p>Simples!</p>
+
+<h2>But wait - my breakpoint wasn&rsquo;t hit!</h2>
+
+<p>That&rsquo;s because it&rsquo;s being executed within the process running your DotNetNuke website. So all you need to do is &ldquo;attach to process&rdquo;.</p>
+
+<p>There are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:</p>
+
+<ol>
+<li>Hit ctrl + alt + p</li>
+<li>Tick show all processes (if it&rsquo;s not allready)</li>
+<li>Select any process in the list, then hit &ldquo;w&rdquo; on your keyboard - this should scroll you to the &ldquo;w3wp.exe&rdquo; process.</li>
+<li>Click &ldquo;attach&rdquo;.</li>
+</ol>
+
+
+<p><img src="http://darrelltunnell.net/assets/posts/attachtoprocess.PNG" alt="attachtoprocess.PNG" /></p>
+
+<p>Now refresh your page, and BAM! Breakpoint is hit!</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/breakpointhit.PNG" alt="breakpointhit.PNG" /></p>
+
+<h2>In Summary</h2>
+
+<p>DnnPackager is an automation tool that I built to help streamline the Dnn module develop workflow. Feel free to drop me a comment - does this tool help? Or have I missed my mark? Where could it be better? I&rsquo;d love to hear suggestions.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Automating Android Unit Test Apps (Xamarin) Like a Pro]]></title>
