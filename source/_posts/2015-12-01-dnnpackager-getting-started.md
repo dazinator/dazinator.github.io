@@ -6,6 +6,7 @@ published: true
 title: "DnnPackager - Getting Started"
 ---
 
+
 ## Dnn Packager - Super Smooth Module Development
 In this post, I am going to show you how to get up and running with DnnPackager for your DotNetNuke module / extension development.
 
@@ -362,6 +363,8 @@ Simples!
 ## But wait - my breakpoint wasn't hit!
 
 That's because it's being executed within the process running your DotNetNuke website. So all you need to do is "attach to process".
+
+**You need to be running Visual Studio as an Administrator before you can attach to the w3p process.**
 
 There are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:
 
