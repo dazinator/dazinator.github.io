@@ -12,6 +12,7 @@ In this post, I am going to show you how to get up and running with DnnPackager 
 ## Tools of the Trade
 I am using VS2015 Community Edition, but this should would equally well with previous versions.
 
+<!-- more -->
 ## Installing DotNetNuke Locally
 You will need a local instance of DotNetNuke website installed so that you have somewhere to deploy / run and debug your modules. There are plenty of tutorials out there that cover how to install a Dnn website so I am not going to cover this here. If you think this would be useful, leave a comment below and I might consider it! Once you have a working Dnn Website installed under your local IIS - please read on!
 
