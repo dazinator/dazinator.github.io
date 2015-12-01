@@ -623,6 +623,8 @@
 
 <p>That&rsquo;s because it&rsquo;s being executed within the process running your DotNetNuke website. So all you need to do is &ldquo;attach to process&rdquo;.</p>
 
+<p><strong>You need to be running Visual Studio as an Administrator before you can attach to the w3p process.</strong></p>
+
 <p>There are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:</p>
 
 <ol>
@@ -638,6 +640,14 @@
 <p>Now refresh your page, and BAM! Breakpoint is hit!</p>
 
 <p><img src="/assets/posts/breakpointhit.PNG" alt="breakpointhit.PNG" /></p>
+
+<h2>What about if I just want my Zip file</h2>
+
+<p>If you just want your installation zip for osme reason, perhaps you want to upload it to the Dnn store etc, just build your project as normal and then in your solution directory check the &ldquo;InstallPackages&rdquo; folder. That&rsquo;s where your zip can be found.</p>
+
+<h2>Issues?</h2>
+
+<p>DnnPackager is open source on GitHub. Feel free to <a href="https://github.com/dazinator/DnnPackager">raise an issue</a></p>
 
 <h2>In Summary</h2>
 
