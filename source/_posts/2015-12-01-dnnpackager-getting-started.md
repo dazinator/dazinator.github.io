@@ -7,6 +7,7 @@ title: "DnnPackager - Getting Started"
 ---
 
 
+
 ## Dnn Packager - Super Smooth Module Development
 In this post, I am going to show you how to get up and running with DnnPackager for your DotNetNuke module / extension development.
 
@@ -74,7 +75,7 @@ First add a new User Control to the project. This is going to be the default UI 
 
 ![AddUserControl.PNG]({{site.baseurl}}/assets/posts/AddUserControl.PNG)
 
-We then need to change our new User Control to make it inherit from `PortalModuleBase` rather than `System.Web.UI.UserControl`
+We then need to change our new User Control to make it inherit from `PortalModuleBase` rather than `System.Web.UI.UserControl`.
 
 So change this:
 
@@ -96,6 +97,7 @@ namespace MySuperModule
 To this:
 
 ``` csharp
+using DotNetNuke.Entities.Modules;
 
 namespace MySuperModule
 {
@@ -109,6 +111,7 @@ namespace MySuperModule
 }
 
 ```
+** Don't forget to add the 'using' statement depicted above! **
 
 ## Making an awesome module
 
