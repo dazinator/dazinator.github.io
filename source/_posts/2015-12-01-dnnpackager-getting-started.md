@@ -170,7 +170,7 @@ For example, you will see something that looks like this:
                   <moduleControl>
                     <controlKey>
                     </controlKey>
-                    <controlSrc>DesktopModules/[FolderName]/[YourPathToDefaultView].ascx</controlSrc>
+                    <controlSrc>[YourControllerOrPathToView]/[YourViewFileName].[YourViewFileExtension]</controlSrc>
                     <supportsPartialRendering>False</supportsPartialRendering>
                     <controlTitle>[Default title when added to page]</controlTitle>
                     <controlType>View</controlType>
@@ -179,7 +179,7 @@ For example, you will see something that looks like this:
                   </moduleControl>
                   <moduleControl>
                     <controlKey>settings</controlKey>
-                    <controlSrc>DesktopModules/[FolderName]/[YourPathToSettings].ascx</controlSrc>
+                    <controlSrc>[YourControllerOrPathToSettings]/[YourSettingsFileName].[YourSettingsFileExtension]</controlSrc>
                     <supportsPartialRendering>False</supportsPartialRendering>
                     <controlTitle>[Default settings title]</controlTitle>
                     <controlType>View</controlType>
@@ -384,7 +384,7 @@ Now refresh your page, and BAM! Breakpoint is hit!
 
 ## What about if I just want my Zip file
 
-If you just want your installation zip for osme reason, perhaps you want to upload it to the Dnn store etc, just build your project as normal and then in your solution directory check the "InstallPackages" folder. That's where your zip can be found.
+If you just want your installation zip for some reason, perhaps you want to upload it to the Dnn store etc, just build your project as normal and then in your solution directory check the "InstallPackages" folder. That's where your zip can be found.
 
 ## Issues?
 
