@@ -173,7 +173,7 @@
 
 <p><img src="/assets/posts/AddUserControl.PNG" alt="AddUserControl.PNG" /></p>
 
-<p>We then need to change our new User Control to make it inherit from <code>PortalModuleBase</code> rather than <code>System.Web.UI.UserControl</code></p>
+<p>We then need to change our new User Control to make it inherit from <code>PortalModuleBase</code> rather than <code>System.Web.UI.UserControl</code>.</p>
 
 <p>So change this:</p>
 
@@ -212,7 +212,11 @@
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">namespace</span> <span class="nn">MySuperModule</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">using</span> <span class="nn">DotNetNuke.Entities.Modules</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nn">MySuperModule</span>
 </span><span class='line'><span class="p">{</span>
 </span><span class='line'>    <span class="k">public</span> <span class="k">partial</span> <span class="k">class</span> <span class="nc">Default</span> <span class="p">:</span> <span class="n">PortalModuleBase</span>
 </span><span class='line'>    <span class="p">{</span>
@@ -224,6 +228,8 @@
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p><strong> Don&rsquo;t forget to add the &lsquo;using&rsquo; statement depicted above! </strong></p>
 
 <h2>Making an awesome module</h2>
 
