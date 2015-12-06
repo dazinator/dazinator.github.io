@@ -4,7 +4,7 @@
   <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2015-12-06T14:23:49+00:00</updated>
+  <updated>2015-12-06T14:34:18+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -285,7 +285,7 @@
 </span><span class='line'>                  <span class="nt">&lt;moduleControl&gt;</span>
 </span><span class='line'>                    <span class="nt">&lt;controlKey&gt;</span>
 </span><span class='line'>                    <span class="nt">&lt;/controlKey&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;controlSrc&gt;</span>DesktopModules/[FolderName]/[YourPathToDefaultView].ascx<span class="nt">&lt;/controlSrc&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;controlSrc&gt;</span>[YourControllerOrPathToView]/[YourViewFileName].[YourViewFileExtension]<span class="nt">&lt;/controlSrc&gt;</span>
 </span><span class='line'>                    <span class="nt">&lt;supportsPartialRendering&gt;</span>False<span class="nt">&lt;/supportsPartialRendering&gt;</span>
 </span><span class='line'>                    <span class="nt">&lt;controlTitle&gt;</span>[Default title when added to page]<span class="nt">&lt;/controlTitle&gt;</span>
 </span><span class='line'>                    <span class="nt">&lt;controlType&gt;</span>View<span class="nt">&lt;/controlType&gt;</span>
@@ -294,7 +294,7 @@
 </span><span class='line'>                  <span class="nt">&lt;/moduleControl&gt;</span>
 </span><span class='line'>                  <span class="nt">&lt;moduleControl&gt;</span>
 </span><span class='line'>                    <span class="nt">&lt;controlKey&gt;</span>settings<span class="nt">&lt;/controlKey&gt;</span>
-</span><span class='line'>                    <span class="nt">&lt;controlSrc&gt;</span>DesktopModules/[FolderName]/[YourPathToSettings].ascx<span class="nt">&lt;/controlSrc&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;controlSrc&gt;</span>[YourControllerOrPathToSettings]/[YourSettingsFileName].[YourSettingsFileExtension]<span class="nt">&lt;/controlSrc&gt;</span>
 </span><span class='line'>                    <span class="nt">&lt;supportsPartialRendering&gt;</span>False<span class="nt">&lt;/supportsPartialRendering&gt;</span>
 </span><span class='line'>                    <span class="nt">&lt;controlTitle&gt;</span>[Default settings title]<span class="nt">&lt;/controlTitle&gt;</span>
 </span><span class='line'>                    <span class="nt">&lt;controlType&gt;</span>View<span class="nt">&lt;/controlType&gt;</span>
@@ -571,7 +571,7 @@
 
 <h2>What about if I just want my Zip file</h2>
 
-<p>If you just want your installation zip for osme reason, perhaps you want to upload it to the Dnn store etc, just build your project as normal and then in your solution directory check the &ldquo;InstallPackages&rdquo; folder. That&rsquo;s where your zip can be found.</p>
+<p>If you just want your installation zip for some reason, perhaps you want to upload it to the Dnn store etc, just build your project as normal and then in your solution directory check the &ldquo;InstallPackages&rdquo; folder. That&rsquo;s where your zip can be found.</p>
 
 <h2>Issues?</h2>
 
