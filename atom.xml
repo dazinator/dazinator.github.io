@@ -4,7 +4,7 @@
   <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2015-12-06T14:34:18+00:00</updated>
+  <updated>2015-12-18T23:30:24+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -24,7 +24,7 @@
 
 <h2>Tools of the Trade</h2>
 
-<p>I am using VS2015 Community Edition, but this should would equally well with previous versions.</p>
+<p>I am using VS2015 Community Edition, but this should work equally well with previous versions.</p>
 
 <!-- more -->
 
@@ -43,7 +43,7 @@
 
 <h2>Tweak Web Project</h2>
 
-<p>The reason we choose to create a web project in the previous step, is just so that we have appropriate context menu options in visual studio for things like adding javascript and ascx files etc. This is generally handy for Dnn module development. However our project can not actually run as a &ldquo;standalone website&rdquo; though - as we are developing a Dnn module - which can only be run within the context of the Dnn website that is hosting it. The approach described in this blog should work equally well if you create other types of projects - for example you could create a new &ldquo;Library&rdquo; project instead, but then you wouldn&rsquo;t have those familiar menu options avaialble, so you would have to add things like javascript files to your project by hand.</p>
+<p>The reason we choose to create a web project in the previous step, rather than say - a library project, is just so that we have appropriate context menu options in visual studio for doing things like adding javascript and ascx files etc. This is generally handy for Dnn module development. However our project can not actually run as a &ldquo;standalone website&rdquo; - as we are developing a Dnn module - which can only run within the context of the Dnn website that is hosting it. The approach described in this blog should work equally well if you prefer to create other types of projects - but then you might not have those familiar menu options available, so you may have to add things like javascript files to your project by hand.</p>
 
 <p>Select the project in Solution Explorer window, then in the properties window, change &ldquo;Always Start When Debugging&rdquo; to false.</p>
 
@@ -569,9 +569,21 @@
 
 <p><img src="http://darrelltunnell.net/assets/posts/breakpointhit.PNG" alt="breakpointhit.PNG" /></p>
 
+<p><strong>Update:</strong> Don&rsquo;t like that? Well as of the latest release of DnnPackager you can Deploy and Attach the Debugger in one move.</p>
+
+<p>Use the following command in the Package Manager Console window and hit enter:</p>
+
+<p><code>Install-Module [name of your website in IIS] [Build Configuration] Attach</code></p>
+
+<p>For example:</p>
+
+<p><code>Install-Module DotNetNuke Debug Attach</code></p>
+
+<p>That will build your module in Debug mode, then deploy it to your &ldquo;DotNetNuke&rdquo; website, and then attach the debugger to your website&rsquo;s worker process!</p>
+
 <h2>What about if I just want my Zip file</h2>
 
-<p>If you just want your installation zip for some reason, perhaps you want to upload it to the Dnn store etc, just build your project as normal and then in your solution directory check the &ldquo;InstallPackages&rdquo; folder. That&rsquo;s where your zip can be found.</p>
+<p>If you just want your installation zip for some reason, perhaps you want to upload it to the Dnn store etc, just build your project as normal and check in your projects output directory.</p>
 
 <h2>Issues?</h2>
 
