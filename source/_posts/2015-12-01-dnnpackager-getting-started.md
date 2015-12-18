@@ -8,11 +8,12 @@ title: "DnnPackager - Getting Started"
 
 
 
+
 ## Dnn Packager - Super Smooth Module Development
 In this post, I am going to show you how to get up and running with DnnPackager for your DotNetNuke module / extension development.
 
 ## Tools of the Trade
-I am using VS2015 Community Edition, but this should would equally well with previous versions.
+I am using VS2015 Community Edition, but this should work equally well with previous versions.
 
 <!-- more -->
 ## Installing DotNetNuke Locally
@@ -27,7 +28,7 @@ Note: Create your project wherever you like - where you put your source code - t
 
 ## Tweak Web Project
 
-The reason we choose to create a web project in the previous step, is just so that we have appropriate context menu options in visual studio for things like adding javascript and ascx files etc. This is generally handy for Dnn module development. However our project can not actually run as a "standalone website" though - as we are developing a Dnn module - which can only be run within the context of the Dnn website that is hosting it. The approach described in this blog should work equally well if you create other types of projects - for example you could create a new "Library" project instead, but then you wouldn't have those familiar menu options avaialble, so you would have to add things like javascript files to your project by hand.
+The reason we choose to create a web project in the previous step, rather than say - a library project, is just so that we have appropriate context menu options in visual studio for doing things like adding javascript and ascx files etc. This is generally handy for Dnn module development. However our project can not actually run as a "standalone website" - as we are developing a Dnn module - which can only run within the context of the Dnn website that is hosting it. The approach described in this blog should work equally well if you prefer to create other types of projects - but then you might not have those familiar menu options available, so you may have to add things like javascript files to your project by hand.
 
 Select the project in Solution Explorer window, then in the properties window, change "Always Start When Debugging" to false.
 
@@ -382,9 +383,21 @@ Now refresh your page, and BAM! Breakpoint is hit!
 
 ![breakpointhit.PNG]({{site.baseurl}}/assets/posts/breakpointhit.PNG)
 
+**Update:** Don't like that? Well as of the latest release of DnnPackager you can Deploy and Attach the Debugger in one move.
+
+Use the following command in the Package Manager Console window and hit enter:
+
+`Install-Module [name of your website in IIS] [Build Configuration] Attach` 
+
+For example: 
+
+`Install-Module DotNetNuke Debug Attach`
+
+That will build your module in Debug mode, then deploy it to your "DotNetNuke" website, and then attach the debugger to your website's worker process!
+
 ## What about if I just want my Zip file
 
-If you just want your installation zip for some reason, perhaps you want to upload it to the Dnn store etc, just build your project as normal and then in your solution directory check the "InstallPackages" folder. That's where your zip can be found.
+If you just want your installation zip for some reason, perhaps you want to upload it to the Dnn store etc, just build your project as normal and check in your projects output directory.
 
 ## Issues?
 
