@@ -4,7 +4,7 @@
   <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2015-12-18T23:49:34+00:00</updated>
+  <updated>2015-12-18T23:58:14+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -558,15 +558,19 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>That will tell DnnPackager that in addition to building and deploying your module, you&rsquo;d also like to attach the debugger to your website&rsquo;s worker process!</p>
+<p>So do that, and hit enter. You should see it deploy your module as before but this time it will also attach your debugger!</p>
+
+<p>So.. refresh your page.. and BAM! Breakpoint is hit!</p>
+
+<p><img src="http://darrelltunnell.net/assets/posts/breakpointhit.PNG" alt="breakpointhit.PNG" /></p>
+
+<p><strong>You need to be running Visual Studio as an Administrator before you can attach to the w3p process.</strong></p>
 
 <p>The full syntax of the command is (values in braces are optional):</p>
 
 <p><code>Install-Module [name of your website in IIS] {Build Configuration} {Attach}</code></p>
 
-<p><strong>You need to be running Visual Studio as an Administrator before you can attach to the w3p process.</strong></p>
-
-<p>if you prefer to do it manually for some reason - there are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:</p>
+<p>However, if for some strange reason you&rsquo;d prefer to attach to process in some other way, you absolutely can do that - no one is &ldquo;forcing&rdquo; you to use the above command. There are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:</p>
 
 <ol>
 <li>Hit ctrl + alt + p</li>
@@ -577,10 +581,6 @@
 
 
 <p><img src="http://darrelltunnell.net/assets/posts/attachtoprocess.PNG" alt="attachtoprocess.PNG" /></p>
-
-<p>Now refresh your page, and BAM! Breakpoint is hit!</p>
-
-<p><img src="http://darrelltunnell.net/assets/posts/breakpointhit.PNG" alt="breakpointhit.PNG" /></p>
 
 <h2>What about if I just want my Zip file</h2>
 
