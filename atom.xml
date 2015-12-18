@@ -4,7 +4,7 @@
   <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2015-12-18T23:30:24+00:00</updated>
+  <updated>2015-12-18T23:49:34+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -549,11 +549,24 @@
 
 <h2>But wait - my breakpoint wasn&rsquo;t hit!</h2>
 
-<p>That&rsquo;s because it&rsquo;s being executed within the process running your DotNetNuke website. So all you need to do is &ldquo;attach to process&rdquo;.</p>
+<p>That&rsquo;s because your module is being executed within the process running your DotNetNuke website. So what you need to do is &ldquo;attach&rdquo; the debugger to that process.</p>
+
+<p>You can do this manually, or you can let DnnPackager do it for you. To let DnnPackager handle this, go back to the package manager console, and amend that command you are using, by adding on a couple of arguments:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>Install-Module DotNetNuke Debug Attach
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That will tell DnnPackager that in addition to building and deploying your module, you&rsquo;d also like to attach the debugger to your website&rsquo;s worker process!</p>
+
+<p>The full syntax of the command is (values in braces are optional):</p>
+
+<p><code>Install-Module [name of your website in IIS] {Build Configuration} {Attach}</code></p>
 
 <p><strong>You need to be running Visual Studio as an Administrator before you can attach to the w3p process.</strong></p>
 
-<p>There are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:</p>
+<p>if you prefer to do it manually for some reason - there are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:</p>
 
 <ol>
 <li>Hit ctrl + alt + p</li>
@@ -568,18 +581,6 @@
 <p>Now refresh your page, and BAM! Breakpoint is hit!</p>
 
 <p><img src="http://darrelltunnell.net/assets/posts/breakpointhit.PNG" alt="breakpointhit.PNG" /></p>
-
-<p><strong>Update:</strong> Don&rsquo;t like that? Well as of the latest release of DnnPackager you can Deploy and Attach the Debugger in one move.</p>
-
-<p>Use the following command in the Package Manager Console window and hit enter:</p>
-
-<p><code>Install-Module [name of your website in IIS] [Build Configuration] Attach</code></p>
-
-<p>For example:</p>
-
-<p><code>Install-Module DotNetNuke Debug Attach</code></p>
-
-<p>That will build your module in Debug mode, then deploy it to your &ldquo;DotNetNuke&rdquo; website, and then attach the debugger to your website&rsquo;s worker process!</p>
 
 <h2>What about if I just want my Zip file</h2>
 

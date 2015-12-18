@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Dotnetnuke,dnnpackager,dnn | Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/blog/categories/dotnetnuke-dnnpackager-dnn/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2015-12-18T23:30:24+00:00</updated>
+  <updated>2015-12-18T23:49:34+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -157,7 +157,7 @@ For example, you will see something that looks like this:
         <name>[OwnerName]</name>
         <organization>[OrganizationName]</organization>
         <url><a href="http://www.someurl.com">http://www.someurl.com</a></url>
-        <email>&lt;![CDATA[<a href="mailto:support@someorg.com"><a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#115;&#x75;&#x70;&#112;&#111;&#114;&#x74;&#x40;&#115;&#111;&#109;&#x65;&#111;&#114;&#103;&#x2e;&#x63;&#111;&#x6d;">&#x73;&#x75;&#112;&#x70;&#x6f;&#114;&#116;&#x40;&#115;&#x6f;&#x6d;&#x65;&#x6f;&#114;&#103;&#x2e;&#99;&#111;&#x6d;</a></a>]]&gt;</email>
+        <email>&lt;![CDATA[<a href="mailto:support@someorg.com"><a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#x73;&#117;&#x70;&#x70;&#111;&#114;&#x74;&#x40;&#115;&#x6f;&#109;&#x65;&#111;&#x72;&#x67;&#x2e;&#x63;&#x6f;&#109;">&#115;&#117;&#112;&#x70;&#111;&#x72;&#x74;&#x40;&#x73;&#x6f;&#109;&#101;&#x6f;&#114;&#103;&#46;&#x63;&#x6f;&#x6d;</a></a>]]&gt;</email>
       </owner>
       <license src="License.lic">
       </license>
@@ -237,7 +237,7 @@ Fill it in so it looks more like this:
         <name>Darrell Tunnell</name>
         <organization>Dazinator</organization>
         <url><a href="http://darrelltunnell.net">http://darrelltunnell.net</a></url>
-        <email>&lt;![CDATA[<a href="mailto:support@someorg.com"><a href="&#109;&#97;&#x69;&#108;&#x74;&#x6f;&#58;&#x73;&#117;&#x70;&#112;&#111;&#114;&#116;&#x40;&#x73;&#x6f;&#x6d;&#x65;&#111;&#x72;&#x67;&#x2e;&#x63;&#111;&#109;">&#x73;&#x75;&#x70;&#x70;&#111;&#x72;&#x74;&#64;&#x73;&#x6f;&#109;&#101;&#x6f;&#x72;&#103;&#x2e;&#x63;&#111;&#109;</a></a>]]&gt;</email>
+        <email>&lt;![CDATA[<a href="mailto:support@someorg.com"><a href="&#x6d;&#x61;&#x69;&#108;&#x74;&#x6f;&#x3a;&#x73;&#x75;&#x70;&#x70;&#111;&#114;&#x74;&#64;&#115;&#111;&#109;&#101;&#111;&#x72;&#103;&#46;&#99;&#x6f;&#109;">&#115;&#117;&#112;&#x70;&#111;&#x72;&#116;&#x40;&#115;&#x6f;&#x6d;&#101;&#111;&#114;&#103;&#46;&#x63;&#x6f;&#109;</a></a>]]&gt;</email>
       </owner>
       <license src="License.lic">
       </license>
@@ -360,23 +360,35 @@ Now deploy this very simply by placing your cursor in the Package Manager Consol
 
 <p>Install-Module DotNetNuke</p>
 
+<pre><code>
+hit enter.
+
+Once that completes, refresh the page displaying your module:
+
+![redeployedmodulewithchanges.PNG](/assets/posts/redeployedmodulewithchanges.PNG)
+
+Simples!
+
+## But wait - my breakpoint wasn't hit!
+
+That's because your module is being executed within the process running your DotNetNuke website. So what you need to do is "attach" the debugger to that process.
+
+You can do this manually, or you can let DnnPackager do it for you. To let DnnPackager handle this, go back to the package manager console, and amend that command you are using, by adding on a couple of arguments:
+</code></pre>
+
+<p>Install-Module DotNetNuke Debug Attach</p>
+
 <p>&#8220;`</p>
 
-<p>hit enter.</p>
+<p>That will tell DnnPackager that in addition to building and deploying your module, you&rsquo;d also like to attach the debugger to your website&rsquo;s worker process!</p>
 
-<p>Once that completes, refresh the page displaying your module:</p>
+<p>The full syntax of the command is (values in braces are optional):</p>
 
-<p><img src="/assets/posts/redeployedmodulewithchanges.PNG" alt="redeployedmodulewithchanges.PNG" /></p>
-
-<p>Simples!</p>
-
-<h2>But wait - my breakpoint wasn&rsquo;t hit!</h2>
-
-<p>That&rsquo;s because it&rsquo;s being executed within the process running your DotNetNuke website. So all you need to do is &ldquo;attach to process&rdquo;.</p>
+<p><code>Install-Module [name of your website in IIS] {Build Configuration} {Attach}</code></p>
 
 <p><strong>You need to be running Visual Studio as an Administrator before you can attach to the w3p process.</strong></p>
 
-<p>There are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:</p>
+<p>if you prefer to do it manually for some reason - there are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:</p>
 
 <ol>
 <li>Hit ctrl + alt + p</li>
@@ -391,18 +403,6 @@ Now deploy this very simply by placing your cursor in the Package Manager Consol
 <p>Now refresh your page, and BAM! Breakpoint is hit!</p>
 
 <p><img src="/assets/posts/breakpointhit.PNG" alt="breakpointhit.PNG" /></p>
-
-<p><strong>Update:</strong> Don&rsquo;t like that? Well as of the latest release of DnnPackager you can Deploy and Attach the Debugger in one move.</p>
-
-<p>Use the following command in the Package Manager Console window and hit enter:</p>
-
-<p><code>Install-Module [name of your website in IIS] [Build Configuration] Attach</code></p>
-
-<p>For example:</p>
-
-<p><code>Install-Module DotNetNuke Debug Attach</code></p>
-
-<p>That will build your module in Debug mode, then deploy it to your &ldquo;DotNetNuke&rdquo; website, and then attach the debugger to your website&rsquo;s worker process!</p>
 
 <h2>What about if I just want my Zip file</h2>
 
