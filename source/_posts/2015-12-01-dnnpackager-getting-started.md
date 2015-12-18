@@ -376,15 +376,19 @@ Install-Module DotNetNuke Debug Attach
 
 ```
 
-That will tell DnnPackager that in addition to building and deploying your module, you'd also like to attach the debugger to your website's worker process!
+So do that, and hit enter. You should see it deploy your module as before but this time it will also attach your debugger!
+
+So.. refresh your page.. and BAM! Breakpoint is hit!
+
+![breakpointhit.PNG]({{site.baseurl}}/assets/posts/breakpointhit.PNG)
+
+**You need to be running Visual Studio as an Administrator before you can attach to the w3p process.**
 
 The full syntax of the command is (values in braces are optional):
 
 `Install-Module [name of your website in IIS] {Build Configuration} {Attach}` 
 
-**You need to be running Visual Studio as an Administrator before you can attach to the w3p process.**
-
-if you prefer to do it manually for some reason - there are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:
+However, if for some strange reason you'd prefer to attach to process in some other way, you absolutely can do that - no one is "forcing" you to use the above command. There are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:
 
 1. Hit ctrl + alt + p
 2. Tick show all processes (if it's not allready)
@@ -392,10 +396,6 @@ if you prefer to do it manually for some reason - there are VS extensions you ca
 4. Click "attach".
 
 ![attachtoprocess.PNG]({{site.baseurl}}/assets/posts/attachtoprocess.PNG)
-
-Now refresh your page, and BAM! Breakpoint is hit!
-
-![breakpointhit.PNG]({{site.baseurl}}/assets/posts/breakpointhit.PNG)
 
 ## What about if I just want my Zip file
 
