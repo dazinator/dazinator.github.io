@@ -366,11 +366,25 @@ Simples!
 
 ## But wait - my breakpoint wasn't hit!
 
-That's because it's being executed within the process running your DotNetNuke website. So all you need to do is "attach to process".
+That's because your module is being executed within the process running your DotNetNuke website. So what you need to do is "attach" the debugger to that process.
+
+You can do this manually, or you can let DnnPackager do it for you. To let DnnPackager handle this, go back to the package manager console, and amend that command you are using, by adding on a couple of arguments:
+
+```
+
+Install-Module DotNetNuke Debug Attach
+
+```
+
+That will tell DnnPackager that in addition to building and deploying your module, you'd also like to attach the debugger to your website's worker process!
+
+The full syntax of the command is (values in braces are optional):
+
+`Install-Module [name of your website in IIS] {Build Configuration} {Attach}` 
 
 **You need to be running Visual Studio as an Administrator before you can attach to the w3p process.**
 
-There are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:
+if you prefer to do it manually for some reason - there are VS extensions you can get to make attaching to IIS processes trivial. Otherwise, within VS, a quick way to do it is do this:
 
 1. Hit ctrl + alt + p
 2. Tick show all processes (if it's not allready)
@@ -382,18 +396,6 @@ There are VS extensions you can get to make attaching to IIS processes trivial. 
 Now refresh your page, and BAM! Breakpoint is hit!
 
 ![breakpointhit.PNG]({{site.baseurl}}/assets/posts/breakpointhit.PNG)
-
-**Update:** Don't like that? Well as of the latest release of DnnPackager you can Deploy and Attach the Debugger in one move.
-
-Use the following command in the Package Manager Console window and hit enter:
-
-`Install-Module [name of your website in IIS] [Build Configuration] Attach` 
-
-For example: 
-
-`Install-Module DotNetNuke Debug Attach`
-
-That will build your module in Debug mode, then deploy it to your "DotNetNuke" website, and then attach the debugger to your website's worker process!
 
 ## What about if I just want my Zip file
 
