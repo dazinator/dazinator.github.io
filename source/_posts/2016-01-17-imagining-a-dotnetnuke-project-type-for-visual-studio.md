@@ -8,7 +8,7 @@ title: Imagining a DotNetNuke Project Type for Visual Studio
 
 ## Introduction
 
-When developing DotNetNuke extensions, developers typically use one of the existing Visual Studio Project Type's, for example - an ASP.NET Web Application project.
+When developing DotNetNuke extensions, we typically use one of the existing Visual Studio Project Type's, for example - an ASP.NET Web Application project.
 
 Even when using a Project Template such as Christoc's, the project template is still based upon one of the standard Visual Studio project types - usually an ASP.NET Web Application project.
 
