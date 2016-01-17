@@ -33,32 +33,58 @@ You would start by installing the VSIX package from the VS gallery. This will in
 
 You can now create a new "DotNetNuke" project using Visual Studio.
 
-TODO: screenshot
+![new dnn project.PNG]({{site.baseurl}}/assets/posts/new dnn project.PNG)
 
-This creates your new project, which has it's own ".dnnproj" file.
+This creates your new project. It also imports the "DnnPackager" NuGet package automatically - something I have blogged about seperately.
 
-Straight away, you can build your project, it all compiles, and an installation zip for your extension is output to the Output directory.
+![adding DnnPackager.PNG]({{site.baseurl}}/assets/posts/adding DnnPackager.PNG)
 
-(The project automatically includes the "DnnPackager" NuGet package which handles this build logic)
+Your new project, has it's own ".dnnproj" file. This is a new project type and that's why it has its own file extension ".dnnproj".
+
+![SolutionExplorer1.PNG]({{site.baseurl}}/assets/posts/SolutionExplorer1.PNG)
 
 ### Adding Content
 
-You can now add items to your project. If you "Add new item" - you can select from a number of item templates. For example a "Module View". 
+You can now add items to your project. If you "Add new item" - you can select from a number of standard item templates. For example a "Module View". 
 
-When you add the new item, not only do the files get added to your project, but any required dependencies also get added as a NuGet package. For example, adding a Module View will autoamtically add the DotNetNuke NuGet package to your project if it hasn;t allready been added, because this is required for a Module View to compile, because it inherits from `PortalModuleBase`. 
+![AddModuleView.png]({{site.baseurl}}/assets/posts/AddModuleView.png)
+
+When you add the new item, not only do the files get added to your project, but any required dependencies also get broguth in by the magical power of NuGet:
+
+![AddingDotNetNukeCoreNuget.PNG]({{site.baseurl}}/assets/posts/AddingDotNetNukeCoreNuget.PNG)
+
+In other words, you don't need to worry about adding any references, they will be bought in for you as you add items. Ofcourse, you are still free to add references to other dependencies you might have as normal. 
 
 ### Running and Debugging
 
-When you want to run and debug your extension, you will see that next to the "play" button in the toolbar is a new "drop down" which lists your local DNN Websites. You must select the appropriate one that you want to target. The website that is selected in this dropdown will be used as the as the host for running and debugging purposes for your extension.
+When you want to run and debug your extension, for those of you that have read my previous blog about DnnPackager, you may recall that this could be accomplished via a command that you could enter in the Package Manager Console window and DnnPackager would handle the deployment and attaching the debugger.
 
-Clicking "Play" will
+Well that approach was only ever necessary because there was not any first class support within VS itself - i.e from the project system. We can now do better than that.
 
-1. Build your project to get the deployment zip.
-2. Deploy your extension to the currently selected Dnn website.
-3. Attach the debugger to the currently selected Dnn website's worker process.
-4. Launch a new browser window, navigated to your dnn websites home page.
+In VS, I am going to extend the debugging toolbar (where the "play" button is)
 
-This is way better than previous workflows for Dnn development. All you have to do is click play and your module will be up and running and ready to debug. 
+![debug toolbar.PNG]({{site.baseurl}}/assets/posts/debug toolbar.PNG)
+
+You can see in the screenshot there is an empty dropdown at present, but this will list your DotNetNuke websites that you have on your local IIS. The first one in that list will be selected by default.
+
+You may also notice there a new Debugger selected in that screenshot "Local Dnn Website".
+
+All you need to do it click "Play" and it will:
+
+1. Build your project to output the deployment zip.
+2. Deploy your install zip to the Dnn website selected in the dropdown.
+3. Attach the debugger to Dnn website's worker process that is selected in the dropwdown.
+4. Launch a new browser window, navigated to that dnn websites home page.
+
+Therefore, to use a different Dnn website as the host for running and debugging your module, you would just select that website in the drop down instead, before you click the "play" button.
+
+This is going to wayyyy better than previous workflows for Dnn development. 
+
+## What Now?
+
+Well I am well into development if this at the moment, which is why I have been able to include some screenshots. However I am hitting hurdles with Microsoft's new Project System. This is my first attempt at developing a VS project type and I don't have any in roads with microsoft and therefore any real support. So all of this means, I am hoping I can pull it off, but I'm not through the woods yet. The (very) dark, mystical woods, of VS project type development.
+
+I'd love to hear what others think of this, would you use such a system? How could it be better?
 
 
 
