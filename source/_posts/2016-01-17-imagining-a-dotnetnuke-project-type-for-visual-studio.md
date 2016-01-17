@@ -23,7 +23,7 @@ So.. what if there was a new Project Type, one that was purpose built for DotNet
 
 ## Introducing the "DnnProj"
 
-I am currently developing a new VS Project Type explicitly for DotNetNuke development. The rest of the blog will describe my vision for how this will work.
+I am currently developing a new VS Project Type explicitly for DotNetNuke development. The rest of this blog post will describe my vision for how this will work.
 
 ### Installing the Project Type
 
