@@ -31,33 +31,34 @@ You would start by installing the VSIX package from the VS gallery. This will in
 
 ## Create a New Project
 
-You can now create a new "DotNetNuke" project type using Visual Studio.
+You can now create a new "DotNetNuke" project using Visual Studio.
 
 TODO: screenshot
 
 This creates your new project, which has it's own ".dnnproj" file.
 
-Straight away, you can build your project, and an installation zip for your extension is output to the Output directory.
+Straight away, you can build your project, it all compiles, and an installation zip for your extension is output to the Output directory.
 
-Also, it has automatically included the "DnnPackager" NuGet package.
+(The project automatically includes the "DnnPackager" NuGet package which handles this build logic)
 
 ### Adding Content
 
-You can now add items to your project. If you "Add new item" - you can select from a number of item types. For example "Module View". 
+You can now add items to your project. If you "Add new item" - you can select from a number of item templates. For example a "Module View". 
 
-When you add the new item, not only do the files get added to your project, but any required dependencies also get added as a NuGet package. For example, adding a Module View will autoamtically add the DotNetNuke NuGet package to your project if it hasn;t allready been added, because this is required for your project to compile. 
+When you add the new item, not only do the files get added to your project, but any required dependencies also get added as a NuGet package. For example, adding a Module View will autoamtically add the DotNetNuke NuGet package to your project if it hasn;t allready been added, because this is required for a Module View to compile, because it inherits from `PortalModuleBase`. 
 
 ### Running and Debugging
 
-Next to the debug button in the toolbar is a drop down listing your local DNN Websites. You must select the website you want to run the extension with. Once you have selected a website, this website will now be used for running and debugging purposes for your extension.
+When you want to run and debug your extension, you will see that next to the "play" button in the toolbar is a new "drop down" which lists your local DNN Websites. You must select the appropriate one that you want to target. The website that is selected in this dropdown will be used as the as the host for running and debugging purposes for your extension.
 
 Clicking "Play" will
 
-1. Build your extension
+1. Build your project to get the deployment zip.
 2. Deploy your extension to the currently selected Dnn website.
 3. Attach the debugger to the currently selected Dnn website's worker process.
+4. Launch a new browser window, navigated to your dnn websites home page.
 
-This is way better than previous workflows for Dnn development. All you have to do is click play and your module will be running and ready to debug. 
+This is way better than previous workflows for Dnn development. All you have to do is click play and your module will be up and running and ready to debug. 
 
 
 
