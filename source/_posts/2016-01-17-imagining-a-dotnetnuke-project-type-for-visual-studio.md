@@ -21,6 +21,8 @@ However these Project Types do not "gel" well with DotNetNuke development in a n
 
 So.. what if there was a new Project Type, one that was purpose built for DotNetNuke development? What would that look like?
 
+<!-- more -->
+
 ## Introducing the "DnnProj"
 
 I am currently developing a new VS Project Type explicitly for DotNetNuke development. The rest of this blog post will describe my vision for how this will work.
