@@ -14,7 +14,7 @@ Even when using a Project Template such as Christoc's, the project template is s
 
 However these Project Types do not "gel" well with DotNetNuke development in a number of areas:
 
-1. Running the project in VS (clicking play) - wants to run the extensions as a Web Application, but this makes no sense for a Dnn extension - which we need to be run within a DotNetNuke host.
+1. Running the project in VS (clicking play) - wants to run the extensions as a Web Application, but this makes no sense for a Dnn extension - which has to be hosted by the DotNetNuke website.
 2. Deploying the extension - there is no support for that in the project system - you have to manually deploy your extensions to the Dnn instance.
 3. Debugging the extension - you have to manually attach to process.
 4. Adding new items to your project - it would be nice if there were a standard set of items you could add to a DotNetNuke extension project by default, likewise you could always extens this by creating your templates and sticking them in your "ItemTemplates" folder, but those templates would target the "DnnProjectType". Things such as a "Module View" etc. This is where templates do tend to work nicely. It would be even better though, if these templates brought in any required dependencies / references (as NuGet packages) as they were added.
