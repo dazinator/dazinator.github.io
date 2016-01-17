@@ -25,11 +25,11 @@ So.. what if there was a new Project Type, one that was purpose built for DotNet
 
 I am currently developing a new VS Project Type explicitly for DotNetNuke development. The rest of the blog will describe my vision for how this will work.
 
-## Installing the Project Type
+### Installing the Project Type
 
 You would start by installing the VSIX package from the VS gallery. This will install the DotNetNuke project type, and make this project type available to you when you create new projects in VS.
 
-## Create a New Project
+### Create a New Project
 
 You can now create a new "DotNetNuke" project using Visual Studio.
 
