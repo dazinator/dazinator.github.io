@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-categories: ""
+categories: "DotNetNuke,DnnPackager,Dnn"
 published: true
 title: Imagining a DotNetNuke Project Type for Visual Studio
 ---
