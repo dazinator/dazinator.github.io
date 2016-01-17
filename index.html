@@ -9,7 +9,7 @@
   <meta name="author" content="Darrell Tunnell">
 
   
-  <meta name="description" content="Dnn Packager - Super Smooth Module Development In this post, I am going to show you how to get up and running with DnnPackager for your DotNetNuke &hellip;">
+  <meta name="description" content="Overview When developing DotNetNuke extensions, developers typically use one of the existing Visual Studio Project Type&rsquo;s, for example - an ASP &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,125 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/17/imagining-a-dotnetnuke-project-type-for-visual-studio/">Imagining a DotNetNuke Project Type for Visual Studio</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-17T00:00:00+00:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Overview</h2>
+
+<p>When developing DotNetNuke extensions, developers typically use one of the existing Visual Studio Project Type&rsquo;s, for example - an ASP.NET Web Application project.</p>
+
+<p>Even when using a Project Template such as Christoc&rsquo;s, the project template is still based upon one of the standard Visual Studio project types - usually an ASP.NET Web Application project.</p>
+
+<p>However these Project Types do not &ldquo;gel&rdquo; well with DotNetNuke development in a number of areas:</p>
+
+<ol>
+<li>Running the project in VS (clicking play) - wants to run the extensions as a Web Application, but this makes no sense for a Dnn extension - which has to be hosted by the DotNetNuke website.</li>
+<li>Deploying the extension - there is no support for that in the project system - you have to manually deploy your extensions to the Dnn instance.</li>
+<li>Debugging the extension - you have to manually attach to process.</li>
+<li>Adding new items to your project - it would be nice if there were a standard set of items you could add to a DotNetNuke extension project by default, likewise you can always extend this by creating your templates and sticking them in your &ldquo;ItemTemplates&rdquo; folder, but those templates would target the &ldquo;DnnProjectType&rdquo;. Things such as a &ldquo;Module View&rdquo; etc. This is where templates do tend to work nicely. It would be even better though, if these templates brought in any required dependencies / references (as NuGet packages) as they were added.</li>
+</ol>
+
+
+<p>So.. what if there was a new Project Type, one that was purpose built for DotNetNuke development? What would that look like?</p>
+
+<h2>Introducing the &ldquo;DnnProj&rdquo;</h2>
+
+<p>I am currently developing a new VS Project Type explicitly for DotNetNuke development. The rest of this blog post will describe my vision for how this will work.</p>
+
+<h3>Installing the Project Type</h3>
+
+<p>You would start by installing the VSIX package from the VS gallery. This will install the DotNetNuke project type, and make this project type available to you when you create new projects in VS.</p>
+
+<h3>Create a New Project</h3>
+
+<p>You can now create a new &ldquo;DotNetNuke&rdquo; project using Visual Studio.</p>
+
+<p><img src="/assets/posts/new%20dnn%20project.PNG" alt="new dnn project.PNG" /></p>
+
+<p>This creates your new project. It also imports the &ldquo;DnnPackager&rdquo; NuGet package automatically - <a href="http://darrelltunnell.net/blog/2015/12/01/dnnpackager-getting-started/">something I have blogged about seperately.</a></p>
+
+<p><img src="/assets/posts/adding%20DnnPackager.PNG" alt="adding DnnPackager.PNG" /></p>
+
+<p>Your new project, has it&rsquo;s own &ldquo;.dnnproj&rdquo; file. This is a new project type and that&rsquo;s why it has its own file extension &ldquo;.dnnproj&rdquo;.</p>
+
+<p><img src="/assets/posts/SolutionExplorer1.PNG" alt="SolutionExplorer1.PNG" /></p>
+
+<h3>Adding Content</h3>
+
+<p>You can now add items to your project. If you &ldquo;Add new item&rdquo; - you will be able select from a number of standard DotNetNuke item templates. For example a &ldquo;Module View&rdquo;.</p>
+
+<p><img src="/assets/posts/AddModuleView.png" alt="AddModuleView.png" /></p>
+
+<p>Initially, I will just show Dnn 7 compatible item templates, but eventually I&rsquo;d also like to add a seperate group for Dnn 8 item templates, which would include item templates for the new MVC and SPA stuff.</p>
+
+<p>When you add the new item, not only do the source code files get added to your project, but any required dependencies also get brought in by the magical power of NuGet:</p>
+
+<p><img src="/assets/posts/AddingDotNetNukeCoreNuget.PNG" alt="AddingDotNetNukeCoreNuget.PNG" /></p>
+
+<p>So for example, adding a Module View for Dnn 7, will automatically bring in the DotNetNuke.Core NuGet package for Dnn7 as depicted above.</p>
+
+<p>In other words, you don&rsquo;t need to worry about adding any Dnn assembly references for the most part, as they will be bought in for you as you add items to your project. Ofcourse, you are still free to add references to other dependencies you might have as normal.</p>
+
+<h3>Running and Debugging</h3>
+
+<p>When you want to run and debug your extension, for those of you that have read my previous blog about DnnPackager, you may recall that this could be accomplished via a command that you could enter in the Package Manager Console window and DnnPackager would handle the deployment and attaching the debugger.</p>
+
+<p>Well that approach was only ever necessary because there was not any first class support within VS itself. Something I am going to rectify with the DotNetNuke project type.</p>
+
+<p>In VS, I am going to extend the debugging toolbar (where the &ldquo;play&rdquo; button is)</p>
+
+<p><img src="/assets/posts/debug%20toolbar.PNG" alt="debug toolbar.PNG" /></p>
+
+<p>You can see in the screenshot there is an empty dropdown at present, but this will list your DotNetNuke websites that you have on your local IIS. The first one in that list will be selected by default.</p>
+
+<p>You may also notice there a new Debugger selected in that screenshot called &ldquo;Local Dnn Website&rdquo;. That&rsquo;s my own custom debugger that&rsquo;s available only for this project type.</p>
+
+<p>All you need to do is click &ldquo;Play&rdquo; and it will:</p>
+
+<ol>
+<li>Build your project to output the deployment zip.</li>
+<li>Deploy your install zip to the Dnn website selected in the dropdown.</li>
+<li>Attach the debugger to Dnn website&rsquo;s worker process that is selected in the dropwdown.</li>
+<li>Launch a new browser window, navigated to that dnn websites home page.</li>
+</ol>
+
+
+<p>Therefore, to use a different Dnn website as the host for running and debugging your module, you would just select that website in the drop down instead, before you click the &ldquo;play&rdquo; button.</p>
+
+<p>This is going to wayyyy better than previous workflows for Dnn development.</p>
+
+<h2>What Now?</h2>
+
+<p>Well.. I am pretty far into the development of this at the moment, which is why I have been able to include some screenshots. However it is a steep learning curve, and I am continuosly hitting hurdles with <a href="https://github.com/Microsoft/VSProjectSystem">Microsoft&rsquo;s new Project System (CPS)</a>. This is my first attempt at developing a VS project type and I don&rsquo;t have any in roads with microsoft or any support. So all of this means, I am &ldquo;hoping&rdquo; I can pull this off, and the signs are promising, but I&rsquo;m not through the woods yet. The (very) dark, mystical woods, of VS project type development.</p>
+
+<p>Still, I&rsquo;d love to hear what others think of this - even though I appreciate it&rsquo;s very premature. Would you use such a system? Any ideas for improvements? I&rsquo;ll release a new blog post when things are looking a bit more finalised, and perhaps again when I have something for beta release.</p>
+
+<p>Lastly, if there are any guru&rsquo;s out there who have expertise with <a href="https://github.com/Microsoft/VSProjectSystem">CPS</a> - I can always use a hand ;)</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -521,52 +640,9 @@ You should package this tool up into a NuGet package and, you guessed it, stick 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/16/a-proclamation/">A Proclamation</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-11-16T16:20:59+00:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>4:20 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>On this day the 16th November 2014, let it be known that Darrell&rsquo;s blog was rendered forth unto the internet.</p>
-
-<p>Let the knowledge and manner of its creation also be recorded, lest it be lost from mortal ken. Thus humanity, need not be stricken in ignorance and awe, and need not refer to my blogging website as &ldquo;Witchcraft&rdquo; or &ldquo;Devilry&rdquo;.</p>
-
-<h2>The Mechanism of Creation</h2>
-
-<ol>
-<li>Inspiration taken from JakeGinnivan&rsquo;s blog which is powered by OctoPress: <a href="http://jake.ginnivan.net/">http://jake.ginnivan.net/</a></li>
-<li>Purchased a domain name: darrelltunnell.net</li>
-<li>Followed this OctoPress documentation: <a href="http://octopress.org/docs/setup/">http://octopress.org/docs/setup/</a></li>
-<li>Hosted on <a href="https://github.com/">https://github.com/</a></li>
-</ol>
-
-
-<h2>A revelation</h2>
-
-<p>And so it came to pass that Darrell Tunnell&rsquo;s blog was incredibly useful to others. Darrell&rsquo;s blog is currently read by 3.1 million people. Web browser requests for Darrell&rsquo;s blog constitute approximately 85.2% of all browser requests made, worldwide. NetFlix was eventually absorbed into Darrell&rsquo;s Blog at the end of 2014, through internet osmosis.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
+    
+      <a class="prev" href="/posts/2">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -577,6 +653,10 @@ You should package this tool up into a NuGet package and, you guessed it, stick 
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/17/imagining-a-dotnetnuke-project-type-for-visual-studio/">Imagining a DotNetNuke Project Type for Visual Studio</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/01/dnnpackager-getting-started/">DnnPackager - Getting Started</a>
@@ -592,10 +672,6 @@ You should package this tool up into a NuGet package and, you guessed it, stick 
     
       <li class="post">
         <a href="/blog/2015/06/13/dotnetnuke-streamlining-module-development/">DotNetNuke - Streamlining Module Development Workflow</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/04/29/automating-dotnetnuke-deployments-with-octopus-deploy/">Automating DotNetNuke Deployments With Octopus Deploy</a>
       </li>
     
   </ul>
@@ -649,7 +725,7 @@ You should package this tool up into a NuGet package and, you guessed it, stick 
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2015 - Darrell Tunnell -
+  Copyright &copy; 2016 - Darrell Tunnell -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

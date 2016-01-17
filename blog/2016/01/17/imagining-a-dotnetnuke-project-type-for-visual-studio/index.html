@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Imagining a DotNetNuke Project Type for Visual Studio - Darrell Tunnell&#8217;s Blog</title>
+  <meta name="author" content="Darrell Tunnell">
+
+  
+  <meta name="description" content="Overview When developing DotNetNuke extensions, developers typically use one of the existing Visual Studio Project Type&rsquo;s, for example - an ASP &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://darrelltunnell.net/blog/2016/01/17/imagining-a-dotnetnuke-project-type-for-visual-studio">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Darrell Tunnell's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-49278315-3']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Darrell Tunnell&#8217;s Blog</a></h1>
+  
+    <h2>Radiating Awesomeness, One Blog Post at a Time.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:darrelltunnell.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Imagining a DotNetNuke Project Type for Visual Studio</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-01-17T00:00:00+00:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>Overview</h2>
+
+<p>When developing DotNetNuke extensions, developers typically use one of the existing Visual Studio Project Type&rsquo;s, for example - an ASP.NET Web Application project.</p>
+
+<p>Even when using a Project Template such as Christoc&rsquo;s, the project template is still based upon one of the standard Visual Studio project types - usually an ASP.NET Web Application project.</p>
+
+<p>However these Project Types do not &ldquo;gel&rdquo; well with DotNetNuke development in a number of areas:</p>
+
+<ol>
+<li>Running the project in VS (clicking play) - wants to run the extensions as a Web Application, but this makes no sense for a Dnn extension - which has to be hosted by the DotNetNuke website.</li>
+<li>Deploying the extension - there is no support for that in the project system - you have to manually deploy your extensions to the Dnn instance.</li>
+<li>Debugging the extension - you have to manually attach to process.</li>
+<li>Adding new items to your project - it would be nice if there were a standard set of items you could add to a DotNetNuke extension project by default, likewise you can always extend this by creating your templates and sticking them in your &ldquo;ItemTemplates&rdquo; folder, but those templates would target the &ldquo;DnnProjectType&rdquo;. Things such as a &ldquo;Module View&rdquo; etc. This is where templates do tend to work nicely. It would be even better though, if these templates brought in any required dependencies / references (as NuGet packages) as they were added.</li>
+</ol>
+
+
+<p>So.. what if there was a new Project Type, one that was purpose built for DotNetNuke development? What would that look like?</p>
+
+<h2>Introducing the &ldquo;DnnProj&rdquo;</h2>
+
+<p>I am currently developing a new VS Project Type explicitly for DotNetNuke development. The rest of this blog post will describe my vision for how this will work.</p>
+
+<h3>Installing the Project Type</h3>
+
+<p>You would start by installing the VSIX package from the VS gallery. This will install the DotNetNuke project type, and make this project type available to you when you create new projects in VS.</p>
+
+<h3>Create a New Project</h3>
+
+<p>You can now create a new &ldquo;DotNetNuke&rdquo; project using Visual Studio.</p>
+
+<p><img src="/assets/posts/new%20dnn%20project.PNG" alt="new dnn project.PNG" /></p>
+
+<p>This creates your new project. It also imports the &ldquo;DnnPackager&rdquo; NuGet package automatically - <a href="http://darrelltunnell.net/blog/2015/12/01/dnnpackager-getting-started/">something I have blogged about seperately.</a></p>
+
+<p><img src="/assets/posts/adding%20DnnPackager.PNG" alt="adding DnnPackager.PNG" /></p>
+
+<p>Your new project, has it&rsquo;s own &ldquo;.dnnproj&rdquo; file. This is a new project type and that&rsquo;s why it has its own file extension &ldquo;.dnnproj&rdquo;.</p>
+
+<p><img src="/assets/posts/SolutionExplorer1.PNG" alt="SolutionExplorer1.PNG" /></p>
+
+<h3>Adding Content</h3>
+
+<p>You can now add items to your project. If you &ldquo;Add new item&rdquo; - you will be able select from a number of standard DotNetNuke item templates. For example a &ldquo;Module View&rdquo;.</p>
+
+<p><img src="/assets/posts/AddModuleView.png" alt="AddModuleView.png" /></p>
+
+<p>Initially, I will just show Dnn 7 compatible item templates, but eventually I&rsquo;d also like to add a seperate group for Dnn 8 item templates, which would include item templates for the new MVC and SPA stuff.</p>
+
+<p>When you add the new item, not only do the source code files get added to your project, but any required dependencies also get brought in by the magical power of NuGet:</p>
+
+<p><img src="/assets/posts/AddingDotNetNukeCoreNuget.PNG" alt="AddingDotNetNukeCoreNuget.PNG" /></p>
+
+<p>So for example, adding a Module View for Dnn 7, will automatically bring in the DotNetNuke.Core NuGet package for Dnn7 as depicted above.</p>
+
+<p>In other words, you don&rsquo;t need to worry about adding any Dnn assembly references for the most part, as they will be bought in for you as you add items to your project. Ofcourse, you are still free to add references to other dependencies you might have as normal.</p>
+
+<h3>Running and Debugging</h3>
+
+<p>When you want to run and debug your extension, for those of you that have read my previous blog about DnnPackager, you may recall that this could be accomplished via a command that you could enter in the Package Manager Console window and DnnPackager would handle the deployment and attaching the debugger.</p>
+
+<p>Well that approach was only ever necessary because there was not any first class support within VS itself. Something I am going to rectify with the DotNetNuke project type.</p>
+
+<p>In VS, I am going to extend the debugging toolbar (where the &ldquo;play&rdquo; button is)</p>
+
+<p><img src="/assets/posts/debug%20toolbar.PNG" alt="debug toolbar.PNG" /></p>
+
+<p>You can see in the screenshot there is an empty dropdown at present, but this will list your DotNetNuke websites that you have on your local IIS. The first one in that list will be selected by default.</p>
+
+<p>You may also notice there a new Debugger selected in that screenshot called &ldquo;Local Dnn Website&rdquo;. That&rsquo;s my own custom debugger that&rsquo;s available only for this project type.</p>
+
+<p>All you need to do is click &ldquo;Play&rdquo; and it will:</p>
+
+<ol>
+<li>Build your project to output the deployment zip.</li>
+<li>Deploy your install zip to the Dnn website selected in the dropdown.</li>
+<li>Attach the debugger to Dnn website&rsquo;s worker process that is selected in the dropwdown.</li>
+<li>Launch a new browser window, navigated to that dnn websites home page.</li>
+</ol>
+
+
+<p>Therefore, to use a different Dnn website as the host for running and debugging your module, you would just select that website in the drop down instead, before you click the &ldquo;play&rdquo; button.</p>
+
+<p>This is going to wayyyy better than previous workflows for Dnn development.</p>
+
+<h2>What Now?</h2>
+
+<p>Well.. I am pretty far into the development of this at the moment, which is why I have been able to include some screenshots. However it is a steep learning curve, and I am continuosly hitting hurdles with <a href="https://github.com/Microsoft/VSProjectSystem">Microsoft&rsquo;s new Project System (CPS)</a>. This is my first attempt at developing a VS project type and I don&rsquo;t have any in roads with microsoft or any support. So all of this means, I am &ldquo;hoping&rdquo; I can pull this off, and the signs are promising, but I&rsquo;m not through the woods yet. The (very) dark, mystical woods, of VS project type development.</p>
+
+<p>Still, I&rsquo;d love to hear what others think of this - even though I appreciate it&rsquo;s very premature. Would you use such a system? Any ideas for improvements? I&rsquo;ll release a new blog post when things are looking a bit more finalised, and perhaps again when I have something for beta release.</p>
+
+<p>Lastly, if there are any guru&rsquo;s out there who have expertise with <a href="https://github.com/Microsoft/VSProjectSystem">CPS</a> - I can always use a hand ;)</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Darrell Tunnell</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-01-17T00:00:00+00:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>12:00 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/dotnetnuke-dnnpackager-dnn/'>dotnetnuke,dnnpackager,dnn</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://darrelltunnell.net/blog/2016/01/17/imagining-a-dotnetnuke-project-type-for-visual-studio/" data-via="dazinate" data-counturl="http://darrelltunnell.net/blog/2016/01/17/imagining-a-dotnetnuke-project-type-for-visual-studio/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/12/01/dnnpackager-getting-started/" title="Previous Post: DnnPackager - Getting Started">&laquo; DnnPackager - Getting Started</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/17/imagining-a-dotnetnuke-project-type-for-visual-studio/">Imagining a DotNetNuke Project Type for Visual Studio</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/01/dnnpackager-getting-started/">DnnPackager - Getting Started</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/05/automating-android-unit-test-apps-xamarin-like-a-pro/">Automating Android Unit Test Apps (Xamarin) Like a Pro</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/16/aurelia-and-asp-net-5-mvc/">ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/13/dotnetnuke-streamlining-module-development/">DotNetNuke - Streamlining Module Development Workflow</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/dazinator">@dazinator</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'dazinator',
+            count: 10,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/darrelltunnell?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Darrell Tunnell -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'darrelltunnellsblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://darrelltunnell.net/blog/2016/01/17/imagining-a-dotnetnuke-project-type-for-visual-studio/';
+        var disqus_url = 'http://darrelltunnell.net/blog/2016/01/17/imagining-a-dotnetnuke-project-type-for-visual-studio/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
