@@ -19,7 +19,7 @@ However these Project Types do not "gel" well with DotNetNuke development in a n
 3. Debugging the extension - you have to manually attach to process.
 4. Adding new items to your project - it would be nice if there were a standard set of items you could add to a DotNetNuke extension project by default, likewise you can always extend this by creating your templates and sticking them in your "ItemTemplates" folder, but those templates would target the "DnnProjectType". Things such as a "Module View" etc. This is where templates do tend to work nicely. It would be even better though, if these templates brought in any required dependencies / references (as NuGet packages) as they were added.
 
-So.. what if there was a new Project Type, one that was purpose built for DotNetNuke development?
+So.. what if there was a new Project Type, one that was purpose built for DotNetNuke development? What would that look like?
 
 ## Introducing the "DnnProj"
 
