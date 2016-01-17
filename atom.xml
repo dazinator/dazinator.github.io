@@ -4,7 +4,7 @@
   <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2016-01-17T19:46:09+00:00</updated>
+  <updated>2016-01-17T19:53:27+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -18,19 +18,18 @@
     <link href="http://darrelltunnell.net/blog/2016/01/17/imagining-a-dotnetnuke-project-type-for-visual-studio/"/>
     <updated>2016-01-17T00:00:00+00:00</updated>
     <id>http://darrelltunnell.net/blog/2016/01/17/imagining-a-dotnetnuke-project-type-for-visual-studio</id>
-    <content type="html"><![CDATA[<h2>Overview</h2>
+    <content type="html"><![CDATA[<h2>Introduction</h2>
 
-<p>When developing DotNetNuke extensions, developers typically use one of the existing Visual Studio Project Type&rsquo;s, for example - an ASP.NET Web Application project.</p>
+<p>When developing DotNetNuke extensions, we typically use one of the existing Visual Studio Project Type&rsquo;s, for example - an ASP.NET Web Application project.</p>
 
 <p>Even when using a Project Template such as Christoc&rsquo;s, the project template is still based upon one of the standard Visual Studio project types - usually an ASP.NET Web Application project.</p>
 
-<p>However these Project Types do not &ldquo;gel&rdquo; well with DotNetNuke development in a number of areas:</p>
+<p>However these Project Types do not &ldquo;gel&rdquo; well with DotNetNuke development in a number of areas, the main ones being:</p>
 
 <ol>
 <li>Running the project in VS (clicking play) - wants to run the extensions as a Web Application, but this makes no sense for a Dnn extension - which has to be hosted by the DotNetNuke website.</li>
 <li>Deploying the extension - there is no support for that in the project system - you have to manually deploy your extensions to the Dnn instance.</li>
 <li>Debugging the extension - you have to manually attach to process.</li>
-<li>Adding new items to your project - it would be nice if there were a standard set of items you could add to a DotNetNuke extension project by default, likewise you can always extend this by creating your templates and sticking them in your &ldquo;ItemTemplates&rdquo; folder, but those templates would target the &ldquo;DnnProjectType&rdquo;. Things such as a &ldquo;Module View&rdquo; etc. This is where templates do tend to work nicely. It would be even better though, if these templates brought in any required dependencies / references (as NuGet packages) as they were added.</li>
 </ol>
 
 
@@ -39,7 +38,7 @@
 <!-- more -->
 
 
-<h2>Introducing the &ldquo;DnnProj&rdquo;</h2>
+<h2>Introducing the &ldquo;DotNetNuke&rdquo; Project Type</h2>
 
 <p>I am currently developing a new VS Project Type explicitly for DotNetNuke development. The rest of this blog post will describe my vision for how this will work.</p>
 
