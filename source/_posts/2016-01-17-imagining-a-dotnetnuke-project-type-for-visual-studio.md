@@ -88,7 +88,7 @@ This is going to wayyyy better than previous workflows for Dnn development.
 
 Well.. I am pretty far into the development of this at the moment, which is why I have been able to include some screenshots. However it is a steep learning curve, and I am continuosly hitting hurdles with [Microsoft's new Project System (CPS)](https://github.com/Microsoft/VSProjectSystem). This is my first attempt at developing a VS project type and I don't have any in roads with microsoft or any support. So all of this means, I am "hoping" I can pull this off, and the signs are promising, but I'm not through the woods yet. The (very) dark, mystical woods, of VS project type development.
 
-Still, I'd love to hear what others think of this, would you use such a system? How could it be better? 
+Still, I'd love to hear what others think of this - even though I appreciate it's very premature. Would you use such a system? Any ideas for improvements? I'll release a new blog post when things are looking a bit more finalised, and perhaps again when I have something for beta release. 
 
 Lastly, if there are any guru's out there who have expertise with [CPS](https://github.com/Microsoft/VSProjectSystem) - I can always use a hand ;)
 
