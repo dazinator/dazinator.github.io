@@ -35,7 +35,7 @@ You can now create a new "DotNetNuke" project using Visual Studio.
 
 ![new dnn project.PNG]({{site.baseurl}}/assets/posts/new dnn project.PNG)
 
-This creates your new project. It also imports the "DnnPackager" NuGet package automatically - something I have blogged about seperately.
+This creates your new project. It also imports the "DnnPackager" NuGet package automatically - [something I have blogged about seperately.](http://darrelltunnell.net/blog/2015/12/01/dnnpackager-getting-started/)
 
 ![adding DnnPackager.PNG]({{site.baseurl}}/assets/posts/adding DnnPackager.PNG)
 
@@ -45,21 +45,25 @@ Your new project, has it's own ".dnnproj" file. This is a new project type and t
 
 ### Adding Content
 
-You can now add items to your project. If you "Add new item" - you can select from a number of standard item templates. For example a "Module View". 
+You can now add items to your project. If you "Add new item" - you will be able select from a number of standard DotNetNuke item templates. For example a "Module View". 
 
 ![AddModuleView.png]({{site.baseurl}}/assets/posts/AddModuleView.png)
 
-When you add the new item, not only do the files get added to your project, but any required dependencies also get broguth in by the magical power of NuGet:
+Initially, I will just show Dnn 7 compatible item templates, but eventually I'd also like to add a seperate group for Dnn 8 item templates, which would include item templates for the new MVC and SPA stuff.
+
+When you add the new item, not only do the source code files get added to your project, but any required dependencies also get brought in by the magical power of NuGet:
 
 ![AddingDotNetNukeCoreNuget.PNG]({{site.baseurl}}/assets/posts/AddingDotNetNukeCoreNuget.PNG)
 
-In other words, you don't need to worry about adding any references, they will be bought in for you as you add items. Ofcourse, you are still free to add references to other dependencies you might have as normal. 
+So for example, adding a Module View for Dnn 7, will automatically bring in the DotNetNuke.Core NuGet package for Dnn7 as depicted above.
+
+In other words, you don't need to worry about adding any Dnn assembly references for the most part, as they will be bought in for you as you add items to your project. Ofcourse, you are still free to add references to other dependencies you might have as normal. 
 
 ### Running and Debugging
 
 When you want to run and debug your extension, for those of you that have read my previous blog about DnnPackager, you may recall that this could be accomplished via a command that you could enter in the Package Manager Console window and DnnPackager would handle the deployment and attaching the debugger.
 
-Well that approach was only ever necessary because there was not any first class support within VS itself - i.e from the project system. We can now do better than that.
+Well that approach was only ever necessary because there was not any first class support within VS itself. Something I am going to rectify with the DotNetNuke project type.
 
 In VS, I am going to extend the debugging toolbar (where the "play" button is)
 
@@ -67,9 +71,9 @@ In VS, I am going to extend the debugging toolbar (where the "play" button is)
 
 You can see in the screenshot there is an empty dropdown at present, but this will list your DotNetNuke websites that you have on your local IIS. The first one in that list will be selected by default.
 
-You may also notice there a new Debugger selected in that screenshot "Local Dnn Website".
+You may also notice there a new Debugger selected in that screenshot called "Local Dnn Website". That's my own custom debugger that's available only for this project type. 
 
-All you need to do it click "Play" and it will:
+All you need to do is click "Play" and it will:
 
 1. Build your project to output the deployment zip.
 2. Deploy your install zip to the Dnn website selected in the dropdown.
@@ -82,9 +86,11 @@ This is going to wayyyy better than previous workflows for Dnn development.
 
 ## What Now?
 
-Well I am well into development if this at the moment, which is why I have been able to include some screenshots. However I am hitting hurdles with Microsoft's new Project System. This is my first attempt at developing a VS project type and I don't have any in roads with microsoft and therefore any real support. So all of this means, I am hoping I can pull it off, but I'm not through the woods yet. The (very) dark, mystical woods, of VS project type development.
+Well.. I am pretty far into the development of this at the moment, which is why I have been able to include some screenshots. However it is a steep learning curve, and I am continuosly hitting hurdles with [Microsoft's new Project System (CPS)](https://github.com/Microsoft/VSProjectSystem). This is my first attempt at developing a VS project type and I don't have any in roads with microsoft or any support. So all of this means, I am "hoping" I can pull this off, and the signs are promising, but I'm not through the woods yet. The (very) dark, mystical woods, of VS project type development.
 
-I'd love to hear what others think of this, would you use such a system? How could it be better?
+Still, I'd love to hear what others think of this, would you use such a system? How could it be better? 
+
+Lastly, if there are any guru's out there who have expertise with [CPS](https://github.com/Microsoft/VSProjectSystem) - I can always use a hand ;)
 
 
 
