@@ -4,7 +4,7 @@
   <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2016-01-17T19:44:48+00:00</updated>
+  <updated>2016-01-17T19:46:09+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -35,6 +35,9 @@
 
 
 <p>So.. what if there was a new Project Type, one that was purpose built for DotNetNuke development? What would that look like?</p>
+
+<!-- more -->
+
 
 <h2>Introducing the &ldquo;DnnProj&rdquo;</h2>
 
