@@ -75,28 +75,28 @@ Here are the answers. Some of them you can just hit enter without typing anythin
 
 I'll quickly run through each option briefly.. But you should defer to the `JSPM` documentation site for further clarifications.
 
-1. "Would you like jspm to prefix the jspm package.json properties under jspm?"
+1. "**Would you like jspm to prefix the jspm package.json properties under jspm?**"
 We answer yes to this (the default) and this just means that JSPM will store its project configuration within a "jspm" section in our existing `package.json` file.
 
-2. "Enter server baseURL (public folder path)"
+2. "**Enter server baseURL (public folder path)**"
 The word URL is a bit confusing here. This is the relative path to your "public" folder within the project. By public folder, we mean the folder that will serve up static files and is therefore accessible to a browser. We need to set this to the path to our `wwwroot` directory. So the value we set for this question is `./wwwroot` as the value is relative to the current (project) directory.
 
-3. "Enter jspm packages folder [wwwroot\jspm_packages]"
+3. "**Enter jspm packages folder [wwwroot\jspm_packages]**"
 We accept the default value for this question. Previously, our Bower packages were installed under `wwwroot\lib` folder, so if you want to keep this consistent you could change this value to `wwwroot\lib`. I however am happy to keep the default.
 
-4. "Enter config file path [wwwroot\config.js]"
+4. "**Enter config file path [wwwroot\config.js]**"
 This is the path to where you would like the config javascript file to be placed. Remember, `JSPM` is not just a package manager in a the sense of allowing you to adopt packages at `design time`. It also has features that are used your application when it runs. This means it has a `config` file (a javascript file) that your application will actually need to reference at runtime. This config file must therefore be placed in a directory that can be served up. We accept the default value (wwwroot\config.js)  
 
-5. "Configuration file wwwroot\config.js doesn't exist, create it?" [yes]
+5. "**Configuration file wwwroot\config.js doesn't exist, create it? [yes]**" 
 We accept the default which is `yes` as we want it to create this config file for us.
 
-6. "Enter client baseURL (public folder URL) [/]
+6. "**Enter client baseURL (public folder URL) [/]**"
 This is the URL or path that the browser uses to browse to the public folder (wwwroot). We accept the default value, because our public folder (wwwroot) is served up as the root path ("/").
 
-7. "Do you wish to use a transpiler? [yes]"
+7. "**Do you wish to use a transpiler? [yes]**"
 We accept the default answer of "yes" because transpilers are awesome. They allow us to write javascript using the latest language specifications, and then they "transpile" that javascript so that it can run in browsers that don't support the latest language specifications yet.
 
-8. "Which ES6 transpiler would you like to use, Babel, Typescript, or Traceur? [babel]"
+8. "**Which ES6 transpiler would you like to use, Babel, Typescript, or Traceur? [babel]**"
 For the purposes of this blog, I am accepting the default of "Babel". 
 
 The transpiler will just allow us to write javascript using ES6 language features, and this will be transpiled to run in browsers that don't support ES6 yet.
