@@ -13,6 +13,7 @@ title: "ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia-Part2"
 In [part 1 of this series](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc) we created a shiny new ASP.NET 5 project, and I introduced some fundamentals.
 
 For reasons discussed in [part 1](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc), let's now go ahead with our first task, which is to ditch Bower in favour of JSPM as our javascript package manager.
+<!-- more -->
 
 ### Uninstall Bower
 You will notice that your ASP.NET 5 application has a number of bower packages included by default:
