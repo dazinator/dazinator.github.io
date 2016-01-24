@@ -4,7 +4,7 @@
   <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2016-01-24T20:55:14+00:00</updated>
+  <updated>2016-01-24T20:59:03+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -98,21 +98,21 @@ The way to do this, is a little bit fiddely, as you have to drop to the command 
 <p>I&rsquo;ll quickly run through each option briefly.. But you should defer to the <code>JSPM</code> documentation site for further clarifications.</p>
 
 <ol>
-<li><p>&ldquo;Would you like jspm to prefix the jspm package.json properties under jspm?&rdquo;
+<li><p>&ldquo;<strong>Would you like jspm to prefix the jspm package.json properties under jspm?</strong>&rdquo;
 We answer yes to this (the default) and this just means that JSPM will store its project configuration within a &ldquo;jspm&rdquo; section in our existing <code>package.json</code> file.</p></li>
-<li><p>&ldquo;Enter server baseURL (public folder path)&rdquo;
+<li><p>&ldquo;<strong>Enter server baseURL (public folder path)</strong>&rdquo;
 The word URL is a bit confusing here. This is the relative path to your &ldquo;public&rdquo; folder within the project. By public folder, we mean the folder that will serve up static files and is therefore accessible to a browser. We need to set this to the path to our <code>wwwroot</code> directory. So the value we set for this question is <code>./wwwroot</code> as the value is relative to the current (project) directory.</p></li>
-<li><p>&ldquo;Enter jspm packages folder [wwwroot\jspm_packages]&rdquo;
+<li><p>&ldquo;<strong>Enter jspm packages folder [wwwroot\jspm_packages]</strong>&rdquo;
 We accept the default value for this question. Previously, our Bower packages were installed under <code>wwwroot\lib</code> folder, so if you want to keep this consistent you could change this value to <code>wwwroot\lib</code>. I however am happy to keep the default.</p></li>
-<li><p>&ldquo;Enter config file path [wwwroot\config.js]&rdquo;
+<li><p>&ldquo;<strong>Enter config file path [wwwroot\config.js]</strong>&rdquo;
 This is the path to where you would like the config javascript file to be placed. Remember, <code>JSPM</code> is not just a package manager in a the sense of allowing you to adopt packages at <code>design time</code>. It also has features that are used your application when it runs. This means it has a <code>config</code> file (a javascript file) that your application will actually need to reference at runtime. This config file must therefore be placed in a directory that can be served up. We accept the default value (wwwroot\config.js)</p></li>
-<li><p>&ldquo;Configuration file wwwroot\config.js doesn&rsquo;t exist, create it?&rdquo; [yes]
+<li><p>&ldquo;<strong>Configuration file wwwroot\config.js doesn&rsquo;t exist, create it? [yes]</strong>&rdquo;
 We accept the default which is <code>yes</code> as we want it to create this config file for us.</p></li>
-<li><p>&ldquo;Enter client baseURL (public folder URL) [/]
-This is the URL or path that the browser uses to browse to the public folder (wwwroot). We accept the default value, because our public folder (wwwroot) is served up as the root path (&rdquo;/&ldquo;).</p></li>
-<li><p>&ldquo;Do you wish to use a transpiler? [yes]&rdquo;
+<li><p>&ldquo;<strong>Enter client baseURL (public folder URL) [/]</strong>&rdquo;
+This is the URL or path that the browser uses to browse to the public folder (wwwroot). We accept the default value, because our public folder (wwwroot) is served up as the root path (&ldquo;/&rdquo;).</p></li>
+<li><p>&ldquo;<strong>Do you wish to use a transpiler? [yes]</strong>&rdquo;
 We accept the default answer of &ldquo;yes&rdquo; because transpilers are awesome. They allow us to write javascript using the latest language specifications, and then they &ldquo;transpile&rdquo; that javascript so that it can run in browsers that don&rsquo;t support the latest language specifications yet.</p></li>
-<li><p>&ldquo;Which ES6 transpiler would you like to use, Babel, Typescript, or Traceur? [babel]&rdquo;
+<li><p>&ldquo;<strong>Which ES6 transpiler would you like to use, Babel, Typescript, or Traceur? [babel]</strong>&rdquo;
 For the purposes of this blog, I am accepting the default of &ldquo;Babel&rdquo;.</p></li>
 </ol>
 
