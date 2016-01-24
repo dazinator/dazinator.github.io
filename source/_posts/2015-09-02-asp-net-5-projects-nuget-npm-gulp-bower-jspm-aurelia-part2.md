@@ -59,50 +59,67 @@ The `NPM` package for `JSPM` should now be downloaded and installed into your pr
 #### Configuring JSPM
 
 Now that the `JSPM` package has been installed, we need to configure `JSPM`.
-The way to do this, is a little bit fiddely, as you have to drop to the command line. 
+The way to do this, is a little bit fiddely, as you have to drop to the command line - there is no fancy support for `JSPM` in Visual Studio at the moment like there is for `Bower`. 
 
 1. Open a `command prompt` window, and `CD` to your project directory
 2. Type `jspm init` and hit enter.
 
-![commandlinejspminit.PNG]({{site.baseurl}}/source/assets/posts/commandlinejspminit.PNG)
+![commandlinejspminit.PNG]({{site.baseurl}}/assets/posts/commandlinejspminit.PNG)
 
-You will now be asked a series of questions. At the end of answering these questions, the relevent `config` will be performed within our project.
+You will now be asked a series of questions. At the end of answering these questions, the relevent `config` will be produced within the project.
 
-Here are the answers you should give. Some of them you can just hit enter without typing anything, and the default value will be used.
+Here are the answers. Some of them you can just hit enter without typing anything, and the default value will be used.
 
-![jspminit.PNG]({{site.baseurl}}/source/assets/posts/jspminit.PNG)
+![jspminit.PNG]({{site.baseurl}}/assets/posts/jspminit.PNG)
 
-I'll touch on some of the above configuration options briefly..
+I'll quickly run through each option briefly.. But you should defer to the `JSPM` documentation site for further clarifications.
 
 1. "Would you like jspm to prefix the jspm package.json properties under jspm?"
 We answer yes to this (the default) and this just means that JSPM will store its project configuration within a "jspm" section in our existing `package.json` file.
 
 2. "Enter server baseURL (public folder path)"
-The word URL is a bit confusing here. This is the relative path to your "public" folder within the project that will serve up files. We need to set this to the path to our `wwwroot` directory. So the value we set for this question is `./wwwroot` as the value is relative to the current (project) directory.
+The word URL is a bit confusing here. This is the relative path to your "public" folder within the project. By public folder, we mean the folder that will serve up static files and is therefore accessible to a browser. We need to set this to the path to our `wwwroot` directory. So the value we set for this question is `./wwwroot` as the value is relative to the current (project) directory.
 
-3. "Enter jspm packages folder [wwwroot\jspm_packages]
+3. "Enter jspm packages folder [wwwroot\jspm_packages]"
 We accept the default value for this question. Previously, our Bower packages were installed under `wwwroot\lib` folder, so if you want to keep this consistent you could change this value to `wwwroot\lib`. I however am happy to keep the default.
 
 4. "Enter config file path [wwwroot\config.js]"
-This is the path to where you would like the config javascript file to be placed. It defaults to your public folder (wwwroot\config.js) because this javascript file needs to be loaded at runtime by the client browser. We accept the default value.
+This is the path to where you would like the config javascript file to be placed. Remember, `JSPM` is not just a package manager in a the sense of allowing you to adopt packages at `design time`. It also has features that are used your application when it runs. This means it has a `config` file (a javascript file) that your application will actually need to reference at runtime. This config file must therefore be placed in a directory that can be served up. We accept the default value (wwwroot\config.js)  
 
 5. "Configuration file wwwroot\config.js doesn't exist, create it?" [yes]
-We accept the default which is `yes` as we want it to create the config file for us.
+We accept the default which is `yes` as we want it to create this config file for us.
 
 6. "Enter client baseURL (public folder URL) [/]
-This is the URL / path that the browser uses to browse to the public folder (wwwroot). We accept the default value, because our public folder (wwwroot) is served up as the root directory ("/").
+This is the URL or path that the browser uses to browse to the public folder (wwwroot). We accept the default value, because our public folder (wwwroot) is served up as the root path ("/").
 
 7. "Do you wish to use a transpiler? [yes]"
-We accept the default answer of "yes" because transpilers are awesome. They allow us to write javascript using the latest language specifications, and then they "transpile" that javascript so that it can run in browsers that don't support the latest specifications yet.
+We accept the default answer of "yes" because transpilers are awesome. They allow us to write javascript using the latest language specifications, and then they "transpile" that javascript so that it can run in browsers that don't support the latest language specifications yet.
 
 8. "Which ES6 transpiler would you like to use, Babel, Typescript, or Traceur? [babel]"
 For the purposes of this blog, I am accepting the default of "Babel". 
 
+The transpiler will just allow us to write javascript using ES6 language features, and this will be transpiled to run in browsers that don't support ES6 yet.
+
 #### Installing JSPM Packages
 
+Now that we have `JSPM` configured, it's time to install those packages that we previously had installed via `Bower`.
+
+Back in the `command prompt` run the following commands:
+
+1. `jspm install jquery`
+2. `jspm install jquery-validation`
+3. `jspm install github:aspnet/jquery-validation-unobtrusive`
+2. `jspm install bootstrap`
+
+Once that is done, those packages will now be installed under your `wwwroot\jspm_packages` folder:
+
+![jspmpackages.PNG]({{site.baseurl}}/assets/posts/jspmpackages.PNG)
+
+The next step is to fix up our MVC application so that loads our javascript and css using the `jspm` module loader.
 
 
-3. `jspm install` all those dependencies we need.. jquery etc..
+
+
 4. Find the MVC razor views and reference the scripts from the jspm packages folder instead.
 5. Run the MVC application, verify it still works.
 
