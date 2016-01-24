@@ -16,7 +16,7 @@ At this point we have a very basic, default, MVC web application.
 
 For reasons discussed in [part 1](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc), let's now go ahead and ditch Bower in favour of JSPM as our javascript package manager.
 
-#### Uninstall Bower
+### Uninstall Bower
 You will notice that your ASP.NET 5 application has a number of bower packages included by default:
 
 ![bowerpackages.PNG]({{site.baseurl}}/assets/posts/bowerpackages.PNG)
@@ -41,7 +41,7 @@ As you can see, there are now errors displayed in the browser, and our site look
 
 To fix this situation we'll need to add these packages back to our application, using `JSPM`, and then fix up the way our application is `loading` these dependencies (javascript, css files) at runtime. 
 
-#### Installing JSPM
+### Install JSPM
 
 JSPM can be installed as a local `NPM` package.
 
@@ -56,7 +56,7 @@ The `NPM` package for `JSPM` should now be downloaded and installed into your pr
 
 ![nodemodulesfolderjspm.PNG]({{site.baseurl}}/assets/posts/nodemodulesfolderjspm.PNG)
 
-#### Configuring JSPM
+### Configure JSPM
 
 Now that the `JSPM` package has been installed, we need to configure `JSPM`.
 The way to do this, is a little bit fiddely, as you have to drop to the command line - there is no fancy support for `JSPM` in Visual Studio at the moment like there is for `Bower`. 
@@ -100,7 +100,7 @@ For the purposes of this blog, I am accepting the default of "Babel".
 
 The transpiler will just allow us to write javascript using ES6 language features, and this will be transpiled to run in browsers that don't support ES6 yet.
 
-#### Installing JSPM Packages
+### Installing JSPM Packages
 
 Now that we have `JSPM` configured, it's time to install those packages that we previously had installed via `Bower`.
 
@@ -117,7 +117,7 @@ Once that is done, those packages will now be installed under your `wwwroot\jspm
 
 The next step is to fix up our MVC application so that it loads our javascript and css using the `module loader`.
 
-#### Transitioning to Modules.
+### Transitioning to Modules.
 
 The changes we have been making up until now, have been about managing our packages in our project at design time. This next step is about making changes to our application so that rather than including javascript and css files directly into particular pages, we instead, write modular javascript, that declares any dependencies it has, and then allow the `SystemJS` module loader to satisfy those dependencies for us at runtime by loading any needed javascript / css.
 
@@ -149,8 +149,8 @@ Let's comment out that whole section and replace it with this:
 
 ```xml
 
-<script src="jspm_packages/system.js"></script>
-<script src="config.js"></script>
+<script src="~/jspm_packages/system.js"></script>
+<script src="~/config.js"></script>
 <script>System.import("js/site");</script>
 
 ```
@@ -190,7 +190,7 @@ You should now see that `JQuery` and `Bootstrap` are loaded:
 
 ![jspmjqueryandbootstrapdependency.PNG]({{site.baseurl}}/assets/posts/jspmjqueryandbootstrapdependency.PNG)
 
-#### What about CSS
+### What about CSS
 
 Now that we have got our javascript files loading again, we are still left with 404's for the bootstrap.css file.
 
@@ -231,49 +231,80 @@ Lastly, in `_Layout.cshtml`, comment out the link to the bootstrap.css file that
 
 Now run your application!
 
+![jspmnoerrors.PNG]({{site.baseurl}}/source/assets/posts/jspmnoerrors.PNG)
 
+Wahoo! We now have no errors in the console window, our javascript and css is being loaded - and our application looks ok again.
 
-The last `script` tells the `JSPM` module loader to load a module named `js/site` and by default this will resolve to the `js/site.js` file in our public directory (wwwroot).
+#### Flash of unstyled content
 
-By default `site.js` is just an empty javascript file..
+You may notice that using the CSS plugin, your page is displayed in an unstyled form for a brief moment, whilst the CSS file is loaded asynchronosuly. This is known as a [Flash of Unstyled Content](http://www.techrepublic.com/blog/web-designer/how-to-prevent-flash-of-unstyled-content-on-your-websites/) and is a problem with using the CSS plugin at present - [see here](https://github.com/systemjs/plugin-css/issues/57). Hopefully this will be addressed in the future, but in the meantime, feel free not to use the CSS Plugin if this is an issue, you can instead just directly reference the `Bootstrap.css` file in the `_Layout.cshtml` file as before, but from its new location under the `jspm_packages` directory.
 
-Let's run the application..
+### Finishing Touches - `_ValidationScripsPartial.cshtml`
 
+Our application is running again, but you may notice a few of the pages have errors.
 
+If you click on "Register" link for example you will see these errors in the browser console window:
 
-4. Find the MVC razor views and reference the scripts from the jspm packages folder instead.
-5. Run the MVC application, verify it still works.
+![jspmregisterpageproblems.PNG]({{site.baseurl}}/source/assets/posts/jspmregisterpageproblems.PNG)
 
-At this point we have the same MVC web application as when we started, it's just that we are now using JSPM to manage our packages instead of Bower.
+This is because many of the views within our MVC application are rendering a partial called `_ValidationScriptsPartial.cshtml`
 
-### Aurelia
+For example, if you look at the bottom of `Register.cshtml`, you will see the following:
 
-Now let's create an Aurelia javascript application to run on our home page.
-Aurelia is a popular new javascript framework for creating SPA's. I have chosen it because I really liked Durandal, it's predessor, and I feel it's time for me to start getting more familiar with it!
+```csharp
 
-todo:
-1. jspm install aurelia packages.
-2. add necessary javascript script includes and system js import call
-3. add html and js for our first aurelia page
-4. run the website in VS, make sure we see the app load up on the home page.
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
 
-### Linting, Bundling, and Minification
-The app works great, but it's not very optimised.. 
-We are now going to set up a gulp task so that whenever we build our application in visual studio, the gulp task runs that will
+```
 
-1. JSHint (Lint) our javascript code to check for common errors.
-2. Bundle the javascript files into 1 file.
-3. Minify the javascript file.
+If you look at the contents of `_ValidationScriptsPartial` we can see that it is actually including additional scripts onto the page:
 
-In addition, this gulp task should also re-run whenever we save changes to any of the javascript files for our app.
+```
+<environment names="Development">
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+</environment>
+<environment names="Staging,Production">
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"
+            asp-fallback-src="~/lib/jquery-validation/dist/jquery.validate.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.validator">
+    </script>
+    <script src="https://ajax.aspnetcdn.com/ajax/mvc/5.2.3/jquery.validate.unobtrusive.min.js"
+            asp-fallback-src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.validator && window.jQuery.validator.unobtrusive">
+    </script>
+</environment>
 
-Having our application just include a single bundled and minified javascript file should give it a nice performance boost.
+```
 
-TODO:
+As you can see, depending upon the environment that ASP.NET determines your application is running on, this renders some script includes to particular js files, used for forms validation. These were previoulsy located within `Bower` packages, that we have deleted.
 
-### Browser Refresh
-Isn't it annoying though that whenever we make a change to our javascript file, or some HTML for our application, we have to refresh the browser to see our changes!
+To correct this, we'll just need to instruct the module loader to load the `jquery.validate.unobtrusive` module instead. Notice that you don't need to also instruc the module loader to load the `jquery.validate` module, because `jquery.validate` is a dependency of `jquery.validate.unobtrusive` so the module loader will resolve it automatically.  
 
-Well with Browser-Sync that is a thing of the past.
+So change the contents of `_ValidationScriptsPartial.cshtml` to this:
 
-TODO: Explain how to set up browser-sync, gulp task etc, and sepcify port number in gulp task options, and proxy.. Then change project website settings to launch default url of the proxy when we start the project. Then all we have to do is serve which starts browser sync, and gets gulp watching for changes, then with gulp serve running we can run the website and debug in VS as normal whever we need to.
+```
+<script>System.import("aspnet/jquery-validation-unobtrusive");</script>
+```
+
+And now - everything is working!
+
+![jspmallworking.PNG]({{site.baseurl}}/source/assets/posts/jspmallworking.PNG)
+
+## Recap
+
+In this blog post, we have replaced `Bower` with `JSPM` and changed the way our application loads it's javascript and css, so that it now uses a module loader.
+
+We also saw that modular CSS currently has a flash of unstyled content issue, and so if that's an issue for your application then it's probably best to stick to directly linking to your css files as before, rather than trying to load them through the module loader. That's a decision for you to make!
+
+In the next blog post/s in this series, I will attempt to cover:
+
+1. Creating a basic Aurelia application on the Home page.
+2. Introducing Linting, Bundling, and Minification.
+3. Automatic Browser Refresh as we make changes.
+
+I hope this has helped you, and apologies if the article seems rushed in places... It was! :)
+
+As always, appreciate any feedback below!
