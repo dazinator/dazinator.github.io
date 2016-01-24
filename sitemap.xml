@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://darrelltunnell.net/blog/2016/01/24/aurelia-and-asp-net-5-mvc-part2/</loc>
+    <lastmod>2016-01-24T00:00:00+00:00</lastmod>
+  </url>
+  <url>
     <loc>http://darrelltunnell.net/blog/2016/01/17/imagining-a-dotnetnuke-project-type-for-visual-studio/</loc>
     <lastmod>2016-01-17T00:00:00+00:00</lastmod>
   </url>
@@ -27,10 +31,6 @@
   <url>
     <loc>http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-executemultiplerequest-get-you/</loc>
     <lastmod>2015-02-26T00:00:00+00:00</lastmod>
-  </url>
-  <url>
-    <loc>http://darrelltunnell.net/blog/2015/01/24/aurelia-and-asp-net-5-mvc-part2/</loc>
-    <lastmod>2015-01-24T00:00:00+00:00</lastmod>
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install/</loc>
@@ -79,9 +79,6 @@
     <loc>http://darrelltunnell.net/blog/categories/asp-dot-net-nuget-asp-dot-net-nuget/</loc>
   </url>
   <url>
-    <loc>http://darrelltunnell.net/blog/categories/asp-dot-net-aurelia-gulp-bower-jspm/</loc>
-  </url>
-  <url>
     <loc>http://darrelltunnell.net/blog/categories/dotnetnuke-octopus-deployment/</loc>
   </url>
   <url>
@@ -98,5 +95,8 @@
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/categories/dotnetnuke-dnnpackager-dnn/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/asp-dot-net-aurelia-gulp-bower-jspm/</loc>
   </url>
 </urlset>

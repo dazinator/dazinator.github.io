@@ -4,7 +4,7 @@
   <title><![CDATA[Category: asp.net,aurelia,gulp,bower,jspm | Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/blog/categories/asp-dot-net-aurelia-gulp-bower-jspm/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2016-01-24T20:50:19+00:00</updated>
+  <updated>2016-01-24T20:52:22+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia-Part2]]></title>
-    <link href="http://darrelltunnell.net/blog/2015/01/24/aurelia-and-asp-net-5-mvc-part2/"/>
-    <updated>2015-01-24T00:00:00+00:00</updated>
-    <id>http://darrelltunnell.net/blog/2015/01/24/aurelia-and-asp-net-5-mvc-part2</id>
+    <link href="http://darrelltunnell.net/blog/2016/01/24/aurelia-and-asp-net-5-mvc-part2/"/>
+    <updated>2016-01-24T00:00:00+00:00</updated>
+    <id>http://darrelltunnell.net/blog/2016/01/24/aurelia-and-asp-net-5-mvc-part2</id>
     <content type="html"><![CDATA[<p>**This post is part two of a series. For part one see <a href="http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc/">here</a></p>
 
 <h2>Part 2 - Replacing Bower with JSPM</h2>
