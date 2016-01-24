@@ -191,9 +191,9 @@ import $ from 'jquery';
 import bootstrap from 'bootstrap';
 ```
 
-This is `ES6` syntax for declaring a dependency on a module.
+This is `ES6` syntax for declaring a module dependency.
 
-You should now see that `JQuery` and `Bootstrap` are loaded:
+You should now see that `JQuery` and `Bootstrap` are loaded on every page:
 
 ![jspmjqueryandbootstrapdependency.PNG]({{site.baseurl}}/assets/posts/jspmjqueryandbootstrapdependency.PNG)
 
