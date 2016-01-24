@@ -115,8 +115,129 @@ Once that is done, those packages will now be installed under your `wwwroot\jspm
 
 ![jspmpackages.PNG]({{site.baseurl}}/assets/posts/jspmpackages.PNG)
 
-The next step is to fix up our MVC application so that loads our javascript and css using the `jspm` module loader.
+The next step is to fix up our MVC application so that it loads our javascript and css using the `module loader`.
 
+#### Transitioning to Modules.
+
+The changes we have been making up until now, have been about managing our packages in our project at design time. This next step is about making changes to our application so that rather than including javascript and css files directly into particular pages, we instead, write modular javascript, that declares any dependencies it has, and then allow the `SystemJS` module loader to satisfy those dependencies for us at runtime by loading any needed javascript / css.
+
+First, we need to include the module loader, and it's configuration file, into our application.
+
+If you open `_Layout.cshtml` you will see a section like this:
+
+```xml
+ <environment names="Development">
+            <script src="~/lib/jquery/dist/jquery.js"></script>
+            <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+            <script src="~/js/site.js" asp-append-version="true"></script>
+        </environment>
+        <environment names="Staging,Production">
+            <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js"
+                    asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                    asp-fallback-test="window.jQuery">
+            </script>
+            <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.5/bootstrap.min.js"
+                    asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                    asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+            </script>
+            <script src="~/js/site.min.js" asp-append-version="true"></script>
+        </environment>
+```
+
+Let's comment out that whole section and replace it with this:
+
+
+```xml
+
+<script src="jspm_packages/system.js"></script>
+<script src="config.js"></script>
+<script>System.import("js/site");</script>
+
+```
+
+At this point, let's run the application!
+
+You should now be able to see that we no longer get any errors about failing to load  javascript files `jquery.js` and `bootstrap.js`. In fact, **those javascript files are not being loaded anymore.**
+
+![jspmmissingcss.PNG]({{site.baseurl}}/assets/posts/jspmmissingcss.PNG)
+
+Why is that? Well it's because we no longer directly include the `bootstrap` and `jquery` scripts into our `_Layout.cshtml` file, so they aren't being loaded! So we aren't getting 404's anymore.
+
+This is the nature of `modular` javascript. What we have transitioned to now, is a Modular concept, where `bootstrap` and `jquery` are modules that will only be loaded, if we load a module that requires them as dependencies.
+
+With that in mind, the module we are currently loading is one called `js/site`
+
+```xml
+<script>System.import("js/site");</script>
+```
+
+This resolves to the `js/site.js` file in our `wwwroot` directory. This file is currently empty, meaning there are no dependencies declared in there to any other modules, and this, there is nothing else that the module loader needs to load, and that's why it doesn't bother loading `JQuery` or `Bootstrap` anymore.
+
+This is good, because in our application, we might have some simple pages that don't require `JQuery` to be loaded. We might have other pages that use all sorts of javascript libraries and fancy plugins. Therefore, in our `_Layout.cshtml` file, we will keep our dependencies as few as possible, and ensure that only dependencies that we require on **every page** will be included. 
+
+Let's now assume that we are willing to load `JQuery`, and `Bootstrap` as a dependency for every page:
+
+1. Open `site.js` and insert the following code, then save it an re-run your application:
+
+```javascript
+import $ from 'jquery';
+import bootstrap from 'bootstrap';
+```
+
+This is `ES6` syntax for declaring a dependency on a module.
+
+You should now see that `JQuery` and `Bootstrap` are loaded:
+
+![jspmjqueryandbootstrapdependency.PNG]({{site.baseurl}}/assets/posts/jspmjqueryandbootstrapdependency.PNG)
+
+#### What about CSS
+
+Now that we have got our javascript files loading again, we are still left with 404's for the bootstrap.css file.
+
+Well we can use JSPM for CSS too, but we need to install the `CSS` plugin.
+
+#### Installing the CSS plugin for JSPM
+
+Back in the `command prompt` in your project directory, run the following
+
+```
+jspm install css
+```
+
+Now go back to your `site.js` file, and add an import for the bootstrap.css. It should now look like this:
+
+```
+import $ from 'jquery';
+import bootstrap from 'bootstrap';
+import 'bootstrap/css/bootstrap.css!'
+```
+
+Lastly, in `_Layout.cshtml`, comment out the link to the bootstrap.css file that doesn't exist.
+
+```xml
+
+ <environment names="Development">
+        @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />*@
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment names="Staging,Production">
+        @*<link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.5/css/bootstrap.min.css"
+            asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"*@
+        asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+
+```
+
+Now run your application!
+
+
+
+The last `script` tells the `JSPM` module loader to load a module named `js/site` and by default this will resolve to the `js/site.js` file in our public directory (wwwroot).
+
+By default `site.js` is just an empty javascript file..
+
+Let's run the application..
 
 
 
