@@ -13,10 +13,6 @@
     <lastmod>2015-11-05T19:52:00+00:00</lastmod>
   </url>
   <url>
-    <loc>http://darrelltunnell.net/blog/2015/09/02/aurelia-and-asp-net-5-mvc-part2/</loc>
-    <lastmod>2015-09-02T00:00:00+01:00</lastmod>
-  </url>
-  <url>
     <loc>http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc/</loc>
     <lastmod>2015-08-16T00:00:00+01:00</lastmod>
   </url>
@@ -31,6 +27,10 @@
   <url>
     <loc>http://darrelltunnell.net/blog/2015/02/26/how-far-does-the-xrm-sdk-s-executemultiplerequest-get-you/</loc>
     <lastmod>2015-02-26T00:00:00+00:00</lastmod>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/2015/01/24/aurelia-and-asp-net-5-mvc-part2/</loc>
+    <lastmod>2015-01-24T00:00:00+00:00</lastmod>
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/2015/01/18/asp-net-5-vnext-projects-why-your-nuget-package-may-fail-to-install/</loc>
@@ -79,6 +79,9 @@
     <loc>http://darrelltunnell.net/blog/categories/asp-dot-net-nuget-asp-dot-net-nuget/</loc>
   </url>
   <url>
+    <loc>http://darrelltunnell.net/blog/categories/asp-dot-net-aurelia-gulp-bower-jspm/</loc>
+  </url>
+  <url>
     <loc>http://darrelltunnell.net/blog/categories/dotnetnuke-octopus-deployment/</loc>
   </url>
   <url>
@@ -89,9 +92,6 @@
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/categories/gulp/</loc>
-  </url>
-  <url>
-    <loc>http://darrelltunnell.net/blog/categories/asp-dot-net-aurelia-gulp-bower-jspm/</loc>
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/categories/xamarin-android-teamcity-tests-automate-ci-build/</loc>
