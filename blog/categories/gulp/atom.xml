@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Gulp | Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/blog/categories/gulp/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2016-01-24T21:14:49+00:00</updated>
+  <updated>2016-01-24T21:23:22+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -18,7 +18,7 @@
     <link href="http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc/"/>
     <updated>2015-08-16T00:00:00+01:00</updated>
     <id>http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc</id>
-    <content type="html"><![CDATA[<p><strong>This post is part 1 of a series.</strong></p>
+    <content type="html"><![CDATA[<p><strong>This post is part 1 of a series. Part 2 is <a href="http://darrelltunnell.net/blog/2016/01/24/aurelia-and-asp-net-5-mvc-part2/">here</a></strong></p>
 
 <h2>ASP (A Sea of Packages).NET 5</h2>
 
@@ -112,10 +112,10 @@
 
 <h2>Stay tuned</h2>
 
-<p>In the next post, we will begin modifying our ASP.NET 5 project to do the things I have discussed:</p>
+<p>In the next post/s, we will begin modifying our ASP.NET 5 project to do the things I have discussed:</p>
 
 <ol>
-<li>Replace Bower with JSPM</li>
+<li><a href="http://darrelltunnell.net/blog/2016/01/24/aurelia-and-asp-net-5-mvc-part2/">Replace Bower with JSPM</a></li>
 <li>Bring in Aurelia</li>
 <li>Get an Aurelia application working on the Index.cshtml page</li>
 <li>Enable bundling and minification via a Gulp task</li>
