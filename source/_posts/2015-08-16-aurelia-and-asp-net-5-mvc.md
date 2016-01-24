@@ -9,7 +9,8 @@ title: "ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia"
 
 
 
-**This post is part 1 of a series.**
+
+**This post is part 1 of a series. Part 2 is [here](http://darrelltunnell.net/blog/2016/01/24/aurelia-and-asp-net-5-mvc-part2/)**
 ## ASP (A Sea of Packages).NET 5
 
 When you create a new ASP.NET 5 project, you will see all sorts of new-ness. I am going to guide you, the uninitiated ASP.NET 5 web developer, through creating your first ASP.NET 5 MVC application, but we won't stop there. In the next post of this series, we will then enhance the project with a number of features:
@@ -81,9 +82,9 @@ Not if sourcemaps are enabled. I will show you how to enable this. This will mea
 However, I will also show you what to do if you just don't want to bundle / minify your javascript during development (not all browsers will support source maps yet). If bundling and minification is something you only want to do at the time of a release build - which is pretty sensible - then I'll cover that too.
 
 ## Stay tuned
-In the next post, we will begin modifying our ASP.NET 5 project to do the things I have discussed:
+In the next post/s, we will begin modifying our ASP.NET 5 project to do the things I have discussed:
 
-1. Replace Bower with JSPM
+1. [Replace Bower with JSPM](http://darrelltunnell.net/blog/2016/01/24/aurelia-and-asp-net-5-mvc-part2/)
 2. Bring in Aurelia
 3. Get an Aurelia application working on the Index.cshtml page
 4. Enable bundling and minification via a Gulp task
