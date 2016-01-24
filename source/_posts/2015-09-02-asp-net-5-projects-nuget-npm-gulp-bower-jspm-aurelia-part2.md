@@ -1,8 +1,8 @@
 ---
 layout: post
 comments: true
-categories: ""
-published: false
+categories: "ASP.NET,Aurelia,Gulp,Bower,JSPM"
+published: true
 title: "ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia-Part2"
 ---
 
