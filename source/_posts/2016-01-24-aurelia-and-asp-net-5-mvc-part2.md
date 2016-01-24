@@ -7,9 +7,7 @@ title: "ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia-Part2"
 ---
 
 
-
-
-**This post is part two of a series. For part one see [here](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc/)
+**This post is part two of a series. For part one see [here](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc/)**
 ## Part 2 - Replacing Bower with JSPM
 
 In [part 1 of this series](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc) we created a shiny new ASP.NET 5 project, and I introduced some fundamentals.
