@@ -219,9 +219,11 @@ For the purposes of this blog, I am accepting the default of &ldquo;Babel&rdquo;
 
 <h3>Transitioning to Modules.</h3>
 
-<p>The changes we have been making up until now, have been about managing our packages in our project at design time. This next step is about making changes to our application so that rather than including javascript and css files directly into particular pages, we instead, we write modular javascript, that declares any dependencies it has, and then allow the <code>SystemJS</code> module loader to satisfy those dependencies for us at runtime by loading any needed javascript / css. If this sounds overwhelming, don&rsquo;t worry, it&rsquo;s simple once you get your head around the basic concept. Hoepfully things will become more clear as we continue.</p>
+<p>The changes we have been making up until now, have been about managing our packages in our project at design time. This next step is about making changes to our application so that rather than including javascript and css files directly into particular pages, we instead, write &ldquo;modular&rdquo; javascript, that declares any dependencies it has, and then allow a <code>module loader</code> (<code>SystemJS</code>) to satisfy those dependencies for us at runtime by loading any needed javascript / css dependencies that our module requires.</p>
 
-<p>First, we need to include the module loader, and it&rsquo;s configuration file, into our application.</p>
+<p>If this sounds overwhelming, don&rsquo;t worry, it&rsquo;s simple once you get your head around the basic concept. Hopefully things will become more clear as we continue.</p>
+
+<p>First, we need to include the module loader itself, and it&rsquo;s configuration file, into our application.</p>
 
 <p>If you open <code>_Layout.cshtml</code> you will see a section like this:</p>
 
@@ -292,14 +294,14 @@ For the purposes of this blog, I am accepting the default of &ldquo;Babel&rdquo;
 
 <p>This resolves (thanks to the <code>config.js</code> file) to the <code>js/site.js</code> file in our <code>wwwroot</code> directory. This file is currently empty, meaning it also has no dependencies declared in it for any other modules. This is why the module loader no longer bothers to load <code>JQuery</code> or <code>Bootstrap</code> anymore.</p>
 
-<p>This is good, because in our application, we might have some simple pages that don&rsquo;t require <code>JQuery</code> or <code>Bootstrap</code> to be loaded. We might have other pages that use all sorts of javascript libraries and fancy plugins. It&rsquo;s nice that we are only including stuff that&rsquo;s actually &ldquo;needed&rdquo;.</p>
+<p>This is good, because we are not including any javascript or css by default anymore, until its actually required by something (with the exception of the module loader, and config.js file iteself).</p>
 
-<p>Therefore, as our <code>js/site</code> module is being loaded in our <code>_Layout.cshtml</code> file - which means it&rsquo;s going to be loaded on <strong>every page</strong>, let&rsquo;s limit it&rsquo;s dependencies to only the modules that we know every page will require.</p>
+<p>Therefore, as our <code>js/site</code> module is being loaded in our <code>_Layout.cshtml</code> file - which means it&rsquo;s going to be loaded on <strong>every page</strong>, we can &ldquo;force&rdquo; JQuery and Bootstrap to be loaded on every page, by decalring them as depencies for our module. This could be viewed as a bit of a cheat as really we don&rsquo;t want to load dependencies just for the sake of it, we only want to load them if they are actually used.</p>
 
 <p>So, let&rsquo;s now assume that we are willing to load <code>JQuery</code>, and <code>Bootstrap</code> as a dependency for every page:</p>
 
 <ol>
-<li>Open <code>site.js</code> and insert the following code, then save it an re-run your application:</li>
+<li>Open <code>site.js</code> and insert the following code, then save it an re-run the application:</li>
 </ol>
 
 
@@ -310,9 +312,9 @@ For the purposes of this blog, I am accepting the default of &ldquo;Babel&rdquo;
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This is <code>ES6</code> syntax for declaring a dependency on a module.</p>
+<p>This is <code>ES6</code> syntax for declaring a module dependency.</p>
 
-<p>You should now see that <code>JQuery</code> and <code>Bootstrap</code> are loaded:</p>
+<p>You should now see that <code>JQuery</code> and <code>Bootstrap</code> are loaded on every page:</p>
 
 <p><img src="/assets/posts/jspmjqueryandbootstrapdependency.PNG" alt="jspmjqueryandbootstrapdependency.PNG" /></p>
 
