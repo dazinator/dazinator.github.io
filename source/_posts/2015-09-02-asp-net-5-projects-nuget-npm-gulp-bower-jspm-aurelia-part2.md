@@ -7,14 +7,12 @@ title: "ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia-Part2"
 ---
 
 
-
+**This post is part two of a series. For part one see [here
 ## Part 2 - Replacing Bower with JSPM
 
-In [part 1 of this series](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc) we created a shiny new ASP.NET 5 project.
+In [part 1 of this series](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc) we created a shiny new ASP.NET 5 project, and I introduced some fundamentals.
 
-At this point we have a very basic, default, MVC web application.
-
-For reasons discussed in [part 1](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc), let's now go ahead and ditch Bower in favour of JSPM as our javascript package manager.
+For reasons discussed in [part 1](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc), let's now go ahead with our first task, which is to ditch Bower in favour of JSPM as our javascript package manager.
 
 ### Uninstall Bower
 You will notice that your ASP.NET 5 application has a number of bower packages included by default:
@@ -119,7 +117,7 @@ The next step is to fix up our MVC application so that it loads our javascript a
 
 ### Transitioning to Modules.
 
-The changes we have been making up until now, have been about managing our packages in our project at design time. This next step is about making changes to our application so that rather than including javascript and css files directly into particular pages, we instead, write modular javascript, that declares any dependencies it has, and then allow the `SystemJS` module loader to satisfy those dependencies for us at runtime by loading any needed javascript / css.
+The changes we have been making up until now, have been about managing our packages in our project at design time. This next step is about making changes to our application so that rather than including javascript and css files directly into particular pages, we instead, we write modular javascript, that declares any dependencies it has, and then allow the `SystemJS` module loader to satisfy those dependencies for us at runtime by loading any needed javascript / css. If this sounds overwhelming, don't worry, it's simple once you get your head around the basic concept. Hoepfully things will become more clear as we continue.
 
 First, we need to include the module loader, and it's configuration file, into our application.
 
@@ -161,21 +159,25 @@ You should now be able to see that we no longer get any errors about failing to 
 
 ![jspmmissingcss.PNG]({{site.baseurl}}/assets/posts/jspmmissingcss.PNG)
 
-Why is that? Well it's because we no longer directly include the `bootstrap` and `jquery` scripts into our `_Layout.cshtml` file, so they aren't being loaded! So we aren't getting 404's anymore.
+#### Why aren't we loading JQuery and Bootstrap anymore?
 
-This is the nature of `modular` javascript. What we have transitioned to now, is a Modular concept, where `bootstrap` and `jquery` are modules that will only be loaded, if we load a module that requires them as dependencies.
+We are no longer directly including the `bootstrap` and `jquery` scripts into our `_Layout.cshtml` file, so they aren't being loaded! So we aren't seeing any 404's anymore within the browser console window - which is good, but don't we need those files for our site to function?
 
-With that in mind, the module we are currently loading is one called `js/site`
+This is the nature of `modular` javascript. What we are in the process of transitioning to now, is a Modular concept, where `bootstrap` and `jquery` are modules that will only be loaded, if some other module that we are loading via the module loader, requires them as dependencies.  
+
+With that in mind, let's look at the module we are currently loading via the module loader. It's one called `js/site`
 
 ```xml
 <script>System.import("js/site");</script>
 ```
 
-This resolves to the `js/site.js` file in our `wwwroot` directory. This file is currently empty, meaning there are no dependencies declared in there to any other modules, and this, there is nothing else that the module loader needs to load, and that's why it doesn't bother loading `JQuery` or `Bootstrap` anymore.
+This resolves (thanks to the `config.js` file) to the `js/site.js` file in our `wwwroot` directory. This file is currently empty, meaning it also has no dependencies declared in it for any other modules. This is why the module loader no longer bothers to load `JQuery` or `Bootstrap` anymore.
 
-This is good, because in our application, we might have some simple pages that don't require `JQuery` to be loaded. We might have other pages that use all sorts of javascript libraries and fancy plugins. Therefore, in our `_Layout.cshtml` file, we will keep our dependencies as few as possible, and ensure that only dependencies that we require on **every page** will be included. 
+This is good, because in our application, we might have some simple pages that don't require `JQuery` or `Bootstrap` to be loaded. We might have other pages that use all sorts of javascript libraries and fancy plugins. It's nice that we are only including stuff that's actually "needed". 
 
-Let's now assume that we are willing to load `JQuery`, and `Bootstrap` as a dependency for every page:
+Therefore, as our `js/site` module is being loaded in our `_Layout.cshtml` file - which means it's going to be loaded on **every page**, let's limit it's dependencies to only the modules that we know every page will require.  
+
+So, let's now assume that we are willing to load `JQuery`, and `Bootstrap` as a dependency for every page:
 
 1. Open `site.js` and insert the following code, then save it an re-run your application:
 
@@ -212,7 +214,7 @@ import bootstrap from 'bootstrap';
 import 'bootstrap/css/bootstrap.css!'
 ```
 
-Lastly, in `_Layout.cshtml`, comment out the link to the bootstrap.css file that doesn't exist.
+Lastly, in `_Layout.cshtml`, comment out the link to the old - non existent, bootstrap.css file:
 
 ```xml
 
@@ -281,7 +283,7 @@ If you look at the contents of `_ValidationScriptsPartial` we can see that it is
 
 As you can see, depending upon the environment that ASP.NET determines your application is running on, this renders some script includes to particular js files, used for forms validation. These were previoulsy located within `Bower` packages, that we have deleted.
 
-To correct this, we'll just need to instruct the module loader to load the `jquery.validate.unobtrusive` module instead. Notice that you don't need to also instruc the module loader to load the `jquery.validate` module, because `jquery.validate` is a dependency of `jquery.validate.unobtrusive` so the module loader will resolve it automatically.  
+To correct this, we'll just need to instruct the module loader to load the `jquery.validate.unobtrusive` module instead. Notice that you don't need to also instruct the module loader to load the `jquery.validate` module, because `jquery.validate` is a dependency of `jquery.validate.unobtrusive` so the module loader will resolve it automatically.  
 
 So change the contents of `_ValidationScriptsPartial.cshtml` to this:
 
@@ -295,16 +297,12 @@ And now - everything is working!
 
 ## Recap
 
-In this blog post, we have replaced `Bower` with `JSPM` and changed the way our application loads it's javascript and css, so that it now uses a module loader.
+In this blog post, we took an out of the box ASP.NET 5 MVC application, and replaced `Bower` with `JSPM`. We changed the way our application resolves it's javascript and css files, to use a `module loader` instead.
 
-We also saw that modular CSS currently has a flash of unstyled content issue, and so if that's an issue for your application then it's probably best to stick to directly linking to your css files as before, rather than trying to load them through the module loader. That's a decision for you to make!
+We also saw that using the module loader to load CSS currently results in a "flash of unstyled content" issue, and so if that's an issue for your application then it's probably best to stick to directly linking to your css files as before, for the time being. That's a decision for you to make!
 
 In the next blog post/s in this series, I will attempt to cover:
 
 1. Creating a basic Aurelia application on the Home page.
-2. Introducing Linting, Bundling, and Minification.
-3. Automatic Browser Refresh as we make changes.
-
-I hope this has helped you, and apologies if the article seems rushed in places... It was! :)
-
-As always, appreciate any feedback below!
+2. Introducing Linting, Bundling, and Minification into the build process, using Gulp.
+3. Implementing "Automatic Browser Refresh" so our page refreshes as we make changes to javascript and css files.
