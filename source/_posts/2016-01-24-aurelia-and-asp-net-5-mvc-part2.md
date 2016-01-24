@@ -184,7 +184,7 @@ Therefore, as our `js/site` module is being loaded in our `_Layout.cshtml` file 
 
 So, let's now assume that we are willing to load `JQuery`, and `Bootstrap` as a dependency for every page:
 
-1. Open `site.js` and insert the following code, then save it an re-run your application:
+1. Open `site.js` and insert the following code, then save it an re-run the application:
 
 ```javascript
 import $ from 'jquery';
