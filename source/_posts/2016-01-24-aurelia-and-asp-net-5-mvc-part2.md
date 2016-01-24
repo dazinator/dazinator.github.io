@@ -8,6 +8,7 @@ title: "ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia-Part2"
 
 
 
+
 **This post is part two of a series. For part one see [here](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc/)
 ## Part 2 - Replacing Bower with JSPM
 
@@ -35,7 +36,7 @@ After those changes, your project should look something like this:
 
 With Bower gone and those javascript / css packages deleted, what happens if we run the application now? Let's run it and find out..
 
-![runappbowerremoved.PNG]({{site.baseurl}}/source/assets/posts/runappbowerremoved.PNG)
+![runappbowerremoved.PNG]({{site.baseurl}}/assets/posts/runappbowerremoved.PNG)
 
 As you can see, there are now errors displayed in the browser, and our site looks awful. This makes sense - our application is referencing javascript and css files that used to live in the lib folder, and now they are no longer found because we deleted them. 
 
@@ -235,7 +236,7 @@ Lastly, in `_Layout.cshtml`, comment out the link to the old - non existent, boo
 
 Now run your application!
 
-![jspmnoerrors.PNG]({{site.baseurl}}/source/assets/posts/jspmnoerrors.PNG)
+![jspmnoerrors.PNG]({{site.baseurl}}/assets/posts/jspmnoerrors.PNG)
 
 Wahoo! We now have no errors in the console window, our javascript and css is being loaded - and our application looks ok again.
 
@@ -249,7 +250,7 @@ Our application is running again, but you may notice a few of the pages have err
 
 If you click on "Register" link for example you will see these errors in the browser console window:
 
-![jspmregisterpageproblems.PNG]({{site.baseurl}}/source/assets/posts/jspmregisterpageproblems.PNG)
+![jspmregisterpageproblems.PNG]({{site.baseurl}}/assets/posts/jspmregisterpageproblems.PNG)
 
 This is because many of the views within our MVC application are rendering a partial called `_ValidationScriptsPartial.cshtml`
 
@@ -295,7 +296,7 @@ So change the contents of `_ValidationScriptsPartial.cshtml` to this:
 
 And now - everything is working!
 
-![jspmallworking.PNG]({{site.baseurl}}/source/assets/posts/jspmallworking.PNG)
+![jspmallworking.PNG]({{site.baseurl}}/assets/posts/jspmallworking.PNG)
 
 ## Recap
 
