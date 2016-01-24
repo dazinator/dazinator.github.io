@@ -8,27 +8,24 @@ title: "ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia-Part2"
 
 
 
-## Part 2 - Adding an Aurelia App to our MVC Application
+## Part 2 - Replacing Bower with JSPM
 
 In [part 1 of this series](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc) we created a shiny new ASP.NET 5 project.
 
-At this point we have a very basic MVC web application.
+At this point we have a very basic, default, MVC web application.
 
-### Replacing Bower with JSPM
-I gave a simple overview of JSPM and Bower in [part 1](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc), and for the reasons explained there, let's go ahead and ditch Bower in favour of JSPM as our javascript package manager.
+For reasons discussed in [part 1](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc), let's now go ahead and ditch Bower in favour of JSPM as our javascript package manager.
 
 #### Uninstall Bower
 You will notice that your ASP.NET 5 application has a number of bower packages included by default:
 
 ![bowerpackages.PNG]({{site.baseurl}}/assets/posts/bowerpackages.PNG)
 
-Once we uninstall Bower, we will need to add these packages back through JSPM instead, to get the application working again.
-
-First, let's uninstall Bower. In your project is a `Bower.json` file.. delete it. (If you can't see it in Solution Explorer, you might need to 'show all files'
+First, let's uninstall Bower. In your project is a `Bower.json` file. Delete it! (If you can't see it in Solution Explorer, you might need to 'show all files'
 
 ![bowerjson.PNG]({{site.baseurl}}/assets/posts/bowerjson.PNG)
 
-When you install `Bower` packages, the contents of those packages are actually installed into the "lib" folder under your `wwwroot` directory. So, let's now delete this lib folder.
+When you install `Bower` packages, they are installed under the "lib" folder within your `wwwroot` directory. So, let's now delete this lib folder which will delete all of these packages.
 
 ![wwwrootlibfolder.PNG]({{site.baseurl}}/assets/posts/wwwrootlibfolder.PNG)
 
@@ -36,12 +33,75 @@ After those changes, your project should look something like this:
 
 ![projectremovedbower.PNG]({{site.baseurl}}/assets/posts/projectremovedbower.PNG)
 
-With Bower gone, what happens if we run the application now? Let's run it and find out..
+With Bower gone and those javascript / css packages deleted, what happens if we run the application now? Let's run it and find out..
+
+![runappbowerremoved.PNG]({{site.baseurl}}/source/assets/posts/runappbowerremoved.PNG)
+
+As you can see, there are now errors displayed in the browser, and our site looks awful. This makes sense - our application is referencing javascript and css files that used to live in the lib folder, and now they are no longer found because we deleted them. 
+
+To fix this situation we'll need to add these packages back to our application, using `JSPM`, and then fix up the way our application is `loading` these dependencies (javascript, css files) at runtime. 
+
+#### Installing JSPM
+
+JSPM can be installed as a local `NPM` package.
+
+1. Open `Package.json`
+2. Add `JSPM` and whatever the latest version is:
+
+![addjspmnodejspackage.PNG]({{site.baseurl}}/assets/posts/addjspmnodejspackage.PNG)
+
+3. Save the file. 
+
+The `NPM` package for `JSPM` should now be downloaded and installed into your project. You will see that the package is installed into the "node_modules" folder within your project.
+
+![nodemodulesfolderjspm.PNG]({{site.baseurl}}/assets/posts/nodemodulesfolderjspm.PNG)
+
+#### Configuring JSPM
+
+Now that the `JSPM` package has been installed, we need to configure `JSPM`.
+The way to do this, is a little bit fiddely, as you have to drop to the command line. 
+
+1. Open a `command prompt` window, and `CD` to your project directory
+2. Type `jspm init` and hit enter.
+
+![commandlinejspminit.PNG]({{site.baseurl}}/source/assets/posts/commandlinejspminit.PNG)
+
+You will now be asked a series of questions. At the end of answering these questions, the relevent `config` will be performed within our project.
+
+Here are the answers you should give. Some of them you can just hit enter without typing anything, and the default value will be used.
+
+![jspminit.PNG]({{site.baseurl}}/source/assets/posts/jspminit.PNG)
+
+I'll touch on some of the above configuration options briefly..
+
+1. "Would you like jspm to prefix the jspm package.json properties under jspm?"
+We answer yes to this (the default) and this just means that JSPM will store its project configuration within a "jspm" section in our existing `package.json` file.
+
+2. "Enter server baseURL (public folder path)"
+The word URL is a bit confusing here. This is the relative path to your "public" folder within the project that will serve up files. We need to set this to the path to our `wwwroot` directory. So the value we set for this question is `./wwwroot` as the value is relative to the current (project) directory.
+
+3. "Enter jspm packages folder [wwwroot\jspm_packages]
+We accept the default value for this question. Previously, our Bower packages were installed under `wwwroot\lib` folder, so if you want to keep this consistent you could change this value to `wwwroot\lib`. I however am happy to keep the default.
+
+4. "Enter config file path [wwwroot\config.js]"
+This is the path to where you would like the config javascript file to be placed. It defaults to your public folder (wwwroot\config.js) because this javascript file needs to be loaded at runtime by the client browser. We accept the default value.
+
+5. "Configuration file wwwroot\config.js doesn't exist, create it?" [yes]
+We accept the default which is `yes` as we want it to create the config file for us.
+
+6. "Enter client baseURL (public folder URL) [/]
+This is the URL / path that the browser uses to browse to the public folder (wwwroot). We accept the default value, because our public folder (wwwroot) is served up as the root directory ("/").
+
+7. "Do you wish to use a transpiler? [yes]"
+We accept the default answer of "yes" because transpilers are awesome. They allow us to write javascript using the latest language specifications, and then they "transpile" that javascript so that it can run in browsers that don't support the latest specifications yet.
+
+8. "Which ES6 transpiler would you like to use, Babel, Typescript, or Traceur? [babel]"
+For the purposes of this blog, I am accepting the default of "Babel". 
+
+#### Installing JSPM Packages
 
 
 
-1. Uninstall Bower and delete the `Bower.json` file.
-2. Install JSPM (node dependency global and local?) and tell it the jspm_packages folder goes under wwwroot
 3. `jspm install` all those dependencies we need.. jquery etc..
 4. Find the MVC razor views and reference the scripts from the jspm packages folder instead.
 5. Run the MVC application, verify it still works.
