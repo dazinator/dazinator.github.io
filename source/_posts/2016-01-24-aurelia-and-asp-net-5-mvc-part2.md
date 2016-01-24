@@ -120,9 +120,11 @@ The next step is to fix up our MVC application so that it loads our javascript a
 
 ### Transitioning to Modules.
 
-The changes we have been making up until now, have been about managing our packages in our project at design time. This next step is about making changes to our application so that rather than including javascript and css files directly into particular pages, we instead, we write modular javascript, that declares any dependencies it has, and then allow the `SystemJS` module loader to satisfy those dependencies for us at runtime by loading any needed javascript / css. If this sounds overwhelming, don't worry, it's simple once you get your head around the basic concept. Hoepfully things will become more clear as we continue.
+The changes we have been making up until now, have been about managing our packages in our project at design time. This next step is about making changes to our application so that rather than including javascript and css files directly into particular pages, we instead, write "modular" javascript, that declares any dependencies it has, and then allow a `module loader` (`SystemJS`) to satisfy those dependencies for us at runtime by loading any needed javascript / css dependencies that our module requires. 
 
-First, we need to include the module loader, and it's configuration file, into our application.
+If this sounds overwhelming, don't worry, it's simple once you get your head around the basic concept. Hopefully things will become more clear as we continue.
+
+First, we need to include the module loader itself, and it's configuration file, into our application.
 
 If you open `_Layout.cshtml` you will see a section like this:
 
