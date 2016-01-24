@@ -178,9 +178,9 @@ With that in mind, let's look at the module we are currently loading via the mod
 
 This resolves (thanks to the `config.js` file) to the `js/site.js` file in our `wwwroot` directory. This file is currently empty, meaning it also has no dependencies declared in it for any other modules. This is why the module loader no longer bothers to load `JQuery` or `Bootstrap` anymore.
 
-This is good, because in our application, we might have some simple pages that don't require `JQuery` or `Bootstrap` to be loaded. We might have other pages that use all sorts of javascript libraries and fancy plugins. It's nice that we are only including stuff that's actually "needed". 
+This is good, because we are not including any javascript or css by default anymore, until its actually required by something (with the exception of the module loader, and config.js file iteself).
 
-Therefore, as our `js/site` module is being loaded in our `_Layout.cshtml` file - which means it's going to be loaded on **every page**, let's limit it's dependencies to only the modules that we know every page will require.  
+Therefore, as our `js/site` module is being loaded in our `_Layout.cshtml` file - which means it's going to be loaded on **every page**, we can "force" JQuery and Bootstrap to be loaded on every page, by decalring them as depencies for our module. This could be viewed as a bit of a cheat as really we don't want to load dependencies just for the sake of it, we only want to load them if they are actually used.
 
 So, let's now assume that we are willing to load `JQuery`, and `Bootstrap` as a dependency for every page:
 
