@@ -7,16 +7,39 @@ title: "ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia-Part2"
 ---
 
 
+
 ## Part 2 - Adding an Aurelia App to our MVC Application
 
 In [part 1 of this series](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc) we created a shiny new ASP.NET 5 project.
 
-At this point we have a very basic MVC web application. Let's now create an Aurelia app on our home page.
+At this point we have a very basic MVC web application.
 
-### JSPM instead of Bower
-I gave an overview of JSPM and Bower in part 1, and for the reasons explained there, we will be ditching Bower and using JSPM as our javascript package manager.
+### Replacing Bower with JSPM
+I gave a simple overview of JSPM and Bower in [part 1](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc), and for the reasons explained there, let's go ahead and ditch Bower in favour of JSPM as our javascript package manager.
 
-todo:
+#### Uninstall Bower
+You will notice that your ASP.NET 5 application has a number of bower packages included by default:
+
+![bowerpackages.PNG]({{site.baseurl}}/assets/posts/bowerpackages.PNG)
+
+Once we uninstall Bower, we will need to add these packages back through JSPM instead, to get the application working again.
+
+First, let's uninstall Bower. In your project is a `Bower.json` file.. delete it. (If you can't see it in Solution Explorer, you might need to 'show all files'
+
+![bowerjson.PNG]({{site.baseurl}}/assets/posts/bowerjson.PNG)
+
+When you install `Bower` packages, the contents of those packages are actually installed into the "lib" folder under your `wwwroot` directory. So, let's now delete this lib folder.
+
+![wwwrootlibfolder.PNG]({{site.baseurl}}/assets/posts/wwwrootlibfolder.PNG)
+
+After those changes, your project should look something like this:
+
+![projectremovedbower.PNG]({{site.baseurl}}/assets/posts/projectremovedbower.PNG)
+
+With Bower gone, what happens if we run the application now? Let's run it and find out..
+
+
+
 1. Uninstall Bower and delete the `Bower.json` file.
 2. Install JSPM (node dependency global and local?) and tell it the jspm_packages folder goes under wwwroot
 3. `jspm install` all those dependencies we need.. jquery etc..
