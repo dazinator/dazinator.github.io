@@ -302,7 +302,7 @@ And now - everything is working!
 
 ## Recap
 
-In this blog post, we took an out of the box ASP.NET 5 MVC application, and replaced `Bower` with `JSPM`. We changed the way our application resolves it's javascript and css files, to use a `module loader` instead.
+In this blog post, we took an out of the box ASP.NET 5 MVC application that we created in [part 1](http://darrelltunnell.net/blog/2015/08/16/aurelia-and-asp-net-5-mvc/), and replaced `Bower` with `JSPM`. We changed the way our application resolves it's javascript and css files, to use a `module loader` instead.
 
 We also saw that using the module loader to load CSS currently results in a "flash of unstyled content" issue, and so if that's an issue for your application then it's probably best to stick to directly linking to your css files as before, for the time being. That's a decision for you to make!
 
