@@ -75,9 +75,9 @@ The easiest may be to just zip up your entire solution (checkout directory), and
 If there are some pre-requisites to being able to open and build the solution, add a readme to the zip that explains what a developer must do before attempting to open the solution. This is usually handy to have in your source control anyway - in case you ever need to checkout and open the solution on a new machine one day that doesn't have your dependencies set up. These should be the same steps that any developer new to the company has to go through (including you) when checking out the code for the first time and wanting to open it.
 
 
-## DnnPackager?
+## How does this all tie in with DnnPackager?
 
-For the next realease of DnnPacakger, it will now produce "sources" packages alongside the standard install zip. However this is currently for the purposes of supporting modules that have to be installed with source code into the dnn website because they use dynamic compilation. 
+Well, for the next realease of DnnPacakger, I have added rudimentary support for Sources packages (thanks to [@nvisionative](https://github.com/nvisionative) for requesting this feature) - so that it will now produce "sources" packages alongside the standard install zip. However this is currently for the purposes of supporting modules that need to include source files in their installation process into Dnn, which I suspect will mainly just be ones that use dynamic compilation. 
 
 It won't include .csproj files or .sln files because at this point in time, I can't see how including them would lead to a reliable experience for the developer opening these up at the other end. 
 
