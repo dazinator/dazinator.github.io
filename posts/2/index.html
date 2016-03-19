@@ -9,7 +9,8 @@
   <meta name="author" content="Darrell Tunnell">
 
   
-  <meta name="description" content="There is no Spoon CRM The purpose of this post will be to look at the code for a fairly typical looking crm plugin, and examine how to implement a &hellip;">
+  <meta name="description" content="Setting the Scene Imagine we have an application that uses the CRM SDK. It needs to: Create a new account entity in crm.
+Get some value that was just &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +78,62 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/">CRM / Plugin Generated Values - and Reducing Roundtrips!</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-12-22T00:00:00+00:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2014</span></span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Setting the Scene</h2>
+
+<p>Imagine we have an application that uses the CRM SDK. It needs to:</p>
+
+<ol>
+<li>Create a new <code>account</code> entity in crm.</li>
+<li>Get some value that was just generated as a result of a synchronous plugin that fires on the create. For example, suppose there is a plugin that generates an account reference number.</li>
+</ol>
+
+
+<h2>The &ldquo;I don&rsquo;t care about network latency method!&rdquo;</h2>
+
+<p>The &lsquo;I don&rsquo;t care about network latency&rsquo; way of dealing with this is to just do 2 seperate Requests (roundtrips) with the CRM server.</p>
+
+<ol>
+<li>Create the new <code>account</code> which returns you the ID.</li>
+<li>Retrieve the <code>account</code> using that ID, along with the values that you need.</li>
+</ol>
+
+
+<p>This approach is sub optimal where network latency is a concern, as it incurs the penalty of making two roundtrips accross the network with the server, where 1 is possible.</p>
+
+<p>Let&rsquo;s now have a look at the &ldquo;I&rsquo;m running on a 56k modem method&rdquo; of doing the same thing!</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/12/22/crm-plugin-generated-values-and-reducing-roundtrips/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -176,6 +233,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/03/19/dnn-extensions-sources-packages-what-are-they/">Dnn Extensions - Sources Packages?</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/01/24/aurelia-and-asp-net-5-mvc-part2/">ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia-Part2</a>
       </li>
     
@@ -189,10 +250,6 @@
     
       <li class="post">
         <a href="/blog/2015/11/05/automating-android-unit-test-apps-xamarin-like-a-pro/">Automating Android Unit Test Apps (Xamarin) Like a Pro</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/08/16/aurelia-and-asp-net-5-mvc/">ASP.NET 5 Projects - NuGet-NPM-Gulp-Bower-Jspm-Aurelia</a>
       </li>
     
   </ul>
