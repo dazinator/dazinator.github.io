@@ -10,33 +10,43 @@ title: "Dnn Extensions - Sources Packages?"
 
 I have been doing some work on DnnPackager recently, and I've come accross the concept of "Source" packages. I have to admit I am not entirely new to these, but I've never personally used them for my projects in the past.
 
-Source packages are installation zip's for your dnn extension, i.e you "install" them into your Dnn site like any other install package, except that they also include source code files, like .cs, .vb files etc. 
+Source packages are basically identical to the ordinary install zip's for your dnn module / extension, i.e you "install" them into your Dnn site like any other install package, except that they also include "source code" files within them, like .cs, .vb files etc. 
 
 ## Why would you want to include source code in your install zip?
 Well this is where things get a little interesting. 
 
-The two main reasons why you would want to include source code that I can think of:
+The two main reasons I can fathom why you would want to include source code in an install zip are that:
 
-1. Your module uses dynamic compilation, and so unless you include these source files with the module installation, then it just won't work.
-2. You want to distribute your VS project / solution source code, so that developer's can open it up in VS and own it / make changes. Usually you'd charge for this option.
+1. Your module uses dynamic compilation, and so unless you include source files with the module installation, then it just won't work.
+2. You want to distribute your source code, so that developer's (who pay for it?) can open it up in VS and own it / make changes (improvements?). Usually you'd charge for this option, but it's faesible you are just an extremely generous developer (like me) who gives stuff away for free.
 
 
-Number 1 is a necessity to cater for modules that use dynamic compilation. 
-Number 2 is an optional thing about you as a developer, distributing your solution source in a format that other developers can "own" - irrespective of whether dynamic compilation is used for your module or not. 
+Number 1 is a necessity really to cater for modules that use dynamic compilation. 
 
-Note: If you are using Dynamic compilation for your module, then people allready have the ability to make changes to the code by simply going into the website directory, and modifying the code files. Whether they are legally entitled to do so ofcourse, would be down to the licence agreement. This is different from owning the project / solution in a format that can be opened, built and compiled from an IDE like VS however.
+Number 2 is an optional thing about you as a developer (or commercial entity), distributing your solution source code in a format that thrid parties can "own" it - irrespective of whether you have used dynamic compilation or not. 
+
+Note: If you are using Dynamic compilation for your module, then people allready have the ability to make changes to the code by simply going into the website directory after the module has been installed, and modifying the code files. But you already knew that right!! Whether they are legally entitled to do so ofcourse, would be down to the licence agreement. 
+
+Number 1 and 3 are different. 
+
+## Why are they different?
+Because in the first scenario, you are giving IIS the files it needs to compile and run your code within a Dnn website instance. In the second scenario, you are giving **developers** the files they need, to open up your project / solution and **build**, and compile your code, in a manner that spits out everything needed by scenario 1. In other words, the build and compilation that developers do, produces the output that's needed within the website for the compilation that IIS does. 
+
+## Why was that last bit important
+Because files related to the build that developers do - i,e the ones that prodice the output that actually needs to be installed to the dnn site, arguable have no business being installed into a Dnn website. Key files, project files, solution files etc etc - there are all completely unrelated to the working / running of your module within Dnn, and have nothing to do with IIS dynamic compilation or anything. They shouldn't be installed in a website period (imho).
+
 
 ## Dual purpose
 
-This seems to be a dual purpose for the sources package that doesn't sit right with me. 
-Using it to install source code into the website seems like what it is meant for imho - it is a Dnn installation zip after all.
+There seems to be a dual purpose for the sources package that doesn't sit right with me. 
+Using it to install source code into the website to support dynamic compilation seems like what it is meant for imho - it is a Dnn installation zip after all.
 
-Using it to provide a third party with your VS solution / project files so that they can open up the solution in an IDE, build and compile the code is a completely different scenario, and I can't see how that second scenario can work reliably just by including a .csproj in a dnn sources install zip - except for in the most simplisitic and basic of scenarios, which rarely happen in the real world. Let me explain some of the issues.
+Using it to provide a third party with your VS solution / project files so that they can open up the solution in an IDE, build and compile the code is a completely different scenario, and I can't see how that second scenario can work reliably just by including a .csproj in a dnn sources install zip - except for in the most simplisitic and basic of scenarios, which rarely happen in the real world.
 
 
-## Issues with including Sln / Csproj in the sources package.
+## Example of some issues with including Sln / Csproj in a sources zip package.
 
-Currently, if you use widely available project templates to produce "sources" packages, they will by default, produce a sources "zip" file for each of the module projects in your solution, and this will contain source code files, as well as the csproj, and sln file. (I think the sln will only get included if it lives within the project directory).
+Currently, if you use widely available project templates to produce "sources" packages, they will by default, produce a sources "zip" file for each of the module projects in your solution, and this will contain source code files copied form your project, as well as the csproj, and sln file. (I think the sln will only get included if it lives within the project directory).
 
 Already we hit an issue, as if you have multiple projects in your solution, and the sln file lives in a parent directory of those projects like this:
 
@@ -48,7 +58,7 @@ solution/projectB/projectB.csproj
 
 ```
 
-(which is fairly normal) then the sln file usually won't be included in the sources packages for any of your particular modules.
+(which is fairly normal) then the sln file usually won't be included in the sources packages for any of your particular modules as it doesn't live directly within a project directory.
 
 Secondly, if ProjectA has a project reference to ProjectB, and someone downloads the sources package for your projectA module, and opens up the csproj file that you have included in that sources package - the project is going to have a missing project reference to projectB so it won't compile.
 
