@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-categories: ""
+categories: "DotNetNuke,DnnPackager"
 published: true
 title: "Dnn Extensions - Sources Packages?"
 ---
