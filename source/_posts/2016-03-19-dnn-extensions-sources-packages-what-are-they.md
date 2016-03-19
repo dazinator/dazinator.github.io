@@ -20,6 +20,7 @@ The two main reasons why you would want to include source code that I can think 
 1. Your module uses dynamic compilation, and so unless you include these source files with the module installation, then it just won't work.
 2. You want to distribute your VS project / solution source code, so that developer's can open it up in VS and own it / make changes. Usually you'd charge for this option.
 
+
 Number 1 is a necessity to cater for modules that use dynamic compilation. 
 Number 2 is an optional thing about you as a developer, distributing your solution source in a format that other developers can "own" - irrespective of whether dynamic compilation is used for your module or not. 
 
