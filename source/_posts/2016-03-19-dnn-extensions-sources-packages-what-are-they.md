@@ -3,7 +3,7 @@ layout: post
 comments: true
 categories: ""
 published: true
-title: "Dnn Extensions - Sources Packages - What are they!"
+title: "Dnn Extensions - Sources Packages?"
 ---
 
 ## Sources Packages
