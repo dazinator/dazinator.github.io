@@ -30,7 +30,7 @@ Note: If you are using Dynamic compilation for your module, then people allready
 This seems to be a dual purpose for the sources package that doesn't sit right with me. 
 Using it to install source code into the website seems like what it is meant for imho - it is a Dnn installation zip after all.
 
-Using it to provide a third party with your VS solution / project files so that they can open up the solution in an IDE, build and compile the code is a completely different scenario, and I can't see how that second scenario can work reliably just by including a .csproj in a dnn sources install zip - except for in the most simplisitic and basic of scenarios, which rarely happen in the real world. Let me explain some of those issues.
+Using it to provide a third party with your VS solution / project files so that they can open up the solution in an IDE, build and compile the code is a completely different scenario, and I can't see how that second scenario can work reliably just by including a .csproj in a dnn sources install zip - except for in the most simplisitic and basic of scenarios, which rarely happen in the real world. Let me explain some of the issues.
 
 
 ## Issues with including Sln / Csproj in the sources package.
