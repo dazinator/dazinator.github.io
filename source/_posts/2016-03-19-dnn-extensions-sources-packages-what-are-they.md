@@ -39,10 +39,13 @@ Currently, if you use widely available project templates to produce "sources" pa
 
 Already we hit an issue, as if you have multiple projects in your solution, and the sln file lives in a parent directory of those projects like this:
 
+```
+
 solution/mysln.sln
 solution/projectA/projectA.csproj
 solution/projectB/projectB.csproj
 
+```
 
 (which is fairly normal) then the sln file usually won't be included in the sources packages for any of your particular modules.
 
