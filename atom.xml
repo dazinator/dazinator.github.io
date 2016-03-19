@@ -4,7 +4,7 @@
   <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2016-03-19T21:59:32+00:00</updated>
+  <updated>2016-03-19T22:37:47+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -12,6 +12,21 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[DnnPackager - v2.0.6]]></title>
+    <link href="http://darrelltunnell.net/blog/2016/03/19/dnnpackager-v2-0-6/"/>
+    <updated>2016-03-19T00:00:00+00:00</updated>
+    <id>http://darrelltunnell.net/blog/2016/03/19/dnnpackager-v2-0-6</id>
+    <content type="html"><![CDATA[<h2>DnnPackager Release -v2.0.6</h2>
+
+<p>A short post to announce that a new minor release of DnnPackager is out. You can find the release notes here explaining what&rsquo;s new: <a href="https://github.com/dazinator/DnnPackager/releases/tag/2.0.6%2B2">https://github.com/dazinator/DnnPackager/releases/tag/2.0.6%2B2</a></p>
+
+<p>For an introduction to DnnPackager in general <a href="http://darrelltunnell.net/blog/2015/12/01/dnnpackager-getting-started/">see here</a></p>
+
+<p>Special thanks to <a href="https://github.com/nvisionative">@nvisionative</a> for requesting this feature.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Dnn Extensions - Sources Packages?]]></title>
