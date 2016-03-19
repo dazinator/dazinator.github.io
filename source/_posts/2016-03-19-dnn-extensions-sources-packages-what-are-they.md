@@ -14,6 +14,7 @@ Source packages are basically identical to the ordinary install zip's for your d
 
 ## Why would you want to include source code in your install zip?
 Well this is where things get a little interesting. 
+<!-- more -->
 
 The two main reasons I can fathom why you would want to include source code in an install zip are that:
 
