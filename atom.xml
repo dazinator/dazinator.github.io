@@ -4,7 +4,7 @@
   <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2016-03-19T21:56:46+00:00</updated>
+  <updated>2016-03-19T21:59:32+00:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -45,7 +45,7 @@
 
 <p>Note: If you are using Dynamic compilation for your module, then people allready have the ability to make changes to the code by simply going into the website directory after the module has been installed, and modifying the code files. But you already knew that right!! Whether they are legally entitled to do so ofcourse, would be down to the licence agreement.</p>
 
-<p>Number 1 and 3 are different.</p>
+<p>Number 1 and 2 are different.</p>
 
 <h2>Why are they different?</h2>
 
