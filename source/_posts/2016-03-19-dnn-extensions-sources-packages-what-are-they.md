@@ -28,7 +28,7 @@ Number 2 is an optional thing about you as a developer (or commercial entity), d
 
 Note: If you are using Dynamic compilation for your module, then people allready have the ability to make changes to the code by simply going into the website directory after the module has been installed, and modifying the code files. But you already knew that right!! Whether they are legally entitled to do so ofcourse, would be down to the licence agreement. 
 
-Number 1 and 3 are different. 
+Number 1 and 2 are different. 
 
 ## Why are they different?
 Because in the first scenario, you are giving IIS the files it needs to compile and run your code within a Dnn website instance. In the second scenario, you are giving **developers** the files they need, to open up your project / solution and **build**, and compile your code, in a manner that spits out everything needed by scenario 1. In other words, the build and compilation that developers do, produces the output that's needed within the website for the compilation that IIS does. 
