@@ -135,9 +135,16 @@ Using it to install source code into the website seems like what it is meant for
 
 <p>Already we hit an issue, as if you have multiple projects in your solution, and the sln file lives in a parent directory of those projects like this:</p>
 
-<p>solution/mysln.sln
-solution/projectA/projectA.csproj
-solution/projectB/projectB.csproj</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>solution/mysln.sln
+</span><span class='line'>solution/projectA/projectA.csproj
+</span><span class='line'>solution/projectB/projectB.csproj
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>(which is fairly normal) then the sln file usually won&rsquo;t be included in the sources packages for any of your particular modules.</p>
 
