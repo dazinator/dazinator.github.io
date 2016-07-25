@@ -3,6 +3,7 @@ layout: post
 comments: true
 published: true
 title: ASPNET Core TagHelper's - A Better @addTagHelper type resolver
+categories: 'ASPNETCORE, ASPNET MVC, TagHelper'
 ---
 ## What's this about?
 
