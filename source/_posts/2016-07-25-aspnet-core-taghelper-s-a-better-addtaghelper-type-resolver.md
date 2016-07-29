@@ -24,7 +24,7 @@ mvcBuilder.AddApplicationPart(assy);
 
 ```
 
-Now suppose your have a Razor View that has some markup that can be targeted by those tag helpers:
+Now suppose you have a Razor View with some markup that can be targeted by those tag helpers:
 
 ```
 
@@ -33,7 +33,10 @@ Now suppose your have a Razor View that has some markup that can be targeted by 
 
 ```
 
-If you run your application, those TagHelper's won't work. This is because you don't have any `addTagHelper` directive yet, and so razor doesn't know it should be using them. This is where things get a bit interesting!
+If you run your application, those TagHelper's won't work. 
+This is because you don't have any `@addTagHelper` directive yet in your razor view, and so razor doesn't know it should be using them. This is where things get a bit interesting!
+
+<!-- more -->
 
 ## Let's add an `addTagHelper` directive
 
@@ -249,11 +252,3 @@ Now we can just add one directive to our __ViewImports.cshtml file, like this:
 Now that will include all TagHelpers that live in assemblies matching that glob. We can drop new plugins in and their tag helpers will light up automatically.
 
 You are welcome.
-
-
-
-
-
-
-
-
