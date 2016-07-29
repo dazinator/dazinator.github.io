@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://darrelltunnell.net/blog/2016/07/25/aspnet-core-taghelper-s-a-better-addtaghelper-type-resolver/</loc>
+    <lastmod>2016-07-25T00:00:00+01:00</lastmod>
+  </url>
+  <url>
     <loc>http://darrelltunnell.net/blog/2016/03/19/dnnpackager-v2-0-6/</loc>
     <lastmod>2016-03-19T00:00:00+00:00</lastmod>
   </url>
@@ -106,5 +110,17 @@
   </url>
   <url>
     <loc>http://darrelltunnell.net/blog/categories/asp-dot-net-aurelia-gulp-bower-jspm/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/aspnetcore/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/aspnet/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/mvc/</loc>
+  </url>
+  <url>
+    <loc>http://darrelltunnell.net/blog/categories/taghelper/</loc>
   </url>
 </urlset>

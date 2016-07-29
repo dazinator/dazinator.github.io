@@ -4,7 +4,7 @@
   <title><![CDATA[Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2016-03-19T22:37:47+00:00</updated>
+  <updated>2016-07-29T15:38:20+01:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -12,6 +12,388 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ASPNET Core TagHelper's - a Better @addTagHelper Type Resolver]]></title>
+    <link href="http://darrelltunnell.net/blog/2016/07/25/aspnet-core-taghelper-s-a-better-addtaghelper-type-resolver/"/>
+    <updated>2016-07-25T00:00:00+01:00</updated>
+    <id>http://darrelltunnell.net/blog/2016/07/25/aspnet-core-taghelper-s-a-better-addtaghelper-type-resolver</id>
+    <content type="html"><![CDATA[<h2>What&rsquo;s this about?</h2>
+
+<p>This is about TagHelper&rsquo;s in ASP.NET Core, and how to get more flexible <code>@addTagHelper</code> directives.</p>
+
+<p>Suppose your application loads some assemblies dynamically - for example, from a plugins folder, and those assemblies contain <code>TagHelper</code>&rsquo;s.</p>
+
+<p>In startup.cs you would have something like this to register your assemblies with the MVC parts system:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">assy</span> <span class="p">=</span> <span class="n">Assembly</span><span class="p">.</span><span class="n">LoadFile</span><span class="p">(</span><span class="s">&quot;C:\\SomePath\Plugin.Authentication.dll&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">mvcBuilder</span><span class="p">.</span><span class="n">AddApplicationPart</span><span class="p">(</span><span class="n">assy</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">var</span> <span class="n">assy</span> <span class="p">=</span> <span class="n">Assembly</span><span class="p">.</span><span class="n">LoadFile</span><span class="p">(</span><span class="s">&quot;C:\\SomePath\Plugin.Markdown.dll&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">mvcBuilder</span><span class="p">.</span><span class="n">AddApplicationPart</span><span class="p">(</span><span class="n">assy</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now suppose your have a Razor View that has some markup that can be targeted by those tag helpers:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'> <span class="p">&lt;</span><span class="n">plugin</span><span class="p">-</span><span class="n">authentication</span> <span class="p">/&gt;</span>
+</span><span class='line'> <span class="p">&lt;</span><span class="n">plugin</span><span class="p">-</span><span class="n">markdown</span> <span class="n">visible</span><span class="p">=</span><span class="s">&quot;true&quot;</span><span class="p">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you run your application, those TagHelper&rsquo;s won&rsquo;t work. This is because you don&rsquo;t have any <code>addTagHelper</code> directive yet, and so razor doesn&rsquo;t know it should be using them. This is where things get a bit interesting!</p>
+
+<h2>Let&rsquo;s add an <code>addTagHelper</code> directive</h2>
+
+<p>So we add the directive to our __ViewImports.cshtml file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">@addTagHelper</span> <span class="s">&quot;*, Plugin.Markdown&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now when we start our application, BOOM:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">An</span> <span class="n">error</span> <span class="n">occurred</span> <span class="n">during</span> <span class="n">the</span> <span class="n">compilation</span> <span class="n">of</span> <span class="n">a</span> <span class="n">resource</span> <span class="n">required</span> <span class="n">to</span> <span class="n">process</span> <span class="k">this</span> <span class="n">request</span><span class="p">.</span> <span class="n">Please</span> <span class="n">review</span> <span class="n">the</span> <span class="n">following</span> <span class="n">specific</span> <span class="n">error</span> <span class="n">details</span> <span class="n">and</span> <span class="n">modify</span> <span class="n">your</span> <span class="n">source</span> <span class="n">code</span> <span class="n">appropriately</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">/</span><span class="n">Views</span><span class="p">/</span><span class="n">_ViewImports</span><span class="p">.</span><span class="n">cshtml</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Cannot</span> <span class="n">resolve</span> <span class="n">TagHelper</span> <span class="n">containing</span> <span class="n">assembly</span> <span class="err">&#39;</span><span class="n">Plugin</span><span class="p">.</span><span class="n">Markdown</span><span class="err">&#39;</span><span class="p">.</span> <span class="n">Error</span><span class="p">:</span> <span class="n">Could</span> <span class="n">not</span> <span class="n">load</span> <span class="n">file</span> <span class="n">or</span> <span class="n">assembly</span> <span class="err">&#39;</span><span class="n">Plugin</span><span class="p">.</span><span class="n">Markdown</span><span class="err">&#39;</span> <span class="n">or</span> <span class="n">one</span> <span class="n">of</span> <span class="n">its</span> <span class="n">dependencies</span><span class="p">.</span> <span class="n">The</span> <span class="n">system</span> <span class="n">cannot</span> <span class="n">find</span> <span class="n">the</span> <span class="n">file</span> <span class="n">specified</span><span class="p">.</span>
+</span><span class='line'><span class="n">@addTagHelper</span> <span class="s">&quot;*, Plugin.Markdown&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is because by defualt MVC does not resolve <code>TagHelper</code> assemblies registered with the parts system (atleast this is true as of RTM 1.0.0) so it complains when it processes that directive, saying it can&rsquo;t find such an assembly - because it can only see assemblies that are in the bin folder by default. So it can&rsquo;t see your plugin assembly.</p>
+
+<h2>How do we solve?</h2>
+
+<p>Well if you add this line:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">mvcBuilder</span><span class="p">.</span><span class="n">AddTagHelpersAsServices</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That will register some replacement services that will check the application parts system when trying to resolve the tag helper assemblies based on the name provided by the addTagHelper directive.</p>
+
+<p>However - this now works but it&rsquo;s still not ideal because we still have to add a directive for each <code>plugin</code> before it will work on our page/s. So when someone develops a new plugin, it won&rsquo;t work until we modify our <code>_ViewImports.cshtml</code> file and add another line:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">@addTagHelper</span> <span class="s">&quot;*, Plugin.Markdown&quot;</span>
+</span><span class='line'><span class="n">@addTagHelper</span> <span class="s">&quot;*, Plugin.Another&quot;</span>
+</span><span class='line'><span class="n">@addTagHelper</span> <span class="s">&quot;*, Plugin.YetAnother&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This can be incredibly frustrating because if you are wanting an extensibile system where plugins can be installed on the fly, then they should just work without constant modifications to source code.</p>
+
+<h1>So Can We Do Better?</h1>
+
+<p>Yup. So here is my solution to this issue, and that is to allow <code>globbing</code> to be supported in the <code>addTagHelper</code> directive for the assembly name, just like it is for the TypeName portion.</p>
+
+<p>So this is how you do that.</p>
+
+<h1>ITagHelperTypeResolver</h1>
+
+<p>We need to create an <code>ITagHelperTypeResolver</code> and implement it&rsquo;s <code>Resolve</code> method. This method takes the string provided by in the <code>addTagHelper</code> directive and returns all <code>TagHelper</code> type&rsquo;s that are matches to that string. We will make our implementation support globbing on the assembly name so it can match <code>TagHelper</code> types accross multiple assemblies registered with the <code>Application Parts</code> system, instead of just from a single one.</p>
+
+<p>Here is my quick and dirty implementation, where I took a lot of the code from the microsoft implementation, and just added a few tweaks for globbing:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">AssemblyNameGlobbingTagHelperTypeResolver</span> <span class="p">:</span> <span class="n">ITagHelperTypeResolver</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">private</span> <span class="k">static</span> <span class="k">readonly</span> <span class="n">System</span><span class="p">.</span><span class="n">Reflection</span><span class="p">.</span><span class="n">TypeInfo</span> <span class="n">ITagHelperTypeInfo</span> <span class="p">=</span> <span class="k">typeof</span><span class="p">(</span><span class="n">ITagHelper</span><span class="p">).</span><span class="n">GetTypeInfo</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">protected</span> <span class="n">TagHelperFeature</span> <span class="n">Feature</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="nf">AssemblyNameGlobbingTagHelperTypeResolver</span><span class="p">(</span><span class="n">ApplicationPartManager</span> <span class="n">manager</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">manager</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentNullException</span><span class="p">(</span><span class="n">nameof</span><span class="p">(</span><span class="n">manager</span><span class="p">));</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">Feature</span> <span class="p">=</span> <span class="k">new</span> <span class="n">TagHelperFeature</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">manager</span><span class="p">.</span><span class="n">PopulateFeature</span><span class="p">(</span><span class="n">Feature</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// _manager = manager;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">/// &lt;inheritdoc /&gt;</span>
+</span><span class='line'>        <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Type</span><span class="p">&gt;</span> <span class="n">Resolve</span><span class="p">(</span>
+</span><span class='line'>            <span class="kt">string</span> <span class="n">name</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">SourceLocation</span> <span class="n">documentLocation</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">ErrorSink</span> <span class="n">errorSink</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">errorSink</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentNullException</span><span class="p">(</span><span class="n">nameof</span><span class="p">(</span><span class="n">errorSink</span><span class="p">));</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="n">IsNullOrEmpty</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">errorLength</span> <span class="p">=</span> <span class="n">name</span> <span class="p">==</span> <span class="k">null</span> <span class="p">?</span> <span class="m">1</span> <span class="p">:</span> <span class="n">Math</span><span class="p">.</span><span class="n">Max</span><span class="p">(</span><span class="n">name</span><span class="p">.</span><span class="n">Length</span><span class="p">,</span> <span class="m">1</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">errorSink</span><span class="p">.</span><span class="n">OnError</span><span class="p">(</span>
+</span><span class='line'>                    <span class="n">documentLocation</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s">&quot;Tag Helper Assembly Name Cannot Be Empty Or Null&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="n">errorLength</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="k">return</span> <span class="n">Type</span><span class="p">.</span><span class="n">EmptyTypes</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">TypeInfo</span><span class="p">&gt;</span> <span class="n">libraryTypes</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">try</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">libraryTypes</span> <span class="p">=</span> <span class="n">GetExportedTypes</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">errorSink</span><span class="p">.</span><span class="n">OnError</span><span class="p">(</span>
+</span><span class='line'>                    <span class="n">documentLocation</span><span class="p">,</span>
+</span><span class='line'>                    <span class="err">$</span><span class="s">&quot;Cannot Resolve Tag Helper Assembly: {name}, {ex.Message}&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="n">name</span><span class="p">.</span><span class="n">Length</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="k">return</span> <span class="n">Type</span><span class="p">.</span><span class="n">EmptyTypes</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">return</span> <span class="n">libraryTypes</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">/// &lt;inheritdoc /&gt;</span>
+</span><span class='line'>        <span class="k">protected</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">System</span><span class="p">.</span><span class="n">Reflection</span><span class="p">.</span><span class="n">TypeInfo</span><span class="p">&gt;</span> <span class="n">GetExportedTypes</span><span class="p">(</span><span class="kt">string</span> <span class="n">assemblyNamePattern</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">assemblyNamePattern</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentNullException</span><span class="p">(</span><span class="n">nameof</span><span class="p">(</span><span class="n">assemblyNamePattern</span><span class="p">));</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">results</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">System</span><span class="p">.</span><span class="n">Reflection</span><span class="p">.</span><span class="n">TypeInfo</span><span class="p">&gt;();</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="kt">var</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">Feature</span><span class="p">.</span><span class="n">TagHelpers</span><span class="p">.</span><span class="n">Count</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">tagHelperAssemblyName</span> <span class="p">=</span> <span class="n">Feature</span><span class="p">.</span><span class="n">TagHelpers</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">Assembly</span><span class="p">.</span><span class="n">GetName</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">assemblyNamePattern</span><span class="p">.</span><span class="n">Contains</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">))</span> <span class="c1">// is it actually a pattern?</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="n">tagHelperAssemblyName</span><span class="p">.</span><span class="n">Name</span><span class="p">.</span><span class="n">Like</span><span class="p">(</span><span class="n">assemblyNamePattern</span><span class="p">))</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="n">results</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">Feature</span><span class="p">.</span><span class="n">TagHelpers</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+</span><span class='line'>                        <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c1">// not a pattern so treat as normal assembly name.</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">assyName</span> <span class="p">=</span> <span class="k">new</span> <span class="n">AssemblyName</span><span class="p">(</span><span class="n">assemblyNamePattern</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">AssemblyNameComparer</span><span class="p">.</span><span class="n">OrdinalIgnoreCase</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="n">tagHelperAssemblyName</span><span class="p">,</span> <span class="n">assyName</span><span class="p">))</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="n">results</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">Feature</span><span class="p">.</span><span class="n">TagHelpers</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+</span><span class='line'>                    <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">return</span> <span class="n">results</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">private</span> <span class="k">class</span> <span class="nc">AssemblyNameComparer</span> <span class="p">:</span> <span class="n">IEqualityComparer</span><span class="p">&lt;</span><span class="n">AssemblyName</span><span class="p">&gt;</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">public</span> <span class="k">static</span> <span class="k">readonly</span> <span class="n">IEqualityComparer</span><span class="p">&lt;</span><span class="n">AssemblyName</span><span class="p">&gt;</span> <span class="n">OrdinalIgnoreCase</span> <span class="p">=</span> <span class="k">new</span> <span class="n">AssemblyNameComparer</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">private</span> <span class="nf">AssemblyNameComparer</span><span class="p">()</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">public</span> <span class="kt">bool</span> <span class="nf">Equals</span><span class="p">(</span><span class="n">AssemblyName</span> <span class="n">x</span><span class="p">,</span> <span class="n">AssemblyName</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="c1">// Ignore case because that&#39;s what Assembly.Load does.</span>
+</span><span class='line'>                <span class="k">return</span> <span class="kt">string</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">y</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">StringComparison</span><span class="p">.</span><span class="n">OrdinalIgnoreCase</span><span class="p">)</span> <span class="p">&amp;&amp;</span>
+</span><span class='line'>                       <span class="kt">string</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">CultureName</span> <span class="p">??</span> <span class="kt">string</span><span class="p">.</span><span class="n">Empty</span><span class="p">,</span> <span class="n">y</span><span class="p">.</span><span class="n">CultureName</span> <span class="p">??</span> <span class="kt">string</span><span class="p">.</span><span class="n">Empty</span><span class="p">,</span> <span class="n">StringComparison</span><span class="p">.</span><span class="n">Ordinal</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">public</span> <span class="kt">int</span> <span class="nf">GetHashCode</span><span class="p">(</span><span class="n">AssemblyName</span> <span class="n">obj</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="kt">var</span> <span class="n">hashCode</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">obj</span><span class="p">.</span><span class="n">Name</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="n">hashCode</span> <span class="p">^=</span> <span class="n">obj</span><span class="p">.</span><span class="n">Name</span><span class="p">.</span><span class="n">GetHashCode</span><span class="p">();</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="n">hashCode</span> <span class="p">^=</span> <span class="p">(</span><span class="n">obj</span><span class="p">.</span><span class="n">CultureName</span> <span class="p">??</span> <span class="kt">string</span><span class="p">.</span><span class="n">Empty</span><span class="p">).</span><span class="n">GetHashCode</span><span class="p">();</span>
+</span><span class='line'>                <span class="k">return</span> <span class="n">hashCode</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we just register this on startup, after we have registered <code>MVC</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'>  <span class="n">services</span><span class="p">.</span><span class="n">AddSingleton</span><span class="p">&lt;</span><span class="n">ITagHelperTypeResolver</span><span class="p">,</span> <span class="n">AssemblyNameGlobbingTagHelperTypeResolver</span><span class="p">&gt;();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we can just add one directive to our __ViewImports.cshtml file, like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">@addTagHelper</span> <span class="s">&quot;*, Plugin.*&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now that will include all TagHelpers that live in assemblies matching that glob. We can drop new plugins in and their tag helpers will light up automatically.</p>
+
+<p>You are welcome.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[DnnPackager - v2.0.6]]></title>
