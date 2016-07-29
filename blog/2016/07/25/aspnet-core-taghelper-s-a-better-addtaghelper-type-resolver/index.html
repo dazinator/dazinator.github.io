@@ -117,7 +117,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Now suppose your have a Razor View that has some markup that can be targeted by those tag helpers:</p>
+<p>Now suppose you have a Razor View with some markup that can be targeted by those tag helpers:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -126,7 +126,11 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>If you run your application, those TagHelper&rsquo;s won&rsquo;t work. This is because you don&rsquo;t have any <code>addTagHelper</code> directive yet, and so razor doesn&rsquo;t know it should be using them. This is where things get a bit interesting!</p>
+<p>If you run your application, those TagHelper&rsquo;s won&rsquo;t work.
+This is because you don&rsquo;t have any <code>@addTagHelper</code> directive yet in your razor view, and so razor doesn&rsquo;t know it should be using them. This is where things get a bit interesting!</p>
+
+<!-- more -->
+
 
 <h2>Let&rsquo;s add an <code>addTagHelper</code> directive</h2>
 

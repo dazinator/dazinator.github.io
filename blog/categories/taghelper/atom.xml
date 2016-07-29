@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Taghelper | Darrell Tunnell's Blog]]></title>
   <link href="http://darrelltunnell.net/blog/categories/taghelper/atom.xml" rel="self"/>
   <link href="http://darrelltunnell.net/"/>
-  <updated>2016-07-29T15:38:20+01:00</updated>
+  <updated>2016-07-29T15:51:25+01:00</updated>
   <id>http://darrelltunnell.net/</id>
   <author>
     <name><![CDATA[Darrell Tunnell]]></name>
@@ -34,14 +34,18 @@ var assy = Assembly.LoadFile("C:\\SomePath\Plugin.Markdown.dll");
 mvcBuilder.AddApplicationPart(assy);
 </code></pre>
 
-<p>Now suppose your have a Razor View that has some markup that can be targeted by those tag helpers:</p>
+<p>Now suppose you have a Razor View with some markup that can be targeted by those tag helpers:</p>
 
 <pre><code>
  &lt;plugin-authentication /&gt;
  &lt;plugin-markdown visible="true"/&gt;
 </code></pre>
 
-<p>If you run your application, those TagHelper&rsquo;s won&rsquo;t work. This is because you don&rsquo;t have any <code>addTagHelper</code> directive yet, and so razor doesn&rsquo;t know it should be using them. This is where things get a bit interesting!</p>
+<p>If you run your application, those TagHelper&rsquo;s won&rsquo;t work.
+This is because you don&rsquo;t have any <code>@addTagHelper</code> directive yet in your razor view, and so razor doesn&rsquo;t know it should be using them. This is where things get a bit interesting!</p>
+
+<!-- more -->
+
 
 <h2>Let&rsquo;s add an <code>addTagHelper</code> directive</h2>
 
